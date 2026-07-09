@@ -1,4 +1,4 @@
-package com.example.fintracker.presentaion.theme
+package com.example.fintracker.presentation.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
