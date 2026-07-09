@@ -1,4 +1,4 @@
-package com.example.fintracker.ui.theme
+package com.example.fintracker.presentaion.theme
 
 import androidx.compose.ui.graphics.Color
 
