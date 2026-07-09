@@ -18,7 +18,11 @@ fun MainCommonScreen(
             BottomNavigationBar()
         },
         topBar = {
-
+            TopAppBar(
+                onMenuClick = {},
+                onAnalyticsClick = {},
+                onFilterClick = {}
+            )
         }
     ) { innerPadding ->
         Box(
