@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FinTracker</string>
+    <string name="bottom_nav_account">Accounts</string>
+    <string name="bottom_nav_expenses">Расходы</string>
+    <string name="bottom_nav_income">Доходы</string>
+</resources>
