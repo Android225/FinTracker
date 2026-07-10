@@ -8,11 +8,6 @@ enum class BottomNavItem(
     @StringRes val label:Int,
     val route:NavigationPath
 ) {
-    ACCOUNTS(
-        iconRes = R.drawable.accounts,
-        label = R.string.bottom_nav_account,
-        route = NavigationPath.ACCOUNTS
-    ),
     EXPENSES(
         iconRes = R.drawable.expenses,
         label = R.string.bottom_nav_expenses,
@@ -22,5 +17,10 @@ enum class BottomNavItem(
         iconRes = R.drawable.income,
         label = R.string.bottom_nav_income,
         route = NavigationPath.INCOME
+    ),
+    ACCOUNTS(
+        iconRes = R.drawable.accounts,
+        label = R.string.bottom_nav_account,
+        route = NavigationPath.ACCOUNTS
     )
 }

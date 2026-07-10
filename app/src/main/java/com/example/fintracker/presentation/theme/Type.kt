@@ -8,27 +8,53 @@ import androidx.compose.ui.unit.sp
 
 // Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = TextStyle(
+
+    // ================================================================
+    // Герой-сумма: "323 524 ₽", "1 322 444 ₽" (Hero-блок)
+    // Figma: fontSize=45, fontWeight=700, letterSpacing=-1, lineHeightPx=54
+    // ================================================================
+    displayMedium = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight(700),
+        fontSize = 45.sp,
+        lineHeight = 45.sp,
+        letterSpacing = (-1.0).sp
+    ),
+
+    // ================================================================
+    // Названия операций/счетов: "Покупка канцтоваров", "Яндекс Pay"
+    // Figma: fontSize=16, fontWeight=500, letterSpacing=0, lineHeightPx=19.2
+    // ================================================================
+    titleMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight(500),
         fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
+        lineHeight = 16.sp,
         letterSpacing = 0.sp
     ),
-    labelSmall = TextStyle(
+
+    // ================================================================
+    // Суммы в списках ("1 200 ₽"), заголовки секций ("расходы, всего"),
+    // кнопка фильтра ("12 июня"), время в статус-баре ("9:41")
+    // Figma: fontSize=14, fontWeight=500, letterSpacing=0, lineHeightPx=16.8
+    // ================================================================
+    labelLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 14.sp,
+        lineHeight = 14.sp,
+        letterSpacing = 0.sp
+    ),
+
+    // ================================================================
+    // Табы нижней навигации: "Расходы", "Доходы", "Счета"
+    // Figma: fontSize=12, fontWeight=500, letterSpacing=0, lineHeightPx=14.4
+    // ================================================================
+    labelMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 12.sp,
+        letterSpacing = 0.sp
     )
-    */
 )

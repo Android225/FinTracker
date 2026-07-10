@@ -20,8 +20,18 @@ private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40,
-    surfaceContainer = GrayBackContainer.copy(alpha = 0.1f),
-    onSurfaceVariant = GrayText
+
+    primaryContainer = PrimaryContainer,     // #EADDFF — FAB кнопка
+    onPrimaryContainer = OnPrimaryContainer, // #21005D — иконка "+" внутри FAB
+    secondaryContainer = SecondaryContainer, // #E8DEF8 — активный таб навигации
+    onSecondaryContainer = OnSecondaryContainer, // #1D192B — штрих активной иконки
+    surfaceContainer = SurfaceContainer.copy(alpha = 0.1f),                       // #F3EDF7 — фон TopAppBar / BottomNav
+    surfaceVariant = SurfaceContainer,                // #F3EDF7 — фон баров
+    onSurface = OnSurface,                   // #1D1B20 — весь текст
+    onSurfaceVariant = OnSurfaceVariant,     // #49454F — второстепенные подписи
+    outline = OutlineVariant,                // #C4C7C5 — границы иконок
+    outlineVariant = OutlineVariant,
+    background = BackgroundColor
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -38,7 +48,7 @@ private val LightColorScheme = lightColorScheme(
 fun FinTrackerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

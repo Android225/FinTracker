@@ -25,9 +25,7 @@ class MainActivity : ComponentActivity() {
 
                     // Предоставляем navController через CompositionLocal
                     CompositionLocalProvider(LocalNavController provides navController) {
-                        MainCommonScreen {
                             AppNavGraph()
-                        }
                     }
                 }
             }

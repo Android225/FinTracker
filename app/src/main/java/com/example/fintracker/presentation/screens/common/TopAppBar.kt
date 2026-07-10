@@ -40,7 +40,7 @@ fun TopAppBar(
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainer)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable{
                         onMenuClick()
                     }
@@ -56,7 +56,9 @@ fun TopAppBar(
                     , tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "12 июня"
+                    text = "12 июня",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
@@ -79,7 +81,7 @@ fun TopAppBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.background,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
             actionIconContentColor = MaterialTheme.colorScheme.onSurface
         )
