@@ -50,7 +50,7 @@ fun BottomNavigationBar(
                 selected = isSelected,
                 onClick = {
                     if (currentRoute != item.route.route) {
-                        navController.navigate(item.route) {
+                        navController.navigate(item.route.route) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
