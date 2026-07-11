@@ -63,6 +63,54 @@ class ExpensesViewModel: ViewModel() {
             comment = null, createdAt = "", updatedAt = "",
             account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
             category = Category(8, "Магазин продуктов", "🛒", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 9, amount = "1200.00", transactionDate = "2025-07-10T12:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            category = Category(1, "Покупка канцтоваров", "✏️", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 10, amount = "750.00", transactionDate = "2025-07-10T13:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            category = Category(2, "Обед в кафе", "☕", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 11, amount = "2300.00", transactionDate = "2025-07-09T08:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            category = Category(3, "Топливо для машины", "⛽", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 12, amount = "450.00", transactionDate = "2025-07-09T10:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            category = Category(4, "Подписка на сервис", "📱", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 13, amount = "5800.00", transactionDate = "2025-07-08T14:00:00",
+            comment = "Ремонт ноутбука", createdAt = "", updatedAt = "",
+            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            category = Category(5, "Ремонт техники", "🔧", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 14, amount = "3200.00", transactionDate = "2025-07-08T09:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            category = Category(6, "Покупка билетов", "🎫", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 15, amount = "800.00", transactionDate = "2025-07-07T11:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            category = Category(7, "Оплата интернета", "🌐", isIncome = false)
+        ),
+        TransactionResponse(
+            id = 16, amount = "2450.00", transactionDate = "2025-07-07T16:00:00",
+            comment = null, createdAt = "", updatedAt = "",
+            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            category = Category(8, "Магазин продуктов", "🛒", isIncome = false)
         )
     )
 

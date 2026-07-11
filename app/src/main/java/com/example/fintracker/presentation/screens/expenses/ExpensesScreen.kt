@@ -1,5 +1,6 @@
 package com.example.fintracker.presentation.screens.expenses
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,47 +26,37 @@ import com.example.fintracker.presentation.theme.FinTrackerTheme
 @Composable
 fun ExpensesScreen(
     viewModel: ExpensesViewModel = viewModel()
-){
+) {
     val state by viewModel.uiState.collectAsState()
-    MainCommonScreen{
+    MainCommonScreen {
         ExpensesScreenContent(state)
     }
 }
+
 @Composable
 fun ExpensesScreenContent(
     state: ExpensesUiState
-){
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 8.dp)
-    ) {
-        item(key = "hero") {
-            HeroSection(
-                label = "расходы, всего",
-                amount = state.totalAmount
-            )
-        }
-
-        item(key = "divider") {
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-            )
-        }
-
-        items(state.expenses, key = { it.id }) { transaction ->
-            ListItem(
-                emoji = transaction.category.emoji,
-                title = transaction.category.name,
-                amount = "${transaction.amount} ₽"
-            )
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 48.dp),
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-            )
+) {
+    Column() {
+        HeroSection(
+            label = "расходы, всего",
+            amount = state.totalAmount
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 8.dp)
+        ) {
+            items(state.expenses, key = { it.id }) { transaction ->
+                ListItem(
+                    emoji = transaction.category.emoji,
+                    title = transaction.category.name,
+                    amount = "${transaction.amount} ₽"
+                )
+            }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ExpensesScreenPreview() {
