@@ -2,9 +2,9 @@ package com.example.fintracker.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.fintracker.domain.NavigationPath
 import com.example.fintracker.presentation.screens.accounts.AccountsScreen
 import com.example.fintracker.presentation.screens.expenses.ExpensesScreen
 import com.example.fintracker.presentation.screens.income.IncomesScreen
@@ -17,16 +17,16 @@ fun AppNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = NavigationPath.EXPENSES.route,
+        startDestination = Screen.Expenses.route,
         modifier = modifier
     ) {
-        composable(NavigationPath.EXPENSES.route) {
+        composable(Screen.Expenses.route) {
             ExpensesScreen()
         }
-        composable(NavigationPath.INCOME.route) {
+        composable(Screen.Income.route) {
             IncomesScreen()
         }
-        composable(NavigationPath.ACCOUNTS.route) {
+        composable(Screen.Accounts.route) {
             AccountsScreen()
         }
     }
