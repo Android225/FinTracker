@@ -56,9 +56,10 @@ fun SplashScreen(
         label = "text_alpha"
     )
 
-    // Когда анимация закончилась — ждём 200мс и уходим
+    // Когда анимация закончилась — ждём 100 мс и уходим
     LaunchedEffect(progress) {
         if (progress == 1f) {
+            delay(100)
             onSplashFinished()
         }
     }
