@@ -1,7 +1,7 @@
 package com.example.fintracker.domain
 
-import com.example.fintracker.R
 import androidx.annotation.StringRes
+import com.example.fintracker.R
 
 enum class BottomNavItem(
     val iconRes:Int,

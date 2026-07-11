@@ -22,9 +22,9 @@ class AccountsViewModel : ViewModel() {
     )
 
     private val mockAccounts = listOf(
-        Account(id = 1, userId = 1, name = "Яндекс Pay", balance = "123322.00", currency = "RUB", createdAt = "", updatedAt = ""),
-        Account(id = 2, userId = 1, name = "Газпромбанк", balance = "122322.00", currency = "RUB", createdAt = "", updatedAt = ""),
-        Account(id = 3, userId = 1, name = "Сбербанк", balance = "122322.00", currency = "RUB", createdAt = "", updatedAt = "")
+        Account(id = 1, userId = 1, name = "Яндекс Pay", balance = "123322", currency = "RUB", createdAt = "", updatedAt = ""),
+        Account(id = 2, userId = 1, name = "Газпромбанк", balance = "122322", currency = "RUB", createdAt = "", updatedAt = ""),
+        Account(id = 3, userId = 1, name = "Сбербанк", balance = "122322", currency = "RUB", createdAt = "", updatedAt = "")
     )
 
     init {
@@ -55,6 +55,7 @@ data class AccountsUiState(
     val totalBalance: String = "0 ₽",
     val accounts: List<Account> = emptyList(),
     val isLoading: Boolean = false,
+    //временное решение для моков данных счетов, т.к иконки из swagger не приходят, в следующих дз заменится
     val accountEmoji: Map<Int, String> = emptyMap()
 )
 sealed interface AccountsEvent {

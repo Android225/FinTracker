@@ -19,45 +19,45 @@ class IncomesViewModel : ViewModel() {
 
     private val mockIncomes = listOf(
         TransactionResponse(
-            id = 1, amount = "8500.00", transactionDate = "2025-07-10T10:00:00",
+            id = 1, amount = "8500", transactionDate = "2025-07-10T10:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(9, "Продажа старой мебели", "🛋", isIncome = true)
         ),
         TransactionResponse(
-            id = 2, amount = "15000.00", transactionDate = "2025-07-09T09:00:00",
+            id = 2, amount = "15000", transactionDate = "2025-07-09T09:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            account = AccountBrief(2, "Газпромбанк", "122322", "RUB"),
             category = Category(10, "Возврат налога", "📋", isIncome = true)
         ),
         TransactionResponse(
-            id = 3, amount = "25000.00", transactionDate = "2025-07-08T12:00:00",
+            id = 3, amount = "25000", transactionDate = "2025-07-08T12:00:00",
             comment = "За проект Q4", createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(11, "Премия за проект", "💼", isIncome = true)
         ),
         TransactionResponse(
-            id = 4, amount = "13450.00", transactionDate = "2025-07-07T14:00:00",
+            id = 4, amount = "13450", transactionDate = "2025-07-07T14:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            account = AccountBrief(3, "Сбербанк", "122322", "RUB"),
             category = Category(12, "Подработка фриланс", "💻", isIncome = true)
         ),
         TransactionResponse(
-            id = 5, amount = "38000.00", transactionDate = "2025-07-05T08:00:00",
+            id = 5, amount = "38000", transactionDate = "2025-07-05T08:00:00",
             comment = "За июнь", createdAt = "", updatedAt = "",
-            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            account = AccountBrief(2, "Газпромбанк", "122322", "RUB"),
             category = Category(13, "Сдача квартиры", "🏠", isIncome = true)
         ),
         TransactionResponse(
-            id = 6, amount = "1200.00", transactionDate = "2025-07-04T11:00:00",
+            id = 6, amount = "1200", transactionDate = "2025-07-04T11:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(14, "Кэшбэк на карту", "💳", isIncome = true)
         ),
         TransactionResponse(
-            id = 7, amount = "5000.00", transactionDate = "2025-07-03T16:00:00",
+            id = 7, amount = "5000", transactionDate = "2025-07-03T16:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            account = AccountBrief(3, "Сбербанк", "122322", "RUB"),
             category = Category(15, "Подарок от родителей", "🎁", isIncome = true)
         )
     )

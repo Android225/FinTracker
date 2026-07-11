@@ -7,4 +7,5 @@
     <string name="analytics_button">Аналитика</string>
     <string name="parameters_button">Параметры</string>
     <string name="pick_date_button">Дата</string>
+    <string name="manage_your_finances">Manage your finances</string>
 </resources>

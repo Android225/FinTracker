@@ -17,99 +17,99 @@ class ExpensesViewModel: ViewModel() {
 
     private val mockExpenses = listOf(
         TransactionResponse(
-            id = 1, amount = "1200.00", transactionDate = "2025-07-10T12:00:00",
+            id = 1, amount = "1200", transactionDate = "2025-07-10T12:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(1, "Покупка канцтоваров", "✏️", isIncome = false)
         ),
         TransactionResponse(
-            id = 2, amount = "750.00", transactionDate = "2025-07-10T13:00:00",
+            id = 2, amount = "750", transactionDate = "2025-07-10T13:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            account = AccountBrief(2, "Газпромбанк", "122322", "RUB"),
             category = Category(2, "Обед в кафе", "☕", isIncome = false)
         ),
         TransactionResponse(
-            id = 3, amount = "2300.00", transactionDate = "2025-07-09T08:00:00",
+            id = 3, amount = "2300", transactionDate = "2025-07-09T08:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(3, "Топливо для машины", "⛽", isIncome = false)
         ),
         TransactionResponse(
-            id = 4, amount = "450.00", transactionDate = "2025-07-09T10:00:00",
+            id = 4, amount = "450", transactionDate = "2025-07-09T10:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            account = AccountBrief(3, "Сбербанк", "122322", "RUB"),
             category = Category(4, "Подписка на сервис", "📱", isIncome = false)
         ),
         TransactionResponse(
-            id = 5, amount = "5800.00", transactionDate = "2025-07-08T14:00:00",
+            id = 5, amount = "5800", transactionDate = "2025-07-08T14:00:00",
             comment = "Ремонт ноутбука", createdAt = "", updatedAt = "",
-            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            account = AccountBrief(2, "Газпромбанк", "122322", "RUB"),
             category = Category(5, "Ремонт техники", "🔧", isIncome = false)
         ),
         TransactionResponse(
-            id = 6, amount = "3200.00", transactionDate = "2025-07-08T09:00:00",
+            id = 6, amount = "3200", transactionDate = "2025-07-08T09:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(6, "Покупка билетов", "🎫", isIncome = false)
         ),
         TransactionResponse(
-            id = 7, amount = "800.00", transactionDate = "2025-07-07T11:00:00",
+            id = 7, amount = "800", transactionDate = "2025-07-07T11:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            account = AccountBrief(3, "Сбербанк", "122322", "RUB"),
             category = Category(7, "Оплата интернета", "🌐", isIncome = false)
         ),
         TransactionResponse(
-            id = 8, amount = "2450.00", transactionDate = "2025-07-07T16:00:00",
+            id = 8, amount = "2450", transactionDate = "2025-07-07T16:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(8, "Магазин продуктов", "🛒", isIncome = false)
         ),
         TransactionResponse(
-            id = 9, amount = "1200.00", transactionDate = "2025-07-10T12:00:00",
+            id = 9, amount = "1200", transactionDate = "2025-07-10T12:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(1, "Покупка канцтоваров", "✏️", isIncome = false)
         ),
         TransactionResponse(
-            id = 10, amount = "750.00", transactionDate = "2025-07-10T13:00:00",
+            id = 10, amount = "750", transactionDate = "2025-07-10T13:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            account = AccountBrief(2, "Газпромбанк", "122322", "RUB"),
             category = Category(2, "Обед в кафе", "☕", isIncome = false)
         ),
         TransactionResponse(
-            id = 11, amount = "2300.00", transactionDate = "2025-07-09T08:00:00",
+            id = 11, amount = "2300", transactionDate = "2025-07-09T08:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(3, "Топливо для машины", "⛽", isIncome = false)
         ),
         TransactionResponse(
-            id = 12, amount = "450.00", transactionDate = "2025-07-09T10:00:00",
+            id = 12, amount = "450", transactionDate = "2025-07-09T10:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            account = AccountBrief(3, "Сбербанк", "122322", "RUB"),
             category = Category(4, "Подписка на сервис", "📱", isIncome = false)
         ),
         TransactionResponse(
-            id = 13, amount = "5800.00", transactionDate = "2025-07-08T14:00:00",
+            id = 13, amount = "5800", transactionDate = "2025-07-08T14:00:00",
             comment = "Ремонт ноутбука", createdAt = "", updatedAt = "",
-            account = AccountBrief(2, "Газпромбанк", "122322.00", "RUB"),
+            account = AccountBrief(2, "Газпромбанк", "122322", "RUB"),
             category = Category(5, "Ремонт техники", "🔧", isIncome = false)
         ),
         TransactionResponse(
-            id = 14, amount = "3200.00", transactionDate = "2025-07-08T09:00:00",
+            id = 14, amount = "3200", transactionDate = "2025-07-08T09:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(6, "Покупка билетов", "🎫", isIncome = false)
         ),
         TransactionResponse(
-            id = 15, amount = "800.00", transactionDate = "2025-07-07T11:00:00",
+            id = 15, amount = "800", transactionDate = "2025-07-07T11:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(3, "Сбербанк", "122322.00", "RUB"),
+            account = AccountBrief(3, "Сбербанк", "122322", "RUB"),
             category = Category(7, "Оплата интернета", "🌐", isIncome = false)
         ),
         TransactionResponse(
-            id = 16, amount = "2450.00", transactionDate = "2025-07-07T16:00:00",
+            id = 16, amount = "2450", transactionDate = "2025-07-07T16:00:00",
             comment = null, createdAt = "", updatedAt = "",
-            account = AccountBrief(1, "Яндекс Pay", "123322.00", "RUB"),
+            account = AccountBrief(1, "Яндекс Pay", "123322", "RUB"),
             category = Category(8, "Магазин продуктов", "🛒", isIncome = false)
         )
     )
@@ -143,12 +143,6 @@ data class ExpensesUiState(
     val totalAmount: String = "0 ₽",
     val expenses: List<TransactionResponse> = emptyList(),
     val isLoading: Boolean = false
-)
-data class ExpenseUiItem(
-    val id: Int,
-    val emoji: String,
-    val title: String,
-    val amount: String
 )
 sealed interface ExpensesEvent {
     data object Refresh : ExpensesEvent
