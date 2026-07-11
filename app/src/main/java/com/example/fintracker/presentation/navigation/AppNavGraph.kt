@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.fintracker.presentation.screens.accounts.AccountsScreen
 import com.example.fintracker.presentation.screens.expenses.ExpensesScreen
+import com.example.fintracker.presentation.screens.income.IncomesScreen
 
 @Composable
 fun AppNavGraph(
@@ -23,7 +24,7 @@ fun AppNavGraph(
             ExpensesScreen()
         }
         composable(Screen.Income.route) {
-          //  IncomeScreen()
+            IncomesScreen()
         }
         composable(Screen.Accounts.route) {
             AccountsScreen()
