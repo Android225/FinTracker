@@ -24,10 +24,10 @@ import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
 fun ListItem(
-    emoji: String,
-    title: String,
-    amount: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    lead: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    trail: @Composable () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -35,53 +35,83 @@ fun ListItem(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = emoji,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center
-            )
+        lead()
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Box(modifier = Modifier.weight(1f)) {
+            content()
         }
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
+        trail()
+    }
+}
 
-        Spacer(modifier = Modifier.width(16.dp))
 
+ // для Lead: Круг с эмодзи
+
+@Composable
+fun ListItemLeadEmoji(emoji: String) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
         Text(
-            text = amount,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            text = emoji,
+            fontSize = 20.sp,
+            textAlign = TextAlign.Center
         )
     }
 }
 
-@Preview(showBackground = true)
+
+    //для Content: Заголовок со стилями
 @Composable
-fun ListItemPreview() {
-    FinTrackerTheme {
-        ListItem(
-            emoji = "\u270F\uFE0F",
-            title = "Покупка канцтоваров",
-            amount = "1 200 \u20BD"
-        )
-    }
+fun ListItemContentText(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+
+    //для Trail: Текст суммы
+
+@Composable
+fun ListItemTrailAmount(amount: String) {
+    Text(
+        text = amount,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+}
+
+
+//функция (удобная обертка для текущей реализации кода)
+
+@Composable
+fun ListItem(
+    emoji: String,
+    title: String,
+    amount: String,
+    modifier: Modifier = Modifier
+) {
+    ListItem(
+        modifier = modifier,
+        lead = { ListItemLeadEmoji(emoji) },
+        content = { ListItemContentText(title) },
+        trail = { ListItemTrailAmount(amount) }
+    )
 }
