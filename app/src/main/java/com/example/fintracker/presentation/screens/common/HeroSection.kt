@@ -19,7 +19,8 @@ fun HeroSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
+            .padding(bottom = 24.dp)
     ) {
         Text(
             text = label,

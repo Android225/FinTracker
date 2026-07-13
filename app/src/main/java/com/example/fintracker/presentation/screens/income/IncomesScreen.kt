@@ -40,7 +40,7 @@ fun IncomesScreenContent(
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 8.dp)
+            contentPadding = PaddingValues(bottom = 8.dp)
         ) {
             items(state.incomes, key = { it.id }) { transaction ->
                 ListItem(

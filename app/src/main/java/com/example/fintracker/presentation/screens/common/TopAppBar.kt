@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -60,7 +61,10 @@ fun TopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = onAnalyticsClick) {
+            IconButton(
+                modifier = Modifier.size(48.dp),
+                onClick = onAnalyticsClick,
+                ) {
                 Icon(
                     painter = painterResource(id = R.drawable.analytics),
                     contentDescription = stringResource(R.string.analytics_button),
@@ -68,7 +72,9 @@ fun TopAppBar(
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            IconButton(onClick = onFilterClick) {
+            Spacer(modifier = Modifier.padding(start = 4.dp))
+            IconButton(modifier = Modifier.padding(end = 12.dp).size(48.dp),
+                onClick = onFilterClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.sliders_horizontal),
                     contentDescription = stringResource(R.string.parameters_button),

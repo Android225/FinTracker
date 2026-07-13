@@ -41,9 +41,8 @@ fun AccountsScreenContent(
             amount = state.totalBalance
         )
         LazyColumn(
-
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 8.dp)
+            contentPadding = PaddingValues(bottom = 8.dp)
         ) {
             items(state.accounts, key = { it.id }) { account ->
                 ListItem(
