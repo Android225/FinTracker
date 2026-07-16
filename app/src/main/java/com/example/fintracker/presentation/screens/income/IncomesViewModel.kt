@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.TransactionResponse
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,6 +76,7 @@ class IncomesViewModel : ViewModel() {
     private fun loadIncomes() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            delay(3000)
             _uiState.update {
                 it.copy(
                     isLoading = false,

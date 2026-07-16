@@ -3,6 +3,7 @@ package com.example.fintracker.presentation.screens.accounts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.domain.Account
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +41,7 @@ class AccountsViewModel : ViewModel() {
     private fun loadAccounts() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            delay(3000)
             _uiState.update {
                 it.copy(
                     isLoading = false,
