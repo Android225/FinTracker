@@ -5,16 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.TransactionResponse
+import com.example.fintracker.presentation.common.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ExpensesViewModel: ViewModel() {
-    private val _uiState = MutableStateFlow(ExpensesUiState())
-    val uiState: StateFlow<ExpensesUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<ExpensesContent>>(UiState.Loading)
+    val uiState: StateFlow<UiState<ExpensesContent>> = _uiState.asStateFlow()
 
     private val mockExpenses = listOf(
         TransactionResponse(
@@ -127,13 +127,23 @@ class ExpensesViewModel: ViewModel() {
 
     private fun loadExpenses() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.value = UiState.Loading
             delay(3000)
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    expenses = mockExpenses,
-                    totalAmount = "323 524 ₽"
+            _uiState.value = if (mockExpenses.isEmpty()) {
+                UiState.Empty
+            } else {
+                UiState.Content(
+                    ExpensesContent(
+                        totalAmount = "323 524 ₽",
+                        expenses = mockExpenses.map { transaction ->
+                            TransactionUi(
+                                id = transaction.id,
+                                emoji = transaction.category.emoji,
+                                title = transaction.category.name,
+                                amount = "${transaction.amount} ₽"
+                            )
+                        }
+                    )
                 )
             }
         }
@@ -141,11 +151,18 @@ class ExpensesViewModel: ViewModel() {
 
 }
 
-data class ExpensesUiState(
-    val totalAmount: String = "0 ₽",
-    val expenses: List<TransactionResponse> = emptyList(),
-    val isLoading: Boolean = false
+data class ExpensesContent(
+    val totalAmount: String,
+    val expenses: List<TransactionUi>
 )
+
+data class TransactionUi(
+    val id: Int,
+    val emoji: String,
+    val title: String,
+    val amount: String
+)
+
 sealed interface ExpensesEvent {
     data object Refresh : ExpensesEvent
 }

@@ -3,20 +3,20 @@ package com.example.fintracker.presentation.screens.accounts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.domain.Account
+import com.example.fintracker.presentation.common.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AccountsViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(AccountsUiState())
-    val uiState: StateFlow<AccountsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<AccountsContent>>(UiState.Loading)
+    val uiState: StateFlow<UiState<AccountsContent>> = _uiState.asStateFlow()
 
-    // Account from Swagger не содержит emoji, поэтому храним отдельно для моков
-    val accountEmojis: Map<Int, String> = mapOf(
+    // Account from Swagger не содержит emoji, поэтому это временная UI-деталь для моков.
+    private val accountEmojiById: Map<Int, String> = mapOf(
         1 to "💳",
         2 to "🏦",
         3 to "🏦"
@@ -40,26 +40,47 @@ class AccountsViewModel : ViewModel() {
 
     private fun loadAccounts() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.value = UiState.Loading
             delay(3000)
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    accounts = mockAccounts,
-                    totalBalance = "1 322 444 ₽",
-                    accountEmoji = accountEmojis
+            _uiState.value = if (mockAccounts.isEmpty()) {
+                UiState.Empty
+            } else {
+                UiState.Content(
+                    AccountsContent(
+                        totalBalance = "1 322 444 ₽",
+                        accounts = mockAccounts.map { account -> account.toUi() }
+                    )
                 )
             }
         }
     }
+
+    private fun Account.toUi(): AccountUi {
+        return AccountUi(
+            id = id,
+            emoji = accountEmojiById[id] ?: DEFAULT_ACCOUNT_EMOJI,
+            name = name,
+            balance = "$balance ₽"
+        )
+    }
+
+    private companion object {
+        const val DEFAULT_ACCOUNT_EMOJI = "🏦"
+    }
 }
-data class AccountsUiState(
-    val totalBalance: String = "0 ₽",
-    val accounts: List<Account> = emptyList(),
-    val isLoading: Boolean = false,
-    //временное решение для моков данных счетов, т.к иконки из swagger не приходят, в следующих дз заменится
-    val accountEmoji: Map<Int, String> = emptyMap()
+
+data class AccountsContent(
+    val totalBalance: String,
+    val accounts: List<AccountUi>
 )
+
+data class AccountUi(
+    val id: Int,
+    val emoji: String,
+    val name: String,
+    val balance: String
+)
+
 sealed interface AccountsEvent {
     data object Refresh : AccountsEvent
 }

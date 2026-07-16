@@ -5,18 +5,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.TransactionResponse
+import com.example.fintracker.presentation.common.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
 class IncomesViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(IncomesUiState())
-    val uiState: StateFlow<IncomesUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<UiState<IncomesContent>>(UiState.Loading)
+    val uiState: StateFlow<UiState<IncomesContent>> = _uiState.asStateFlow()
 
     private val mockIncomes = listOf(
         TransactionResponse(
@@ -75,23 +75,41 @@ class IncomesViewModel : ViewModel() {
 
     private fun loadIncomes() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.value = UiState.Loading
             delay(3000)
-            _uiState.update {
-                it.copy(
-                    isLoading = false,
-                    incomes = mockIncomes,
-                    totalAmount = "323 524 ₽"
+            _uiState.value = if (mockIncomes.isEmpty()) {
+                UiState.Empty
+            } else {
+                UiState.Content(
+                    IncomesContent(
+                        totalAmount = "323 524 ₽",
+                        incomes = mockIncomes.map { transaction ->
+                            TransactionUi(
+                                id = transaction.id,
+                                emoji = transaction.category.emoji,
+                                title = transaction.category.name,
+                                amount = "${transaction.amount} ₽"
+                            )
+                        }
+                    )
                 )
             }
         }
     }
 }
-data class IncomesUiState(
-    val totalAmount: String = "0 ₽",
-    val incomes: List<TransactionResponse> = emptyList(),
-    val isLoading: Boolean = false
+
+data class IncomesContent(
+    val totalAmount: String,
+    val incomes: List<TransactionUi>
 )
+
+data class TransactionUi(
+    val id: Int,
+    val emoji: String,
+    val title: String,
+    val amount: String
+)
+
 sealed interface IncomesEvent {
     data object Refresh : IncomesEvent
 }

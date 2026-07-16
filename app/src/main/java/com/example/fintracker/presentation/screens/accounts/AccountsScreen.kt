@@ -1,25 +1,24 @@
 package com.example.fintracker.presentation.screens.accounts
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fintracker.domain.Account
+import com.example.fintracker.domain.AppError
+import com.example.fintracker.presentation.common.UiState
+import com.example.fintracker.presentation.screens.common.EmptyContent
+import com.example.fintracker.presentation.screens.common.ErrorContent
 import com.example.fintracker.presentation.screens.common.HeroSection
 import com.example.fintracker.presentation.screens.common.ListItem
+import com.example.fintracker.presentation.screens.common.LoadingContent
 import com.example.fintracker.presentation.screens.common.MainCommonScreen
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
@@ -30,55 +29,41 @@ fun AccountsScreen(
     val state by viewModel.uiState.collectAsState()
 
     MainCommonScreen {
-        AccountsScreenContent(state)
+        AccountsScreenContent(
+            state = state,
+            onRetryClick = { viewModel.onEvent(AccountsEvent.Refresh) }
+        )
     }
 
 }
 
 @Composable
 fun AccountsScreenContent(
-    state: AccountsUiState
+    state: UiState<AccountsContent>,
+    onRetryClick: () -> Unit
 ) {
     Column(
 
     ) {
-        when {
-            state.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
+        when (state) {
+            UiState.Loading -> LoadingContent()
+            UiState.Empty -> EmptyContent(text = "Счетов пока нет")
+            is UiState.Error -> ErrorContent(error = state.error, onRetryClick = onRetryClick)
 
-            state.accounts.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Счетов пока нет",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            else -> {
+            is UiState.Content -> {
                 HeroSection(
                     label = "баланс, всего",
-                    amount = state.totalBalance
+                    amount = state.data.totalBalance
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 8.dp)
                 ) {
-                    items(state.accounts, key = { it.id }) { account ->
+                    items(state.data.accounts, key = { it.id }) { account ->
                         ListItem(
-                            emoji = state.accountEmoji[account.id] ?: "🏦",
+                            emoji = account.emoji,
                             title = account.name,
-                            amount = "${account.balance} ₽"
+                            amount = account.balance
                         )
                     }
                 }
@@ -93,30 +78,26 @@ fun AccountsScreenContent(
 fun AccountsScreenPreview() {
     FinTrackerTheme {
         AccountsScreenContent(
-            state = AccountsUiState(
-                totalBalance = "245 644 ₽",
-                accounts = listOf(
-                    Account(
-                        id = 1,
-                        userId = 1,
-                        name = "Яндекс Pay",
-                        balance = "123322",
-                        currency = "RUB",
-                        createdAt = "",
-                        updatedAt = ""
-                    ),
-                    Account(
-                        id = 2,
-                        userId = 1,
-                        name = "Газпромбанк",
-                        balance = "122322",
-                        currency = "RUB",
-                        createdAt = "",
-                        updatedAt = ""
+            state = UiState.Content(
+                AccountsContent(
+                    totalBalance = "245 644 ₽",
+                    accounts = listOf(
+                        AccountUi(
+                            id = 1,
+                            emoji = "💳",
+                            name = "Яндекс Pay",
+                            balance = "123 322 ₽"
+                        ),
+                        AccountUi(
+                            id = 2,
+                            emoji = "🏦",
+                            name = "Газпромбанк",
+                            balance = "122 322 ₽"
+                        )
                     )
-                ),
-                accountEmoji = mapOf(1 to "💳", 2 to "🏦")
-            )
+                )
+            ),
+            onRetryClick = {}
         )
     }
 }
@@ -126,7 +107,8 @@ fun AccountsScreenPreview() {
 fun AccountsScreenLoadingPreview() {
     FinTrackerTheme {
         AccountsScreenContent(
-            state = AccountsUiState(isLoading = true)
+            state = UiState.Loading,
+            onRetryClick = {}
         )
     }
 }
@@ -136,7 +118,19 @@ fun AccountsScreenLoadingPreview() {
 fun AccountsScreenEmptyPreview() {
     FinTrackerTheme {
         AccountsScreenContent(
-            state = AccountsUiState()
+            state = UiState.Empty,
+            onRetryClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AccountsScreenErrorPreview() {
+    FinTrackerTheme {
+        AccountsScreenContent(
+            state = UiState.Error(AppError.Network),
+            onRetryClick = {}
         )
     }
 }
