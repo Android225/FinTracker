@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+
 @Composable
 fun MainCommonScreen(
     screenContent: @Composable () -> Unit
@@ -29,14 +30,7 @@ fun MainCommonScreen(
             )
         },
         floatingActionButton = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 6.dp),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                FloatingActionButton()
-            }
+            FloatingActionButton()
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->

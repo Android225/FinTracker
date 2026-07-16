@@ -16,7 +16,7 @@
             android:screenOrientation="portrait"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.FinTracker">
+            android:theme="@style/Theme.FinTracker.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

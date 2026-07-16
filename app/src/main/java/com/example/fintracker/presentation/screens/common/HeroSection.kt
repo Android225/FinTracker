@@ -20,7 +20,7 @@ fun HeroSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 12.dp)
-            .padding(bottom = 24.dp)
+            .padding(bottom = 16.dp)
     ) {
         Text(
             text = label,
