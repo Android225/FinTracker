@@ -32,12 +32,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
 
 @Composable
-fun AnalyticsDonutChart(
+internal fun AnalyticsDonutChart(
     totalAmount: String,
-    breakdown: List<AnalyticsBreakdownUi>,
+    segments: List<AnalyticsChartSegment>,
     modifier: Modifier = Modifier,
     size: Dp = 220.dp,
     strokeWidth: Dp = 22.dp,
@@ -53,10 +52,10 @@ fun AnalyticsDonutChart(
             val strokePx = strokeWidth.toPx()
             val arcSize = Size(size.toPx() - strokePx, size.toPx() - strokePx)
             val topLeft = Offset(strokePx / 2, strokePx / 2)
-            val totalPercent = breakdown.sumOf { it.percent }.coerceAtLeast(1)
+            val totalPercent = segments.sumOf { it.breakdown.percent }.coerceAtLeast(1)
             var startAngle = -90f
 
-            if (breakdown.isEmpty()) {
+            if (segments.isEmpty()) {
                 drawArc(
                     color = Color(0xFFC4C7C5),
                     startAngle = 0f,
@@ -67,10 +66,10 @@ fun AnalyticsDonutChart(
                     style = Stroke(width = strokePx, cap = StrokeCap.Butt)
                 )
             } else {
-                breakdown.forEach { item ->
-                    val sweep = 360f * item.percent / totalPercent
+                segments.forEach { segment ->
+                    val sweep = 360f * segment.breakdown.percent / totalPercent
                     drawArc(
-                        color = item.color,
+                        color = segment.color,
                         startAngle = startAngle,
                         sweepAngle = sweep,
                         useCenter = false,
@@ -104,8 +103,8 @@ fun AnalyticsDonutChart(
 }
 
 @Composable
-fun AnalyticsLegend(
-    breakdown: List<AnalyticsBreakdownUi>,
+internal fun AnalyticsLegend(
+    segments: List<AnalyticsChartSegment>,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -113,16 +112,16 @@ fun AnalyticsLegend(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        breakdown.take(3).forEachIndexed { index, item ->
+        segments.take(3).forEachIndexed { index, segment ->
             if (index > 0) Spacer(modifier = Modifier.width(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
                         .size(12.dp)
-                        .background(item.color, CircleShape)
+                        .background(segment.color, CircleShape)
                 )
                 Text(
-                    text = item.title,
+                    text = segment.breakdown.title,
                     modifier = Modifier.padding(start = 8.dp),
                     fontSize = 14.sp,
                     lineHeight = 16.sp,
@@ -135,18 +134,18 @@ fun AnalyticsLegend(
 }
 
 @Composable
-fun AnalyticsBreakdownList(
-    breakdown: List<AnalyticsBreakdownUi>,
+internal fun AnalyticsBreakdownList(
+    segments: List<AnalyticsChartSegment>,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        breakdown.forEach { item ->
-            AnalyticsBreakdownItem(item = item)
+        segments.forEach { segment ->
+            AnalyticsBreakdownItem(segment = segment)
         }
-        if (breakdown.isEmpty()) {
+        if (segments.isEmpty()) {
             Text(
                 text = "Нет данных за выбранный период",
                 modifier = Modifier.fillMaxWidth(),
@@ -159,7 +158,8 @@ fun AnalyticsBreakdownList(
 }
 
 @Composable
-fun AnalyticsBreakdownItem(item: AnalyticsBreakdownUi) {
+internal fun AnalyticsBreakdownItem(segment: AnalyticsChartSegment) {
+    val item = segment.breakdown
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -172,7 +172,7 @@ fun AnalyticsBreakdownItem(item: AnalyticsBreakdownUi) {
                 Box(
                     modifier = Modifier
                         .size(12.dp)
-                        .background(item.color, CircleShape)
+                        .background(segment.color, CircleShape)
                 )
                 Text(
                     text = item.title,
@@ -208,7 +208,7 @@ fun AnalyticsBreakdownItem(item: AnalyticsBreakdownUi) {
                 modifier = Modifier
                     .fillMaxWidth((item.percent / 100f).coerceIn(0f, 1f))
                     .height(6.dp)
-                    .background(item.color, RoundedCornerShape(100.dp))
+                    .background(segment.color, RoundedCornerShape(100.dp))
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.example.fintracker.presentation.screens.analytics
 
-import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
 
 data class AnalyticsContent(
@@ -27,8 +26,7 @@ data class AnalyticsBreakdownUi(
     val categoryId: Int,
     val title: String,
     val amount: String,
-    val percent: Int,
-    val color: Color
+    val percent: Int
 )
 
 data class AnalyticsTransactionUi(

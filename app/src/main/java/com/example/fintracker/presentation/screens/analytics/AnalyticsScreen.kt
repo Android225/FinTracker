@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +33,7 @@ import com.example.fintracker.presentation.screens.analytics.components.Analytic
 import com.example.fintracker.presentation.screens.analytics.components.AnalyticsLegend
 import com.example.fintracker.presentation.screens.analytics.components.AnalyticsTopBar
 import com.example.fintracker.presentation.screens.analytics.components.AnalyticsTransactionItem
+import com.example.fintracker.presentation.screens.analytics.components.toAnalyticsChartSegments
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsSheetHost
 import com.example.fintracker.presentation.screens.analytics.domain.AnalyticsSheet
 import com.example.fintracker.presentation.screens.common.EmptyContent
@@ -116,6 +116,10 @@ private fun AnalyticsContent(
     onFilterClick: (AnalyticsSheet) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val chartSegments = remember(content.breakdown) {
+        content.breakdown.toAnalyticsChartSegments()
+    }
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 40.dp)
@@ -129,11 +133,11 @@ private fun AnalyticsContent(
             ) {
                 AnalyticsDonutChart(
                     totalAmount = content.totalAmount,
-                    breakdown = content.breakdown,
+                    segments = chartSegments,
                     onClick = onDonutClick
                 )
                 Spacer(modifier = Modifier.height(24.dp))
-                AnalyticsLegend(breakdown = content.breakdown)
+                AnalyticsLegend(segments = chartSegments)
             }
         }
         item {
@@ -223,9 +227,9 @@ private fun AnalyticsScreenPreview() {
                         account = "Все счета"
                     ),
                     breakdown = listOf(
-                        AnalyticsBreakdownUi(1, "Ремонт", "80 200 ₽", 61, Color(0xFFB69DF8)),
-                        AnalyticsBreakdownUi(2, "Авто", "31 500 ₽", 24, Color(0xFF4FD8EB)),
-                        AnalyticsBreakdownUi(3, "Другое", "20 544 ₽", 15, Color(0xFFF48FB1))
+                        AnalyticsBreakdownUi(1, "Ремонт", "80 200 ₽", 61),
+                        AnalyticsBreakdownUi(2, "Авто", "31 500 ₽", 24),
+                        AnalyticsBreakdownUi(3, "Другое", "20 544 ₽", 15)
                     ),
                     transactions = listOf(
                         AnalyticsTransactionUi(1, "🐶", "На собачку", "Наличные", "123 322 ₽"),

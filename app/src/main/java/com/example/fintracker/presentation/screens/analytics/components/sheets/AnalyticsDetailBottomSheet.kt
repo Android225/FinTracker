@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
 import com.example.fintracker.presentation.screens.analytics.components.AnalyticsBreakdownList
 import com.example.fintracker.presentation.screens.analytics.components.AnalyticsDonutChart
+import com.example.fintracker.presentation.screens.analytics.components.toAnalyticsChartSegments
 
 @Composable
 fun AnalyticsDetailBottomSheet(
@@ -26,6 +28,10 @@ fun AnalyticsDetailBottomSheet(
     breakdown: List<AnalyticsBreakdownUi>,
     modifier: Modifier = Modifier
 ) {
+    val chartSegments = remember(breakdown) {
+        breakdown.toAnalyticsChartSegments()
+    }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -47,11 +53,11 @@ fun AnalyticsDetailBottomSheet(
         Spacer(modifier = Modifier.height(32.dp))
         AnalyticsDonutChart(
             totalAmount = totalAmount,
-            breakdown = breakdown,
+            segments = chartSegments,
             size = 240.dp,
             strokeWidth = 24.dp
         )
         Spacer(modifier = Modifier.height(32.dp))
-        AnalyticsBreakdownList(breakdown = breakdown)
+        AnalyticsBreakdownList(segments = chartSegments)
     }
 }

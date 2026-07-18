@@ -1,6 +1,5 @@
 package com.example.fintracker.presentation.screens.analytics
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -52,15 +51,19 @@ class AnalyticsViewModel(
                     accountId = null
                 )
             )
+
             is AnalyticsEvent.SelectType -> updateFilter(
                 filter.copy(type = event.type, categoryIds = emptySet())
             )
+
             is AnalyticsEvent.SelectPeriod -> updateFilter(
                 filter.copy(period = event.period, periodKind = event.kind)
             )
+
             is AnalyticsEvent.SelectCategories -> updateFilter(
                 filter.copy(categoryIds = event.categoryIds)
             )
+
             is AnalyticsEvent.SelectAccount -> updateFilter(
                 filter.copy(accountId = event.accountId)
             )
@@ -272,8 +275,7 @@ private fun List<TransactionResponse>.toBreakdown(
                         .toInt()
                 } else {
                     0
-                },
-                color = category.color()
+                }
             )
         }
         .sortedByDescending { item ->
@@ -298,9 +300,3 @@ private fun TransactionResponse.toUi(): AnalyticsTransactionUi =
         subtitle = account.name,
         amount = amount.toBigDecimal().formatMoney()
     )
-
-private fun Category.color(): Color = when (id) {
-    1, 9 -> Color(0xFFB69DF8)
-    2, 10 -> Color(0xFF4FD8EB)
-    else -> Color(0xFFF48FB1)
-}
