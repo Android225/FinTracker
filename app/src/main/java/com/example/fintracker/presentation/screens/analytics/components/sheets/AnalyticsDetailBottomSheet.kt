@@ -17,10 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
-import com.example.fintracker.presentation.screens.analytics.components.AnalyticsBreakdownList
-import com.example.fintracker.presentation.screens.analytics.components.AnalyticsDonutChart
-import com.example.fintracker.presentation.screens.analytics.components.toAnalyticsChartSegments
+import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
+import com.example.fintracker.presentation.screens.analytics.components.chart.AnalyticsBreakdownList
+import com.example.fintracker.presentation.screens.analytics.components.chart.AnalyticsDonutChart
+import com.example.fintracker.presentation.screens.analytics.components.chart.toAnalyticsChartSegments
 
 @Composable
 fun AnalyticsDetailBottomSheet(

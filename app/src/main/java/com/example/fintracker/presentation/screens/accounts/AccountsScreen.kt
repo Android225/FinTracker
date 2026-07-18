@@ -12,14 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fintracker.domain.AppError
-import com.example.fintracker.presentation.common.UiState
-import com.example.fintracker.presentation.screens.common.EmptyContent
-import com.example.fintracker.presentation.screens.common.ErrorContent
-import com.example.fintracker.presentation.screens.common.HeroSection
-import com.example.fintracker.presentation.screens.common.ListItem
-import com.example.fintracker.presentation.screens.common.LoadingContent
-import com.example.fintracker.presentation.screens.common.MainCommonScreen
+import com.example.fintracker.domain.error.AppError
+import com.example.fintracker.presentation.common.components.feedback.EmptyContent
+import com.example.fintracker.presentation.common.components.feedback.ErrorContent
+import com.example.fintracker.presentation.common.components.feedback.LoadingContent
+import com.example.fintracker.presentation.common.components.list.ListItem
+import com.example.fintracker.presentation.common.components.scaffold.HeroSection
+import com.example.fintracker.presentation.common.components.scaffold.MainScreenScaffold
+import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.screens.accounts.model.AccountUi
+import com.example.fintracker.presentation.screens.accounts.model.AccountsContent
+import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
@@ -28,7 +31,7 @@ fun AccountsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    MainCommonScreen {
+    MainScreenScaffold {
         AccountsScreenContent(
             state = state,
             onRetryClick = { viewModel.onEvent(AccountsEvent.Refresh) }

@@ -12,14 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.fintracker.domain.AppError
-import com.example.fintracker.presentation.common.UiState
-import com.example.fintracker.presentation.screens.common.EmptyContent
-import com.example.fintracker.presentation.screens.common.ErrorContent
-import com.example.fintracker.presentation.screens.common.HeroSection
-import com.example.fintracker.presentation.screens.common.ListItem
-import com.example.fintracker.presentation.screens.common.LoadingContent
-import com.example.fintracker.presentation.screens.common.MainCommonScreen
+import com.example.fintracker.domain.error.AppError
+import com.example.fintracker.presentation.common.components.feedback.EmptyContent
+import com.example.fintracker.presentation.common.components.feedback.ErrorContent
+import com.example.fintracker.presentation.common.components.feedback.LoadingContent
+import com.example.fintracker.presentation.common.components.list.ListItem
+import com.example.fintracker.presentation.common.components.scaffold.HeroSection
+import com.example.fintracker.presentation.common.components.scaffold.MainScreenScaffold
+import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.screens.expenses.model.ExpenseTransactionUi
+import com.example.fintracker.presentation.screens.expenses.model.ExpensesContent
+import com.example.fintracker.presentation.screens.expenses.model.ExpensesEvent
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
@@ -27,7 +30,7 @@ fun ExpensesScreen(
     viewModel: ExpensesViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    MainCommonScreen {
+    MainScreenScaffold {
         ExpensesScreenContent(
             state = state,
             onRetryClick = { viewModel.onEvent(ExpensesEvent.Refresh) }
@@ -77,13 +80,13 @@ fun ExpensesScreenPreview() {
                 ExpensesContent(
                     totalAmount = "1 950 ₽",
                     expenses = listOf(
-                        TransactionUi(
+                        ExpenseTransactionUi(
                             id = 1,
                             emoji = "✏️",
                             title = "Покупка канцтоваров",
                             amount = "1 200 ₽"
                         ),
-                        TransactionUi(
+                        ExpenseTransactionUi(
                             id = 2,
                             emoji = "☕",
                             title = "Обед в кафе",

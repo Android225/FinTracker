@@ -4,11 +4,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import com.example.fintracker.presentation.common.FinTrackerBottomSheet
-import com.example.fintracker.presentation.screens.analytics.AnalyticsContent
-import com.example.fintracker.presentation.screens.analytics.AnalyticsEvent
-import com.example.fintracker.presentation.screens.analytics.AnalyticsPeriodKind
-import com.example.fintracker.presentation.screens.analytics.domain.AnalyticsSheet
+import com.example.fintracker.presentation.common.components.bottomsheet.FinTrackerBottomSheet
+import com.example.fintracker.presentation.screens.analytics.components.sheets.daterange.AnalyticsDateRangeBottomSheet
+import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
+import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
+import com.example.fintracker.presentation.screens.analytics.model.AnalyticsEvent
+import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

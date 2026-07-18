@@ -19,7 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fintracker.presentation.screens.analytics.AnalyticsTransactionType
+import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
+import com.example.fintracker.presentation.screens.analytics.mapper.displayName
 
 @Composable
 fun AnalyticsTypeBottomSheet(
@@ -46,7 +47,7 @@ fun AnalyticsTypeBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = type.label,
+                    text = type.displayName,
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp,
                     lineHeight = 19.sp,

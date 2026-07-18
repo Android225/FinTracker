@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.fintracker.domain.NavigationPath
+import com.example.fintracker.presentation.navigation.model.NavigationPath
 import com.example.fintracker.presentation.screens.accounts.AccountsScreen
 import com.example.fintracker.presentation.screens.analytics.AnalyticsScreen
 import com.example.fintracker.presentation.screens.analytics.AnalyticsViewModel
