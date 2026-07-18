@@ -56,5 +56,13 @@ val Typography = Typography(
         fontSize = 12.sp,
         lineHeight = 12.sp,
         letterSpacing = 0.sp
-    )
+    ),
+    //Analytic
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 28.sp,
+        lineHeight = 33.sp,
+        letterSpacing = 0.sp
+    ),
 )

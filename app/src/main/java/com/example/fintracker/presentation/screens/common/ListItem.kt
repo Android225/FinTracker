@@ -9,15 +9,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.presentation.theme.FinTrackerTheme
@@ -73,6 +77,37 @@ fun ListItemLeadEmoji(emoji: String) {
     }
 }
 
+// для Картинок из drawable с кругом вокруг
+
+@Composable
+fun ListItemLeadIcon(
+    icon: Int,
+    iconColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    iconSize: Dp = 32.dp,
+    circleSize: Dp = 40.dp,
+    circleBorderColor: Color = MaterialTheme.colorScheme.outline,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(circleSize)
+            .clip(CircleShape)
+            .border(
+                width = 1.dp,
+                color = circleBorderColor,
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = null,
+            modifier = Modifier.size(iconSize),
+            tint = iconColor
+        )
+    }
+}
+
 
     //для Content: Заголовок со стилями
 @Composable
@@ -100,7 +135,12 @@ fun ListItemTrailAmount(amount: String) {
 
 
 //функция (удобная обертка для текущей реализации кода)
-
+/**
+ * Default list item for Main Screens
+ * @param emoji Emoji
+ * @param title Title
+ * @param amount Amount
+ */
 @Composable
 fun ListItem(
     emoji: String,
