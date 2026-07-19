@@ -1,33 +1,21 @@
 package com.example.fintracker.presentation.screens.income
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fintracker.domain.error.AppError
-import com.example.fintracker.presentation.common.components.feedback.EmptyContent
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
-import com.example.fintracker.presentation.common.components.feedback.ErrorContent
-import com.example.fintracker.presentation.common.components.feedback.LoadingContent
-import com.example.fintracker.presentation.common.components.list.ListItem
 import com.example.fintracker.presentation.common.components.refresh.RefreshableContent
 import com.example.fintracker.presentation.common.components.refresh.RefreshOnResumeEffect
-import com.example.fintracker.presentation.common.components.scaffold.HeroSection
 import com.example.fintracker.presentation.common.components.scaffold.MainScreenScaffold
 import com.example.fintracker.presentation.common.model.UiState
-import com.example.fintracker.presentation.screens.income.model.IncomeTransactionUi
-import com.example.fintracker.presentation.screens.income.model.IncomesContent
-import com.example.fintracker.presentation.screens.income.model.IncomesEvent
+import com.example.fintracker.presentation.screens.transactions.TransactionItemUi
+import com.example.fintracker.presentation.screens.transactions.TransactionListContent
+import com.example.fintracker.presentation.screens.transactions.TransactionListEvent
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
@@ -36,7 +24,7 @@ fun IncomesScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val retry = { viewModel.onEvent(IncomesEvent.Refresh) }
+    val retry = { viewModel.onEvent(TransactionListEvent.Refresh) }
 
     ErrorSnackbarEffect(
         effects = viewModel.effects,
@@ -44,7 +32,7 @@ fun IncomesScreen(
         onRetry = retry
     )
     RefreshOnResumeEffect {
-        viewModel.onEvent(IncomesEvent.ScreenVisible)
+        viewModel.onEvent(TransactionListEvent.ScreenVisible)
     }
 
     MainScreenScaffold(
@@ -66,35 +54,15 @@ fun IncomesScreen(
 
 @Composable
 fun IncomesScreenContent(
-    state: UiState<IncomesContent>,
+    state: UiState<TransactionListContent>,
     onRetryClick: () -> Unit
 ) {
-    Column() {
-        when (state) {
-            UiState.Loading -> LoadingContent()
-            is UiState.Empty -> EmptyContent(text = "Доходов пока нет")
-            is UiState.Error -> ErrorContent(error = state.error, onRetryClick = onRetryClick)
-
-            is UiState.Content -> {
-                HeroSection(
-                    label = "доходы, всего",
-                    amount = state.data.totalAmount
-                )
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 8.dp)
-                ) {
-                    items(state.data.incomes, key = { it.id }) { transaction ->
-                        ListItem(
-                            emoji = transaction.emoji,
-                            title = transaction.title,
-                            amount = transaction.amount
-                        )
-                    }
-                }
-            }
-        }
-    }
+    TransactionListContent(
+        state = state,
+        totalAmountLabel = "доходы, всего",
+        emptyStateText = "Доходов пока нет",
+        onRetryClick = onRetryClick
+    )
 }
 
 @Preview(showBackground = true)
@@ -103,16 +71,16 @@ fun IncomesScreenPreview() {
     FinTrackerTheme {
         IncomesScreenContent(
             state = UiState.Content(
-                IncomesContent(
+                TransactionListContent(
                     totalAmount = "23 500 ₽",
-                    incomes = listOf(
-                        IncomeTransactionUi(
+                    transactions = listOf(
+                        TransactionItemUi(
                             id = 1,
                             emoji = "🛋",
                             title = "Продажа старой мебели",
                             amount = "8 500 ₽"
                         ),
-                        IncomeTransactionUi(
+                        TransactionItemUi(
                             id = 2,
                             emoji = "📋",
                             title = "Возврат налога",

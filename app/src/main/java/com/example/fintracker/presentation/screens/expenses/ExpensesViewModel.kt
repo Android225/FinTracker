@@ -12,9 +12,9 @@ import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.common.model.startRefreshing
 import com.example.fintracker.presentation.common.model.updateFrom
 import com.example.fintracker.presentation.common.refresh.RefreshPolicy
-import com.example.fintracker.presentation.screens.expenses.mapper.toExpensesContent
-import com.example.fintracker.presentation.screens.expenses.model.ExpensesContent
-import com.example.fintracker.presentation.screens.expenses.model.ExpensesEvent
+import com.example.fintracker.presentation.screens.transactions.TransactionListContent
+import com.example.fintracker.presentation.screens.transactions.TransactionListEvent
+import com.example.fintracker.presentation.screens.transactions.toTransactionListContent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -39,8 +39,8 @@ class ExpensesViewModel @Inject constructor(
     val selectedDate: LocalDate = LocalDate.now(clock)
 
     private val refreshPolicy = RefreshPolicy(clock)
-    private val _uiState = MutableStateFlow(RefreshableUiState<ExpensesContent>())
-    val uiState: StateFlow<RefreshableUiState<ExpensesContent>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(RefreshableUiState<TransactionListContent>())
+    val uiState: StateFlow<RefreshableUiState<TransactionListContent>> = _uiState.asStateFlow()
 
     private val effectChannel = Channel<ScreenEffect>(Channel.BUFFERED)
     val effects: Flow<ScreenEffect> = effectChannel.receiveAsFlow()
@@ -51,10 +51,10 @@ class ExpensesViewModel @Inject constructor(
         loadExpenses(force = true)
     }
 
-    fun onEvent(event: ExpensesEvent) {
+    fun onEvent(event: TransactionListEvent) {
         when (event) {
-            ExpensesEvent.ScreenVisible -> loadExpenses(force = false)
-            ExpensesEvent.Refresh -> loadExpenses(force = true)
+            TransactionListEvent.ScreenVisible -> loadExpenses(force = false)
+            TransactionListEvent.Refresh -> loadExpenses(force = true)
         }
     }
 
@@ -69,7 +69,7 @@ class ExpensesViewModel @Inject constructor(
                 isIncome = false
             )
             val uiResult = withContext(defaultDispatcher) {
-                result.map { transactions -> transactions.toExpensesContent() }
+                result.map { transactions -> transactions.toTransactionListContent() }
             }
             if (uiResult is DataResult.Success) {
                 refreshPolicy.markSuccessfulRefresh()
@@ -77,7 +77,7 @@ class ExpensesViewModel @Inject constructor(
             _uiState.updateFrom(
                 result = uiResult,
                 previousState = previousState,
-                isEmpty = { it.expenses.isEmpty() },
+                isEmpty = { it.transactions.isEmpty() },
                 onRefreshError = effectChannel::send
             )
         }
