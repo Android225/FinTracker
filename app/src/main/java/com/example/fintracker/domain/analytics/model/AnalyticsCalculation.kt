@@ -1,12 +1,12 @@
 package com.example.fintracker.domain.analytics.model
 
-import com.example.fintracker.domain.TransactionResponse
+import com.example.fintracker.domain.Transaction
 import java.math.BigDecimal
 
 // Результат расчёта аналитики по выбранным фильтрам.
 data class AnalyticsCalculation(
     val totalAmount: BigDecimal,
-    val transactions: List<TransactionResponse>,
+    val transactions: List<Transaction>,
     val breakdown: List<AnalyticsCategoryBreakdown>
 )
 

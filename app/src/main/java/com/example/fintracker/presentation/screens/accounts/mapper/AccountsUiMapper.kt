@@ -6,27 +6,18 @@ import com.example.fintracker.presentation.screens.accounts.model.AccountsConten
 import java.math.BigDecimal
 import java.text.DecimalFormat
 
-private const val DEFAULT_ACCOUNT_EMOJI = "🏦"
-
-// Сопоставление тестовых счетов с их эмодзи.
-private val accountEmojiById = mapOf(
-    1 to "💳",
-    2 to "🏦",
-    3 to "🏦"
-)
-
 // Преобразует список счетов в содержимое экрана.
 internal fun List<Account>.toAccountsContent(): AccountsContent = AccountsContent(
-    totalBalance = sumOf { it.balance.toBigDecimal() }.formatMoney(),
+    totalBalance = sumOf(Account::balance).formatMoney(),
     accounts = map(Account::toUi)
 )
 
 // Преобразует счёт в отображаемую модель.
 private fun Account.toUi(): AccountUi = AccountUi(
     id = id,
-    emoji = accountEmojiById[id] ?: DEFAULT_ACCOUNT_EMOJI,
+    emoji = emoji,
     name = name,
-    balance = balance.toBigDecimal().formatMoney()
+    balance = balance.formatMoney()
 )
 
 // Форматирует денежную сумму для интерфейса.

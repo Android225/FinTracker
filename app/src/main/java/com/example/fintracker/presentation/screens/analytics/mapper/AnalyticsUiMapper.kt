@@ -2,7 +2,7 @@ package com.example.fintracker.presentation.screens.analytics.mapper
 
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
-import com.example.fintracker.domain.TransactionResponse
+import com.example.fintracker.domain.Transaction
 import com.example.fintracker.domain.analytics.model.AnalyticsCalculation
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
@@ -34,7 +34,7 @@ internal fun AnalyticsCalculation.toUiContent(
                 percent = item.percent
             )
         },
-        transactions = transactions.map(TransactionResponse::toUi),
+        transactions = transactions.map(Transaction::toUi),
         typeOptions = AnalyticsTransactionType.entries,
         periodOptions = createPeriodOptions(filter, today),
         categoryOptions = createCategoryOptions(availableCategories, filter.categoryIds),
@@ -63,11 +63,11 @@ private fun AnalyticsFilter.toUi(
 }
 
 // Преобразует операцию в строку списка аналитики.
-private fun TransactionResponse.toUi(): AnalyticsTransactionUi =
+private fun Transaction.toUi(): AnalyticsTransactionUi =
     AnalyticsTransactionUi(
         id = id,
         emoji = category.emoji,
         title = comment ?: category.name,
         subtitle = account.name,
-        amount = amount.toBigDecimal().formatMoney()
+        amount = amount.formatMoney()
     )

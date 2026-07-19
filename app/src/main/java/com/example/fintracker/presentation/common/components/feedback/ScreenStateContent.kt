@@ -78,9 +78,12 @@ fun ErrorContent(
 private fun AppError.messageForUser(): String {
     return when (this) {
         AppError.Network -> "Не удалось подключиться к интернету"
+        AppError.BadRequest -> "Сервер не смог обработать запрос"
         AppError.Unauthorized -> "Нужна авторизация"
         AppError.NotFound -> "Данные не найдены"
+        AppError.RateLimited -> "Слишком много запросов. Попробуйте позже"
         AppError.Server -> "На сервере что-то пошло не так"
+        is AppError.InvalidData -> "Сервер вернул некорректные данные"
         is AppError.Unknown -> message ?: "Неизвестная ошибка"
     }
 }

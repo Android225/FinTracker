@@ -2,7 +2,7 @@ package com.example.fintracker.domain.analytics
 
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
-import com.example.fintracker.domain.TransactionResponse
+import com.example.fintracker.domain.Transaction
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
@@ -11,27 +11,21 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.math.BigDecimal
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 
-// Проверяет фильтрацию и расчёты доменной аналитики.
 class AnalyticsCalculatorTest {
-    // Проверяет сумму, порядок и проценты выбранного типа операций.
     @Test
     fun `calculates total and breakdown for selected transaction type`() {
         val result = AnalyticsCalculator.calculate(
             transactions = listOf(
-                transaction(1, "100", "2026-07-10T10:00:00", accountId = 1, categoryId = 1),
-                transaction(2, "50", "2026-07-11T10:00:00", accountId = 1, categoryId = 2),
-                transaction(
-                    id = 3,
-                    amount = "500",
-                    date = "2026-07-12T10:00:00",
-                    accountId = 1,
-                    categoryId = 3,
-                    isIncome = true
-                )
+                transaction(1, "100", "2026-07-10T10:00:00Z", 1, 1),
+                transaction(2, "50", "2026-07-11T10:00:00Z", 1, 2),
+                transaction(3, "500", "2026-07-12T10:00:00Z", 1, 3, isIncome = true)
             ),
-            filter = filter(type = AnalyticsTransactionType.Expense)
+            filter = filter(type = AnalyticsTransactionType.Expense),
+            zoneId = ZoneOffset.UTC
         )
 
         assertEquals(BigDecimal("150"), result.totalAmount)
@@ -40,28 +34,27 @@ class AnalyticsCalculatorTest {
         assertEquals(listOf(67, 33), result.breakdown.map { it.percent })
     }
 
-    // Проверяет совместную работу всех фильтров.
     @Test
     fun `applies period category and account filters together`() {
         val result = AnalyticsCalculator.calculate(
             transactions = listOf(
-                transaction(1, "100", "2026-07-10T10:00:00", accountId = 1, categoryId = 1),
-                transaction(2, "200", "2026-07-10T10:00:00", accountId = 2, categoryId = 1),
-                transaction(3, "300", "2026-06-30T10:00:00", accountId = 1, categoryId = 1),
-                transaction(4, "400", "2026-07-10T10:00:00", accountId = 1, categoryId = 2)
+                transaction(1, "100", "2026-07-10T10:00:00Z", 1, 1),
+                transaction(2, "200", "2026-07-10T10:00:00Z", 2, 1),
+                transaction(3, "300", "2026-06-30T10:00:00Z", 1, 1),
+                transaction(4, "400", "2026-07-10T10:00:00Z", 1, 2)
             ),
             filter = filter(
                 type = AnalyticsTransactionType.All,
                 categoryIds = setOf(1),
                 accountId = 1
-            )
+            ),
+            zoneId = ZoneOffset.UTC
         )
 
         assertEquals(listOf(1), result.transactions.map { it.id })
         assertEquals(BigDecimal("100"), result.totalAmount)
     }
 
-    // Проверяет защиту от некорректного диапазона дат.
     @Test
     fun `period rejects an end date before its start date`() {
         assertThrows(IllegalArgumentException::class.java) {
@@ -72,7 +65,6 @@ class AnalyticsCalculatorTest {
         }
     }
 
-    // Создаёт фильтр для тестового сценария.
     private fun filter(
         type: AnalyticsTransactionType,
         categoryIds: Set<Int> = emptySet(),
@@ -88,7 +80,6 @@ class AnalyticsCalculatorTest {
         accountId = accountId
     )
 
-    // Создаёт операцию для тестового сценария.
     private fun transaction(
         id: Int,
         amount: String,
@@ -96,14 +87,23 @@ class AnalyticsCalculatorTest {
         accountId: Int,
         categoryId: Int,
         isIncome: Boolean = false
-    ): TransactionResponse = TransactionResponse(
-        id = id,
-        account = AccountBrief(accountId, "Account $accountId", "0", "RUB"),
-        category = Category(categoryId, "Category $categoryId", "", isIncome),
-        amount = amount,
-        transactionDate = date,
-        comment = null,
-        createdAt = "",
-        updatedAt = ""
-    )
+    ): Transaction {
+        val timestamp = Instant.parse(date)
+        return Transaction(
+            id = id,
+            account = AccountBrief(
+                id = accountId,
+                name = "Account $accountId",
+                emoji = "💳",
+                balance = BigDecimal.ZERO,
+                currency = "RUB"
+            ),
+            category = Category(categoryId, "Category $categoryId", "", isIncome),
+            amount = BigDecimal(amount),
+            transactionDate = timestamp,
+            comment = null,
+            createdAt = timestamp,
+            updatedAt = timestamp
+        )
+    }
 }

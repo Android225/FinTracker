@@ -2,9 +2,10 @@ package com.example.fintracker.data.mock.analytics
 
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
-import com.example.fintracker.domain.TransactionResponse
+import com.example.fintracker.domain.Transaction
+import java.math.BigDecimal
+import java.time.Instant
 
-// Тестовые категории для экрана аналитики.
 internal val analyticsMockCategories = listOf(
     Category(1, "Ремонт", "🔧", isIncome = false),
     Category(2, "Авто", "🚗", isIncome = false),
@@ -15,79 +16,41 @@ internal val analyticsMockCategories = listOf(
     Category(10, "Аренда", "🏠", isIncome = true)
 )
 
-// Тестовые счета для фильтра аналитики.
 internal val analyticsMockAccounts = listOf(
-    AccountBrief(2, "Сбербанк", "122322", "RUB"),
-    AccountBrief(1, "Тинькофф", "122322", "RUB"),
-    AccountBrief(3, "Наличные", "123322", "RUB")
+    AccountBrief(2, "Сбербанк", "🏦", BigDecimal("122322"), "RUB"),
+    AccountBrief(1, "Тинькофф", "💳", BigDecimal("122322"), "RUB"),
+    AccountBrief(3, "Наличные", "💵", BigDecimal("123322"), "RUB")
 )
 
-// Находит тестовую категорию по идентификатору.
 private fun category(id: Int): Category = analyticsMockCategories.first { it.id == id }
-
-// Находит тестовый счёт по идентификатору.
 private fun account(id: Int): AccountBrief = analyticsMockAccounts.first { it.id == id }
 
-// Тестовые операции для расчётов аналитики.
 internal val analyticsMockTransactions = listOf(
-    TransactionResponse(
-        id = 1,
-        amount = "80200",
-        transactionDate = "2026-07-16T12:00:00",
-        comment = "Ремонт квартиры",
-        createdAt = "",
-        updatedAt = "",
-        account = account(1),
-        category = category(1)
-    ),
-    TransactionResponse(
-        id = 2,
-        amount = "31500",
-        transactionDate = "2026-07-15T09:30:00",
-        comment = "ТО и бензин",
-        createdAt = "",
-        updatedAt = "",
-        account = account(2),
-        category = category(2)
-    ),
-    TransactionResponse(
-        id = 3,
-        amount = "20544",
-        transactionDate = "2026-07-13T18:20:00",
-        comment = "На собачку",
-        createdAt = "",
-        updatedAt = "",
-        account = account(3),
-        category = category(3)
-    ),
-    TransactionResponse(
-        id = 4,
-        amount = "45100",
-        transactionDate = "2026-07-09T15:45:00",
-        comment = "Покупки в магазине",
-        createdAt = "",
-        updatedAt = "",
-        account = account(2),
-        category = category(4)
-    ),
-    TransactionResponse(
-        id = 5,
-        amount = "25000",
-        transactionDate = "2026-07-11T10:00:00",
-        comment = "Премия за проект",
-        createdAt = "",
-        updatedAt = "",
-        account = account(1),
-        category = category(9)
-    ),
-    TransactionResponse(
-        id = 6,
-        amount = "38000",
-        transactionDate = "2026-07-05T10:00:00",
-        comment = "Сдача квартиры",
-        createdAt = "",
-        updatedAt = "",
-        account = account(2),
-        category = category(10)
-    )
+    transaction(1, "80200", "2026-07-16T12:00:00Z", "Ремонт квартиры", 1, 1),
+    transaction(2, "31500", "2026-07-15T09:30:00Z", "ТО и бензин", 2, 2),
+    transaction(3, "20544", "2026-07-13T18:20:00Z", "На собачку", 3, 3),
+    transaction(4, "45100", "2026-07-09T15:45:00Z", "Покупки в магазине", 2, 4),
+    transaction(5, "25000", "2026-07-11T10:00:00Z", "Премия за проект", 1, 9),
+    transaction(6, "38000", "2026-07-05T10:00:00Z", "Сдача квартиры", 2, 10)
 )
+
+private fun transaction(
+    id: Int,
+    amount: String,
+    transactionDate: String,
+    comment: String,
+    accountId: Int,
+    categoryId: Int
+): Transaction {
+    val timestamp = Instant.parse(transactionDate)
+    return Transaction(
+        id = id,
+        amount = BigDecimal(amount),
+        transactionDate = timestamp,
+        comment = comment,
+        createdAt = timestamp,
+        updatedAt = timestamp,
+        account = account(accountId),
+        category = category(categoryId)
+    )
+}

@@ -85,12 +85,7 @@ internal fun createAccountOptions(
         AnalyticsAccountOption(
             id = account.id,
             title = account.name,
-            subtitle = if (account.name == "Сбербанк") "Дебетовая карта" else null,
-            emoji = when (account.name) {
-                "Сбербанк" -> "🏦"
-                "Наличные" -> "💵"
-                else -> "💳"
-            },
+            emoji = account.emoji,
             selected = account.id == selectedAccountId
         )
     }
