@@ -3,10 +3,10 @@ package com.example.fintracker.domain.analytics
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -24,7 +24,7 @@ class AnalyticsCalculatorTest {
                 transaction(2, "50", "2026-07-11T10:00:00Z", 1, 2),
                 transaction(3, "500", "2026-07-12T10:00:00Z", 1, 3, isIncome = true)
             ),
-            filter = filter(type = AnalyticsTransactionType.Expense),
+            filter = filter(type = TransactionType.Expense),
             zoneId = ZoneOffset.UTC
         )
 
@@ -44,7 +44,7 @@ class AnalyticsCalculatorTest {
                 transaction(4, "400", "2026-07-10T10:00:00Z", 1, 2)
             ),
             filter = filter(
-                type = AnalyticsTransactionType.All,
+                type = TransactionType.All,
                 categoryIds = setOf(1),
                 accountId = 1
             ),
@@ -66,7 +66,7 @@ class AnalyticsCalculatorTest {
     }
 
     private fun filter(
-        type: AnalyticsTransactionType,
+        type: TransactionType,
         categoryIds: Set<Int> = emptySet(),
         accountId: Int? = null
     ): AnalyticsFilter = AnalyticsFilter(

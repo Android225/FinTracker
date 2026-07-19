@@ -3,9 +3,10 @@ package com.example.fintracker.presentation.screens.income
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
-import com.example.fintracker.domain.usecase.GetTransactionsByTypeUseCase
+import com.example.fintracker.domain.usecase.GetTransactionsUseCase
 import com.example.fintracker.presentation.common.model.ScreenEffect
 import com.example.fintracker.presentation.common.model.RefreshableUiState
 import com.example.fintracker.presentation.common.model.UiState
@@ -32,7 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class IncomesViewModel @Inject constructor(
-    private val getTransactionsByType: GetTransactionsByTypeUseCase,
+    private val getTransactions: GetTransactionsUseCase,
     clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -63,10 +64,10 @@ class IncomesViewModel @Inject constructor(
         if (loadJob?.isActive == true || !refreshPolicy.shouldRefresh(force)) return
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
-            val result = getTransactionsByType(
+            val result = getTransactions(
+                type = TransactionType.Income,
                 startDate = selectedDate,
-                endDate = selectedDate,
-                isIncome = true
+                endDate = selectedDate
             )
             val uiResult = withContext(defaultDispatcher) {
                 result.map { transactions -> transactions.toTransactionListContent() }

@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
@@ -134,7 +134,7 @@ class AnalyticsViewModel @Inject constructor(
         return AnalyticsFilter(
             type = savedStateHandle.get<String>(KEY_TYPE)
                 ?.let { savedName ->
-                    AnalyticsTransactionType.entries.find { it.name == savedName }
+                    TransactionType.entries.find { it.name == savedName }
                 }
                 ?: defaultFilter.type,
             period = restoredPeriod,
@@ -150,7 +150,7 @@ class AnalyticsViewModel @Inject constructor(
     private fun defaultFilter(): AnalyticsFilter {
         val today = LocalDate.now(clock)
         return AnalyticsFilter(
-            type = AnalyticsTransactionType.Expense,
+            type = TransactionType.Expense,
             period = AnalyticsPeriod(today.withDayOfMonth(1), today),
             periodKind = AnalyticsPeriodKind.Month,
             categoryIds = emptySet(),

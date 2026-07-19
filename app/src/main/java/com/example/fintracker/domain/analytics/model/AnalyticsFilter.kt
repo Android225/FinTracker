@@ -1,7 +1,9 @@
 package com.example.fintracker.domain.analytics.model
 
+import com.example.fintracker.domain.TransactionType
+
 data class AnalyticsFilter(
-    val type: AnalyticsTransactionType,
+    val type: TransactionType,
     val period: AnalyticsPeriod,
     val periodKind: AnalyticsPeriodKind,
     val categoryIds: Set<Int>,

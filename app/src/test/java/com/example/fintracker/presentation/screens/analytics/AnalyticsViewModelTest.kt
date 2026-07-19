@@ -9,7 +9,7 @@ import com.example.fintracker.domain.repository.CategoriesRepository
 import com.example.fintracker.domain.repository.TransactionsRepository
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
-import com.example.fintracker.domain.usecase.GetTransactionsForPeriodUseCase
+import com.example.fintracker.domain.usecase.GetTransactionsUseCase
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.test.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +32,7 @@ class AnalyticsViewModelTest {
     fun `default period starts on first day of current month`() =
         runTest(mainDispatcherRule.dispatcher) {
             val accountsRepository = FakeAccountsRepository()
-            val periodUseCase = GetTransactionsForPeriodUseCase(
+            val transactionsUseCase = GetTransactionsUseCase(
                 accountsRepository = accountsRepository,
                 transactionsRepository = EmptyTransactionsRepository,
                 defaultDispatcher = mainDispatcherRule.dispatcher
@@ -40,7 +40,7 @@ class AnalyticsViewModelTest {
             val analyticsUseCase = GetAnalyticsUseCase(
                 accountsRepository = accountsRepository,
                 categoriesRepository = EmptyCategoriesRepository,
-                getTransactionsForPeriod = periodUseCase,
+                getTransactions = transactionsUseCase,
                 defaultDispatcher = mainDispatcherRule.dispatcher
             )
 

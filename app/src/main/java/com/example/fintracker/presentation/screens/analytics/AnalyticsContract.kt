@@ -1,13 +1,13 @@
 package com.example.fintracker.presentation.screens.analytics
 
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 
 sealed interface AnalyticsEvent {
     data object ScreenVisible : AnalyticsEvent
     data object Refresh : AnalyticsEvent
-    data class SelectType(val type: AnalyticsTransactionType) : AnalyticsEvent
+    data class SelectType(val type: TransactionType) : AnalyticsEvent
     data class SelectPeriod(
         val kind: AnalyticsPeriodKind,
         val period: AnalyticsPeriod
@@ -31,11 +31,11 @@ data class AnalyticsContent(
     val filter: AnalyticsFilterUi,
     val breakdown: List<AnalyticsBreakdownUi>,
     val transactions: List<AnalyticsTransactionUi>,
-    val typeOptions: List<AnalyticsTransactionType>,
+    val typeOptions: List<TransactionType>,
     val periodOptions: List<AnalyticsPeriodOption>,
     val categoryOptions: List<AnalyticsCategoryOption>,
     val accountOptions: List<AnalyticsAccountOption>,
-    val selectedType: AnalyticsTransactionType,
+    val selectedType: TransactionType,
     val selectedPeriod: AnalyticsPeriod
 )
 

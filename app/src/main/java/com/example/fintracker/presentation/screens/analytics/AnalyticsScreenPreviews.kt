@@ -2,9 +2,9 @@ package com.example.fintracker.presentation.screens.analytics
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
-import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 import java.time.LocalDate
@@ -34,11 +34,11 @@ private fun AnalyticsScreenPreview() {
                         AnalyticsTransactionUi(2, "🛒", "Покупки в магазине", "Сбербанк", "45 100 ₽"),
                         AnalyticsTransactionUi(3, "🏢", "Ремонт квартиры", "Тинькофф", "890 000 ₽")
                     ),
-                    typeOptions = AnalyticsTransactionType.entries,
+                    typeOptions = TransactionType.entries,
                     periodOptions = emptyList(),
                     categoryOptions = emptyList(),
                     accountOptions = emptyList(),
-                    selectedType = AnalyticsTransactionType.Expense,
+                    selectedType = TransactionType.Expense,
                     selectedPeriod = period
                 )
             ),

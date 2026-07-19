@@ -17,7 +17,7 @@ import java.time.ZoneId
 class GetAnalyticsUseCase(
     private val accountsRepository: AccountsRepository,
     private val categoriesRepository: CategoriesRepository,
-    private val getTransactionsForPeriod: GetTransactionsForPeriodUseCase,
+    private val getTransactions: GetTransactionsUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(
@@ -47,7 +47,8 @@ class GetAnalyticsUseCase(
             ?.let(::setOf)
             ?: availableAccountIds
         val transactions = when (
-            val result = getTransactionsForPeriod(
+            val result = getTransactions(
+                type = filter.type,
                 startDate = filter.period.start,
                 endDate = filter.period.end,
                 accountIds = requestedAccountIds

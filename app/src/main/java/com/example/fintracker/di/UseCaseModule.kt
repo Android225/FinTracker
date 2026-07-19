@@ -5,8 +5,7 @@ import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.repository.CategoriesRepository
 import com.example.fintracker.domain.repository.TransactionsRepository
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
-import com.example.fintracker.domain.usecase.GetTransactionsByTypeUseCase
-import com.example.fintracker.domain.usecase.GetTransactionsForPeriodUseCase
+import com.example.fintracker.domain.usecase.GetTransactionsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,22 +16,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
     @Provides
-    fun provideGetTransactionsForPeriodUseCase(
+    fun provideGetTransactionsUseCase(
         accountsRepository: AccountsRepository,
         transactionsRepository: TransactionsRepository,
         @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
-    ): GetTransactionsForPeriodUseCase = GetTransactionsForPeriodUseCase(
+    ): GetTransactionsUseCase = GetTransactionsUseCase(
         accountsRepository = accountsRepository,
         transactionsRepository = transactionsRepository,
-        defaultDispatcher = defaultDispatcher
-    )
-
-    @Provides
-    fun provideGetTransactionsByTypeUseCase(
-        getTransactionsForPeriod: GetTransactionsForPeriodUseCase,
-        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
-    ): GetTransactionsByTypeUseCase = GetTransactionsByTypeUseCase(
-        getTransactionsForPeriod = getTransactionsForPeriod,
         defaultDispatcher = defaultDispatcher
     )
 
@@ -40,12 +30,12 @@ object UseCaseModule {
     fun provideGetAnalyticsUseCase(
         accountsRepository: AccountsRepository,
         categoriesRepository: CategoriesRepository,
-        getTransactionsForPeriod: GetTransactionsForPeriodUseCase,
+        getTransactions: GetTransactionsUseCase,
         @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
     ): GetAnalyticsUseCase = GetAnalyticsUseCase(
         accountsRepository = accountsRepository,
         categoriesRepository = categoriesRepository,
-        getTransactionsForPeriod = getTransactionsForPeriod,
+        getTransactions = getTransactions,
         defaultDispatcher = defaultDispatcher
     )
 }

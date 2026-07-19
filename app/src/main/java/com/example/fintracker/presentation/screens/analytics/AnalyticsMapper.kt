@@ -3,11 +3,11 @@ package com.example.fintracker.presentation.screens.analytics
 import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsCalculation
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import com.example.fintracker.presentation.common.format.formatMoney
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -21,7 +21,11 @@ internal fun AnalyticsCalculation.toUiContent(
     today: LocalDate
 ): AnalyticsContent {
     val availableCategories = categories.filter { category ->
-        filter.type.isIncome == null || category.isIncome == filter.type.isIncome
+        when (filter.type) {
+            TransactionType.Expense -> !category.isIncome
+            TransactionType.Income -> category.isIncome
+            TransactionType.All -> true
+        }
     }
 
     return AnalyticsContent(
@@ -36,7 +40,7 @@ internal fun AnalyticsCalculation.toUiContent(
             )
         },
         transactions = transactions.map(Transaction::toUi),
-        typeOptions = AnalyticsTransactionType.entries,
+        typeOptions = TransactionType.entries,
         periodOptions = createPeriodOptions(filter, today),
         categoryOptions = createCategoryOptions(availableCategories, filter.categoryIds),
         accountOptions = createAccountOptions(accounts, filter.accountId),
@@ -152,9 +156,9 @@ internal fun createAccountOptions(
 internal fun AnalyticsPeriod.formatForDisplay(): String =
     "${start.format(dateFormatter)} – ${end.format(dateFormatter)}"
 
-internal val AnalyticsTransactionType.displayName: String
+internal val TransactionType.displayName: String
     get() = when (this) {
-        AnalyticsTransactionType.Expense -> "Расходы"
-        AnalyticsTransactionType.Income -> "Доходы"
-        AnalyticsTransactionType.All -> "Всё"
+        TransactionType.Expense -> "Расходы"
+        TransactionType.Income -> "Доходы"
+        TransactionType.All -> "Всё"
     }

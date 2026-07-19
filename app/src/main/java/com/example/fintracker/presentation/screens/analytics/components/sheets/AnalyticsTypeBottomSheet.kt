@@ -19,14 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.presentation.screens.analytics.displayName
 
 @Composable
 fun AnalyticsTypeBottomSheet(
-    options: List<AnalyticsTransactionType>,
-    selectedType: AnalyticsTransactionType,
-    onApply: (AnalyticsTransactionType) -> Unit,
+    options: List<TransactionType>,
+    selectedType: TransactionType,
+    onApply: (TransactionType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var draftType by remember(selectedType) { mutableStateOf(selectedType) }

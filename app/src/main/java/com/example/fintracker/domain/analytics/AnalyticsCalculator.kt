@@ -1,6 +1,7 @@
 package com.example.fintracker.domain.analytics
 
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsCalculation
 import com.example.fintracker.domain.analytics.model.AnalyticsCategoryBreakdown
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
@@ -17,7 +18,13 @@ object AnalyticsCalculator {
     ): AnalyticsCalculation {
         val filteredTransactions = transactions
             .asSequence()
-            .filter { filter.type.isIncome == null || it.category.isIncome == filter.type.isIncome }
+            .filter { transaction ->
+                when (filter.type) {
+                    TransactionType.Expense -> !transaction.category.isIncome
+                    TransactionType.Income -> transaction.category.isIncome
+                    TransactionType.All -> true
+                }
+            }
             .filter {
                 it.transactionDate.atZone(zoneId).toLocalDate() in
                     filter.period.start..filter.period.end
