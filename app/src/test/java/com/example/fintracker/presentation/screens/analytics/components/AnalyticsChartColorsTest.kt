@@ -6,7 +6,9 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBrea
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+// Проверяет назначение цветов категориям диаграммы.
 class AnalyticsChartColorsTest {
+    // Проверяет уникальность цветов большого набора категорий.
     @Test
     fun `assigns a distinct color to every displayed category`() {
         val breakdown = (1..100).map { categoryId ->
@@ -23,6 +25,7 @@ class AnalyticsChartColorsTest {
         assertEquals(breakdown.size, colors.toSet().size)
     }
 
+    // Проверяет стабильность цветов при изменении порядка.
     @Test
     fun `keeps category colors stable when breakdown order changes`() {
         val source = listOf(
@@ -39,6 +42,7 @@ class AnalyticsChartColorsTest {
         assertEquals(originalColors, reorderedColors)
     }
 
+    // Проверяет начальные цвета основной палитры.
     @Test
     fun `starts with colors used by the Figma chart`() {
         val segments = listOf(

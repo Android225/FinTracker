@@ -30,6 +30,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.fintracker.R
 import kotlinx.coroutines.delay
+// Стартовый экран с анимацией загрузки приложения.
 @Composable
 fun SplashScreen(
     onSplashFinished: () -> Unit

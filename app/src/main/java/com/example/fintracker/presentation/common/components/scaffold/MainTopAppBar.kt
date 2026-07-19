@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
 
+// Верхняя панель основных экранов с действиями.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(

@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.fintracker.presentation.navigation.LocalNavController
 import com.example.fintracker.presentation.navigation.model.BottomNavItem
 
+// Нижняя панель навигации между основными экранами.
 @Composable
 fun MainBottomNavigationBar(
     modifier: Modifier = Modifier

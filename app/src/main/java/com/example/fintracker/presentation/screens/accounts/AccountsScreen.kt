@@ -25,6 +25,7 @@ import com.example.fintracker.presentation.screens.accounts.model.AccountsConten
 import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
+// Подключает ViewModel и общий каркас экрана счетов.
 @Composable
 fun AccountsScreen(
     viewModel: AccountsViewModel = viewModel()
@@ -40,6 +41,7 @@ fun AccountsScreen(
 
 }
 
+// Отображает экран счетов для текущего состояния.
 @Composable
 fun AccountsScreenContent(
     state: UiState<AccountsContent>,
@@ -75,7 +77,7 @@ fun AccountsScreenContent(
     }
 }
 
-
+// Preview экрана счетов с данными.
 @Preview(showBackground = true)
 @Composable
 fun AccountsScreenPreview() {
@@ -105,6 +107,7 @@ fun AccountsScreenPreview() {
     }
 }
 
+// Preview состояния загрузки счетов.
 @Preview(showBackground = true)
 @Composable
 fun AccountsScreenLoadingPreview() {
@@ -116,6 +119,7 @@ fun AccountsScreenLoadingPreview() {
     }
 }
 
+// Preview пустого состояния счетов.
 @Preview(showBackground = true)
 @Composable
 fun AccountsScreenEmptyPreview() {
@@ -127,6 +131,7 @@ fun AccountsScreenEmptyPreview() {
     }
 }
 
+// Preview ошибки загрузки счетов.
 @Preview(showBackground = true)
 @Composable
 fun AccountsScreenErrorPreview() {

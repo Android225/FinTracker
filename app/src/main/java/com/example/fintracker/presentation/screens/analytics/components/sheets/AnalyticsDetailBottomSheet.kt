@@ -22,6 +22,7 @@ import com.example.fintracker.presentation.screens.analytics.components.chart.An
 import com.example.fintracker.presentation.screens.analytics.components.chart.AnalyticsDonutChart
 import com.example.fintracker.presentation.screens.analytics.components.chart.toAnalyticsChartSegments
 
+// Bottom sheet с подробной разбивкой аналитики.
 @Composable
 fun AnalyticsDetailBottomSheet(
     totalAmount: String,

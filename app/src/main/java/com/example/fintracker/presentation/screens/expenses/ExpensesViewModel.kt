@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Управляет состоянием и загрузкой экрана расходов.
 class ExpensesViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<ExpensesContent>>(UiState.Loading)
     val uiState: StateFlow<UiState<ExpensesContent>> = _uiState.asStateFlow()
@@ -24,12 +25,14 @@ class ExpensesViewModel : ViewModel() {
         loadExpenses()
     }
 
+    // Обрабатывает события экрана расходов.
     fun onEvent(event: ExpensesEvent) {
         when (event) {
             ExpensesEvent.Refresh -> loadExpenses()
         }
     }
 
+    // Загружает тестовые расходы и обновляет состояние UI.
     private fun loadExpenses() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {

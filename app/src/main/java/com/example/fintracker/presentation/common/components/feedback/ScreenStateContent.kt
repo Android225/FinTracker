@@ -46,6 +46,7 @@ fun EmptyContent(
     }
 }
 
+// Сообщение об ошибке с кнопкой повтора.
 @Composable
 fun ErrorContent(
     error: AppError,

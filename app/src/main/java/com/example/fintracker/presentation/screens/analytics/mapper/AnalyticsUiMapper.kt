@@ -12,6 +12,7 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsFilt
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsTransactionUi
 import java.time.LocalDate
 
+// Преобразует результат расчёта в содержимое экрана.
 internal fun AnalyticsCalculation.toUiContent(
     filter: AnalyticsFilter,
     categories: List<Category>,
@@ -43,6 +44,7 @@ internal fun AnalyticsCalculation.toUiContent(
     )
 }
 
+// Преобразует доменный фильтр в отображаемые значения.
 private fun AnalyticsFilter.toUi(
     categories: List<Category>,
     accounts: List<AccountBrief>
@@ -60,6 +62,7 @@ private fun AnalyticsFilter.toUi(
     )
 }
 
+// Преобразует операцию в строку списка аналитики.
 private fun TransactionResponse.toUi(): AnalyticsTransactionUi =
     AnalyticsTransactionUi(
         id = id,

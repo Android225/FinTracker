@@ -10,6 +10,7 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsCate
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsPeriodOption
 import java.time.LocalDate
 
+// Создаёт варианты стандартных периодов аналитики.
 internal fun createPeriodOptions(
     filter: AnalyticsFilter,
     today: LocalDate
@@ -55,6 +56,7 @@ internal fun createPeriodOptions(
     )
 }
 
+// Создаёт варианты категорий с признаком выбора.
 internal fun createCategoryOptions(
     categories: List<Category>,
     selectedIds: Set<Int>
@@ -67,6 +69,7 @@ internal fun createCategoryOptions(
     )
 }
 
+// Создаёт варианты счетов с признаком выбора.
 internal fun createAccountOptions(
     accounts: List<AccountBrief>,
     selectedAccountId: Int?

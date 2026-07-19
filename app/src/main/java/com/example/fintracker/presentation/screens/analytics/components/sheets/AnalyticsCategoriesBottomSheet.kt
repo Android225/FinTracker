@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsCategoryOption
 
+// Bottom sheet множественного выбора категорий.
 @Composable
 fun AnalyticsCategoriesBottomSheet(
     options: List<AnalyticsCategoryOption>,

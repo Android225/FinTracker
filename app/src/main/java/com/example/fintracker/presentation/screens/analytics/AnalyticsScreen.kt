@@ -22,6 +22,7 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsCont
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsEvent
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
 
+// Подключает ViewModel и навигацию экрана аналитики.
 @Composable
 fun AnalyticsScreen(
     viewModel: AnalyticsViewModel
@@ -36,6 +37,7 @@ fun AnalyticsScreen(
     )
 }
 
+// Отображает аналитику для текущего состояния загрузки.
 @Composable
 fun AnalyticsScreenContent(
     state: UiState<AnalyticsContent>,

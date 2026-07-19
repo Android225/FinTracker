@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+// Крупный блок с названием и итоговой суммой экрана.
 @Composable
 fun HeroSection(
     label: String,

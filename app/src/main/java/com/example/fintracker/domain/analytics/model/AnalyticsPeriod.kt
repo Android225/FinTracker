@@ -2,6 +2,7 @@ package com.example.fintracker.domain.analytics.model
 
 import java.time.LocalDate
 
+// Выбранный диапазон дат для аналитики.
 data class AnalyticsPeriod(
     val start: LocalDate,
     val end: LocalDate

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Управляет состоянием и загрузкой экрана доходов.
 class IncomesViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<IncomesContent>>(UiState.Loading)
     val uiState: StateFlow<UiState<IncomesContent>> = _uiState.asStateFlow()
@@ -24,12 +25,14 @@ class IncomesViewModel : ViewModel() {
         loadIncomes()
     }
 
+    // Обрабатывает события экрана доходов.
     fun onEvent(event: IncomesEvent) {
         when (event) {
             IncomesEvent.Refresh -> loadIncomes()
         }
     }
 
+    // Загружает тестовые доходы и обновляет состояние UI.
     private fun loadIncomes() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {

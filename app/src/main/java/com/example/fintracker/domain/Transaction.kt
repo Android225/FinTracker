@@ -1,6 +1,6 @@
 package com.example.fintracker.domain
 
-
+// Базовая сущность финансовой операции.
 data class Transaction(
     val id: Int,
     val accountId: Int,
@@ -12,6 +12,7 @@ data class Transaction(
     val updatedAt: String
 )
 
+// Данные для создания или изменения операции.
 data class TransactionRequest(
     val accountId: Int,
     val categoryId: Int,
@@ -20,6 +21,7 @@ data class TransactionRequest(
     val comment: String? = null
 )
 
+// Операция с информацией о счёте и категории.
 data class TransactionResponse(
     val id: Int,
     val account: AccountBrief,

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import com.example.fintracker.presentation.screens.analytics.mapper.displayName
 
+// Bottom sheet выбора типа операций.
 @Composable
 fun AnalyticsTypeBottomSheet(
     options: List<AnalyticsTransactionType>,

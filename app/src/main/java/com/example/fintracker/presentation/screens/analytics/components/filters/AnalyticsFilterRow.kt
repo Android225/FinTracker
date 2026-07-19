@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// Строка фильтра с иконкой и выбранным значением.
 @Composable
 fun AnalyticsFilterRow(
     title: String,

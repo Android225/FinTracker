@@ -6,6 +6,7 @@ import com.example.fintracker.presentation.screens.income.model.IncomesContent
 import java.math.BigDecimal
 import java.text.DecimalFormat
 
+// Преобразует доходные операции в содержимое экрана.
 internal fun List<TransactionResponse>.toIncomesContent(): IncomesContent = IncomesContent(
     totalAmount = sumOf { it.amount.toBigDecimal() }.formatMoney(),
     incomes = map { transaction ->
@@ -18,5 +19,6 @@ internal fun List<TransactionResponse>.toIncomesContent(): IncomesContent = Inco
     }
 )
 
+// Форматирует денежную сумму для интерфейса.
 private fun BigDecimal.formatMoney(): String =
     "${DecimalFormat("#,###").format(this).replace(',', ' ')} ₽"

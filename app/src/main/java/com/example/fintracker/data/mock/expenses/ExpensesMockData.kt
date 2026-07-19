@@ -4,6 +4,7 @@ import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.TransactionResponse
 
+// Базовый набор тестовых расходов.
 private val baseExpenses = listOf(
     expense(1, "1200", "2025-07-10T12:00:00", 1, 1, "Покупка канцтоваров", "✏️"),
     expense(2, "750", "2025-07-10T13:00:00", 2, 2, "Обед в кафе", "☕"),
@@ -15,10 +16,12 @@ private val baseExpenses = listOf(
     expense(8, "2450", "2025-07-07T16:00:00", 1, 8, "Магазин продуктов", "🛒")
 )
 
+// Полный список тестовых расходов для длинного списка.
 internal val mockExpenses = baseExpenses + baseExpenses.map { expense ->
     expense.copy(id = expense.id + baseExpenses.size)
 }
 
+// Создаёт тестовую расходную операцию.
 private fun expense(
     id: Int,
     amount: String,
@@ -39,6 +42,7 @@ private fun expense(
     category = Category(categoryId, categoryName, emoji, isIncome = false)
 )
 
+// Возвращает тестовый счёт по идентификатору.
 private fun account(id: Int): AccountBrief = when (id) {
     1 -> AccountBrief(1, "Яндекс Pay", "123322", "RUB")
     2 -> AccountBrief(2, "Газпромбанк", "122322", "RUB")

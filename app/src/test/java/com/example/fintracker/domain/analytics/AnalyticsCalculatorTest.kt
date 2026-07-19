@@ -13,7 +13,9 @@ import org.junit.Test
 import java.math.BigDecimal
 import java.time.LocalDate
 
+// Проверяет фильтрацию и расчёты доменной аналитики.
 class AnalyticsCalculatorTest {
+    // Проверяет сумму, порядок и проценты выбранного типа операций.
     @Test
     fun `calculates total and breakdown for selected transaction type`() {
         val result = AnalyticsCalculator.calculate(
@@ -38,6 +40,7 @@ class AnalyticsCalculatorTest {
         assertEquals(listOf(67, 33), result.breakdown.map { it.percent })
     }
 
+    // Проверяет совместную работу всех фильтров.
     @Test
     fun `applies period category and account filters together`() {
         val result = AnalyticsCalculator.calculate(
@@ -58,6 +61,7 @@ class AnalyticsCalculatorTest {
         assertEquals(BigDecimal("100"), result.totalAmount)
     }
 
+    // Проверяет защиту от некорректного диапазона дат.
     @Test
     fun `period rejects an end date before its start date`() {
         assertThrows(IllegalArgumentException::class.java) {
@@ -68,6 +72,7 @@ class AnalyticsCalculatorTest {
         }
     }
 
+    // Создаёт фильтр для тестового сценария.
     private fun filter(
         type: AnalyticsTransactionType,
         categoryIds: Set<Int> = emptySet(),
@@ -83,6 +88,7 @@ class AnalyticsCalculatorTest {
         accountId = accountId
     )
 
+    // Создаёт операцию для тестового сценария.
     private fun transaction(
         id: Int,
         amount: String,

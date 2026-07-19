@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+// Управляет состоянием и загрузкой экрана счетов.
 class AccountsViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<AccountsContent>>(UiState.Loading)
     val uiState: StateFlow<UiState<AccountsContent>> = _uiState.asStateFlow()
@@ -24,12 +25,14 @@ class AccountsViewModel : ViewModel() {
         loadAccounts()
     }
 
+    // Обрабатывает события экрана счетов.
     fun onEvent(event: AccountsEvent) {
         when (event) {
             AccountsEvent.Refresh -> loadAccounts()
         }
     }
 
+    // Загружает тестовые счета и обновляет состояние UI.
     private fun loadAccounts() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {

@@ -10,7 +10,9 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+// Рассчитывает отфильтрованные операции и разбивку по категориям.
 object AnalyticsCalculator {
+    // Применяет фильтры и формирует итоговые показатели аналитики.
     fun calculate(
         transactions: List<TransactionResponse>,
         filter: AnalyticsFilter
@@ -46,14 +48,18 @@ object AnalyticsCalculator {
     }
 }
 
+// Преобразует серверную строку даты и времени.
 private fun String.toLocalDateTime(): LocalDateTime =
     LocalDateTime.parse(this, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
+// Извлекает календарную дату из строки операции.
 private fun String.toLocalDate(): LocalDate = toLocalDateTime().toLocalDate()
 
+// Суммирует денежные значения списка операций.
 private fun List<TransactionResponse>.sumOfAmount(): BigDecimal =
     fold(BigDecimal.ZERO) { sum, transaction -> sum + transaction.amount.toBigDecimal() }
 
+// Вычисляет процент значения от общей суммы.
 private fun BigDecimal.percentOf(total: BigDecimal): Int {
     if (total <= BigDecimal.ZERO) return 0
     return multiply(BigDecimal(100))

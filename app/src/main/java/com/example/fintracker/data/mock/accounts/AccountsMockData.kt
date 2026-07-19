@@ -2,6 +2,7 @@ package com.example.fintracker.data.mock.accounts
 
 import com.example.fintracker.domain.Account
 
+// Тестовые счета для экрана счетов.
 internal val mockAccounts = listOf(
     Account(
         id = 1,

@@ -25,6 +25,7 @@ import com.example.fintracker.presentation.screens.expenses.model.ExpensesConten
 import com.example.fintracker.presentation.screens.expenses.model.ExpensesEvent
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
+// Подключает ViewModel и общий каркас экрана расходов.
 @Composable
 fun ExpensesScreen(
     viewModel: ExpensesViewModel = viewModel()
@@ -38,6 +39,7 @@ fun ExpensesScreen(
     }
 }
 
+// Отображает экран расходов для текущего состояния.
 @Composable
 fun ExpensesScreenContent(
     state: UiState<ExpensesContent>,
@@ -71,6 +73,7 @@ fun ExpensesScreenContent(
     }
 }
 
+// Preview экрана расходов с данными.
 @Preview(showBackground = true)
 @Composable
 fun ExpensesScreenPreview() {
@@ -100,6 +103,7 @@ fun ExpensesScreenPreview() {
     }
 }
 
+// Preview состояния загрузки расходов.
 @Preview(showBackground = true)
 @Composable
 fun ExpensesScreenLoadingPreview() {
@@ -111,6 +115,7 @@ fun ExpensesScreenLoadingPreview() {
     }
 }
 
+// Preview пустого состояния расходов.
 @Preview(showBackground = true)
 @Composable
 fun ExpensesScreenEmptyPreview() {
@@ -122,6 +127,7 @@ fun ExpensesScreenEmptyPreview() {
     }
 }
 
+// Preview ошибки загрузки расходов.
 @Preview(showBackground = true)
 @Composable
 fun ExpensesScreenErrorPreview() {

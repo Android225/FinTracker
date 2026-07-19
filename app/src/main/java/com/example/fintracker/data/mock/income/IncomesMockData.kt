@@ -4,6 +4,7 @@ import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.TransactionResponse
 
+// Тестовые доходные операции.
 internal val mockIncomes = listOf(
     income(1, "8500", "2025-07-10T10:00:00", 1, 9, "Продажа старой мебели", "🛋", null),
     income(2, "15000", "2025-07-09T09:00:00", 2, 10, "Возврат налога", "📋", null),
@@ -14,6 +15,7 @@ internal val mockIncomes = listOf(
     income(7, "5000", "2025-07-03T16:00:00", 3, 15, "Подарок от родителей", "🎁", null)
 )
 
+// Создаёт тестовую доходную операцию.
 private fun income(
     id: Int,
     amount: String,
@@ -34,6 +36,7 @@ private fun income(
     category = Category(categoryId, categoryName, emoji, isIncome = true)
 )
 
+// Возвращает тестовый счёт по идентификатору.
 private fun account(id: Int): AccountBrief = when (id) {
     1 -> AccountBrief(1, "Яндекс Pay", "123322", "RUB")
     2 -> AccountBrief(2, "Газпромбанк", "122322", "RUB")

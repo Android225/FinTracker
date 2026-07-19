@@ -3,10 +3,11 @@ package com.example.fintracker.presentation.navigation.model
 import androidx.annotation.StringRes
 import com.example.fintracker.R
 
+// Пункты нижней навигации с иконкой, названием и маршрутом.
 enum class BottomNavItem(
-    val iconRes:Int,
+    val iconRes: Int,
     @param:StringRes val label: Int,
-    val route:NavigationPath
+    val route: NavigationPath
 ) {
     EXPENSES(
         iconRes = R.drawable.expenses,

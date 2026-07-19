@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+// Управляет фильтрами, загрузкой и состоянием аналитики.
 class AnalyticsViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -42,6 +43,7 @@ class AnalyticsViewModel(
         loadAnalytics()
     }
 
+    // Обрабатывает действия пользователя на экране аналитики.
     fun onEvent(event: AnalyticsEvent) {
         when (event) {
             AnalyticsEvent.Refresh -> loadAnalytics()
@@ -61,12 +63,14 @@ class AnalyticsViewModel(
         }
     }
 
+    // Сохраняет новый фильтр и пересчитывает аналитику.
     private fun updateFilter(updatedFilter: AnalyticsFilter) {
         filter = updatedFilter
         saveFilter(updatedFilter)
         loadAnalytics()
     }
 
+    // Выполняет mock-загрузку и публикует рассчитанные данные.
     private fun loadAnalytics() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
@@ -88,6 +92,7 @@ class AnalyticsViewModel(
         }
     }
 
+    // Восстанавливает фильтр после пересоздания экрана.
     private fun restoreFilter(): AnalyticsFilter {
         val defaultFilter = defaultFilter()
         val start = savedStateHandle.get<Long>(KEY_PERIOD_START)?.let(LocalDate::ofEpochDay)
@@ -114,6 +119,7 @@ class AnalyticsViewModel(
         )
     }
 
+    // Создаёт фильтр аналитики по умолчанию.
     private fun defaultFilter(): AnalyticsFilter = AnalyticsFilter(
         type = AnalyticsTransactionType.Expense,
         period = currentPeriod,
@@ -122,6 +128,7 @@ class AnalyticsViewModel(
         accountId = null
     )
 
+    // Сохраняет фильтр в SavedStateHandle.
     private fun saveFilter(filter: AnalyticsFilter) {
         savedStateHandle[KEY_TYPE] = filter.type.name
         savedStateHandle[KEY_PERIOD_START] = filter.period.start.toEpochDay()

@@ -27,6 +27,7 @@ import com.example.fintracker.presentation.screens.analytics.components.transact
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
 
+// Основное содержимое аналитики после успешной загрузки.
 @Composable
 internal fun AnalyticsLoadedContent(
     content: AnalyticsContent,

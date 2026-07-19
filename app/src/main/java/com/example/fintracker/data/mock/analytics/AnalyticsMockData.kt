@@ -4,6 +4,7 @@ import com.example.fintracker.domain.AccountBrief
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.TransactionResponse
 
+// Тестовые категории для экрана аналитики.
 internal val analyticsMockCategories = listOf(
     Category(1, "Ремонт", "🔧", isIncome = false),
     Category(2, "Авто", "🚗", isIncome = false),
@@ -14,15 +15,20 @@ internal val analyticsMockCategories = listOf(
     Category(10, "Аренда", "🏠", isIncome = true)
 )
 
+// Тестовые счета для фильтра аналитики.
 internal val analyticsMockAccounts = listOf(
     AccountBrief(2, "Сбербанк", "122322", "RUB"),
     AccountBrief(1, "Тинькофф", "122322", "RUB"),
     AccountBrief(3, "Наличные", "123322", "RUB")
 )
 
+// Находит тестовую категорию по идентификатору.
 private fun category(id: Int): Category = analyticsMockCategories.first { it.id == id }
+
+// Находит тестовый счёт по идентификатору.
 private fun account(id: Int): AccountBrief = analyticsMockAccounts.first { it.id == id }
 
+// Тестовые операции для расчётов аналитики.
 internal val analyticsMockTransactions = listOf(
     TransactionResponse(
         id = 1,
