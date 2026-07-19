@@ -8,6 +8,7 @@ import kotlinx.coroutines.CancellationException
 import retrofit2.HttpException
 import java.io.IOException
 
+// Преобразует сетевые исключения в единые доменные ошибки и не перехватывает отмену корутины.
 internal suspend fun <T> executeRemoteCall(block: suspend () -> T): DataResult<T> =
     try {
         DataResult.Success(block())
@@ -25,6 +26,7 @@ internal suspend fun <T> executeRemoteCall(block: suspend () -> T): DataResult<T
         DataResult.Failure(AppError.Unknown(exception.message))
     }
 
+// Сопоставляет HTTP-коды с ошибками, которые понимают ViewModel и UI.
 private fun HttpException.toAppError(): AppError = when (code()) {
     400 -> AppError.BadRequest
     401, 403 -> AppError.Unauthorized

@@ -6,6 +6,8 @@ import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 
 // Пользовательские события экрана аналитики.
 sealed interface AnalyticsEvent {
+    // Проверяет свежесть данных при возвращении на экран.
+    data object ScreenVisible : AnalyticsEvent
     // Повторно загружает аналитику.
     data object Refresh : AnalyticsEvent
     // Возвращает фильтры к значениям по умолчанию.

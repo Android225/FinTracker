@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -17,9 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.example.fintracker.domain.error.AppError
 
 @Composable
-fun LoadingContent(
-    modifier: Modifier = Modifier
-) {
+fun LoadingContent(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -34,7 +34,9 @@ fun EmptyContent(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -46,7 +48,6 @@ fun EmptyContent(
     }
 }
 
-// Сообщение об ошибке с кнопкой повтора.
 @Composable
 fun ErrorContent(
     error: AppError,
@@ -61,7 +62,7 @@ fun ErrorContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = error.messageForUser(),
+            text = error.toUserMessage(),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
@@ -75,15 +76,13 @@ fun ErrorContent(
     }
 }
 
-private fun AppError.messageForUser(): String {
-    return when (this) {
-        AppError.Network -> "Не удалось подключиться к интернету"
-        AppError.BadRequest -> "Сервер не смог обработать запрос"
-        AppError.Unauthorized -> "Нужна авторизация"
-        AppError.NotFound -> "Данные не найдены"
-        AppError.RateLimited -> "Слишком много запросов. Попробуйте позже"
-        AppError.Server -> "На сервере что-то пошло не так"
-        is AppError.InvalidData -> "Сервер вернул некорректные данные"
-        is AppError.Unknown -> message ?: "Неизвестная ошибка"
-    }
+internal fun AppError.toUserMessage(): String = when (this) {
+    AppError.Network -> "Не удалось подключиться к интернету"
+    AppError.BadRequest -> "Сервер не смог обработать запрос"
+    AppError.Unauthorized -> "Нужна авторизация"
+    AppError.NotFound -> "Данные не найдены"
+    AppError.RateLimited -> "Слишком много запросов. Попробуйте позже"
+    AppError.Server -> "На сервере что-то пошло не так"
+    is AppError.InvalidData -> "Сервер вернул некорректные данные"
+    is AppError.Unknown -> message ?: "Неизвестная ошибка"
 }

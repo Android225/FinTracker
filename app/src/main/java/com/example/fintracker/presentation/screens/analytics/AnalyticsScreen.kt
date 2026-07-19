@@ -1,19 +1,24 @@
 package com.example.fintracker.presentation.screens.analytics
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fintracker.presentation.common.components.feedback.EmptyContent
+import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
 import com.example.fintracker.presentation.common.components.feedback.ErrorContent
 import com.example.fintracker.presentation.common.components.feedback.LoadingContent
+import com.example.fintracker.presentation.common.components.refresh.RefreshableContent
+import com.example.fintracker.presentation.common.components.refresh.RefreshOnResumeEffect
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.navigation.LocalNavController
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsSheetHost
@@ -25,15 +30,29 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsShee
 // Подключает ViewModel и навигацию экрана аналитики.
 @Composable
 fun AnalyticsScreen(
-    viewModel: AnalyticsViewModel
+    viewModel: AnalyticsViewModel = hiltViewModel()
 ) {
     val navController = LocalNavController.current
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val retry = { viewModel.onEvent(AnalyticsEvent.Refresh) }
+
+    ErrorSnackbarEffect(
+        effects = viewModel.effects,
+        snackbarHostState = snackbarHostState,
+        onRetry = retry
+    )
+    RefreshOnResumeEffect {
+        viewModel.onEvent(AnalyticsEvent.ScreenVisible)
+    }
 
     AnalyticsScreenContent(
-        state = state,
+        state = state.dataState,
+        isRefreshing = state.isRefreshing,
+        onRefresh = retry,
         onBackClick = { navController.popBackStack() },
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -42,51 +61,78 @@ fun AnalyticsScreen(
 fun AnalyticsScreenContent(
     state: UiState<AnalyticsContent>,
     onBackClick: () -> Unit,
-    onEvent: (AnalyticsEvent) -> Unit
+    onEvent: (AnalyticsEvent) -> Unit,
+    isRefreshing: Boolean = false,
+    onRefresh: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     var sheet by remember { mutableStateOf<AnalyticsSheet?>(null) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { AnalyticsTopBar(onBackClick = onBackClick) }
+        topBar = { AnalyticsTopBar(onBackClick = onBackClick) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        when (state) {
-            UiState.Loading -> LoadingContent(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
-            UiState.Empty -> EmptyContent(
-                text = "Данных для аналитики пока нет",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
-            is UiState.Error -> ErrorContent(
-                error = state.error,
-                onRetryClick = { onEvent(AnalyticsEvent.Refresh) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            )
-            is UiState.Content -> {
-                AnalyticsLoadedContent(
-                    content = state.data,
-                    modifier = Modifier.padding(innerPadding),
-                    onDonutClick = { sheet = AnalyticsSheet.Detail },
-                    onFilterClick = { sheet = it }
+        RefreshableContent(
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            when (state) {
+                UiState.Loading -> LoadingContent()
+                is UiState.Empty -> {
+                    val content = state.data
+                    if (content == null) {
+                        EmptyContent(text = "Данных для аналитики пока нет")
+                    } else {
+                        AnalyticsAvailableContent(
+                            content = content,
+                            sheet = sheet,
+                            onSheetChange = { sheet = it },
+                            onEvent = onEvent
+                        )
+                    }
+                }
+                is UiState.Error -> ErrorContent(
+                    error = state.error,
+                    onRetryClick = { onEvent(AnalyticsEvent.Refresh) }
                 )
-
-                sheet?.let { selectedSheet ->
-                    AnalyticsSheetHost(
-                        sheet = selectedSheet,
+                is UiState.Content -> {
+                    AnalyticsAvailableContent(
                         content = state.data,
-                        onEvent = onEvent,
+                        sheet = sheet,
                         onSheetChange = { sheet = it },
-                        onDismiss = { sheet = null }
+                        onEvent = onEvent
                     )
                 }
             }
         }
+    }
+}
+
+// Показывает загруженную или пустую аналитику, не закрывая доступ к фильтрам.
+@Composable
+private fun AnalyticsAvailableContent(
+    content: AnalyticsContent,
+    sheet: AnalyticsSheet?,
+    onSheetChange: (AnalyticsSheet?) -> Unit,
+    onEvent: (AnalyticsEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AnalyticsLoadedContent(
+        content = content,
+        modifier = modifier,
+        onDonutClick = { onSheetChange(AnalyticsSheet.Detail) },
+        onFilterClick = onSheetChange
+    )
+
+    sheet?.let { selectedSheet ->
+        AnalyticsSheetHost(
+            sheet = selectedSheet,
+            content = content,
+            onEvent = onEvent,
+            onSheetChange = onSheetChange,
+            onDismiss = { onSheetChange(null) }
+        )
     }
 }

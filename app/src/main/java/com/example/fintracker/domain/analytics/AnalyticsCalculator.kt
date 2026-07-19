@@ -9,6 +9,7 @@ import java.math.RoundingMode
 import java.time.ZoneId
 
 object AnalyticsCalculator {
+    // Применяет фильтры и строит сумму с разбивкой по категориям вне UI-слоя.
     fun calculate(
         transactions: List<Transaction>,
         filter: AnalyticsFilter,
@@ -51,6 +52,7 @@ object AnalyticsCalculator {
 private fun List<Transaction>.sumOfAmount(): BigDecimal =
     fold(BigDecimal.ZERO) { sum, transaction -> sum + transaction.amount }
 
+// Рассчитывает целый процент категории и защищается от деления на ноль.
 private fun BigDecimal.percentOf(total: BigDecimal): Int {
     if (total <= BigDecimal.ZERO) return 0
     return multiply(BigDecimal(100))

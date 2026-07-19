@@ -6,6 +6,7 @@ import com.example.fintracker.domain.Transaction
 import com.example.fintracker.domain.analytics.model.AnalyticsCalculation
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
+import com.example.fintracker.presentation.common.format.formatMoney
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsFilterUi

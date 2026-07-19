@@ -17,6 +17,7 @@ class GetTransactionsForPeriodUseCase(
     private val transactionsRepository: TransactionsRepository,
     private val defaultDispatcher: CoroutineDispatcher
 ) {
+    // Собирает транзакции всех нужных счетов параллельно и возвращает общий отсортированный список.
     suspend operator fun invoke(
         startDate: LocalDate,
         endDate: LocalDate,
@@ -26,6 +27,7 @@ class GetTransactionsForPeriodUseCase(
             return DataResult.Failure(AppError.BadRequest)
         }
 
+        // Явный набор нужен аналитике, иначе счета предварительно загружаются из репозитория.
         val resolvedAccountIds = accountIds ?: when (val accounts = accountsRepository.getAccounts()) {
             is DataResult.Failure -> return accounts
             is DataResult.Success -> accounts.data.mapTo(linkedSetOf()) { it.id }
@@ -36,6 +38,7 @@ class GetTransactionsForPeriodUseCase(
         }
 
         return withContext(defaultDispatcher) {
+            // Ошибка любого счёта отменяет публикацию частичного и потенциально неверного результата.
             val results = coroutineScope {
                 resolvedAccountIds.map { accountId ->
                     async {

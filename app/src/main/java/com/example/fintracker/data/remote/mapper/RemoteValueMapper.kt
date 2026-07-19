@@ -7,9 +7,11 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeParseException
 
+// Проверяет обязательное поле ответа до преобразования DTO в доменную модель.
 internal fun <T : Any> T?.requireRemoteField(fieldName: String): T =
     this ?: throw RemoteDataException("Required field '$fieldName' is missing")
 
+// Безопасно преобразует строковую сумму сервера в BigDecimal.
 internal fun String.toRemoteBigDecimal(fieldName: String): BigDecimal =
     try {
         toBigDecimal()
@@ -17,6 +19,7 @@ internal fun String.toRemoteBigDecimal(fieldName: String): BigDecimal =
         throw RemoteDataException("Field '$fieldName' is not a valid decimal", exception)
     }
 
+// Поддерживает несколько ISO-форматов времени, встречающихся в ответах API.
 internal fun String.toRemoteInstant(fieldName: String): Instant {
     val parsed = runCatching { Instant.parse(this) }
         .recoverCatching { OffsetDateTime.parse(this).toInstant() }

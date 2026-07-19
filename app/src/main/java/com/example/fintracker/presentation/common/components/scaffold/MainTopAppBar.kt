@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,15 +24,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 // Верхняя панель основных экранов с действиями.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(
+    selectedDate: LocalDate,
     onMenuClick: () -> Unit = {},
     onAnalyticsClick: () -> Unit = {},
     onFilterClick: () -> Unit = {}
 ){
+    val dateLabel = remember(selectedDate) {
+        selectedDate.format(
+            DateTimeFormatter.ofPattern("d MMMM", Locale.forLanguageTag("ru"))
+        )
+    }
     TopAppBar(
         title = {},
         navigationIcon = {
@@ -55,7 +65,7 @@ fun MainTopAppBar(
                     , tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "12 июня",
+                    text = dateLabel,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

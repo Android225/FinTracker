@@ -8,8 +8,8 @@ sealed interface UiState<out T> {
     data object Loading : UiState<Nothing>
     // Данные успешно получены.
     data class Content<T>(val data: T) : UiState<T>
-    // Загруженный список пуст.
-    data object Empty : UiState<Nothing>
+    // Данные успешно загружены, но основная коллекция пуста.
+    data class Empty<T>(val data: T? = null) : UiState<T>
     // Загрузка завершилась ошибкой.
     data class Error(val error: AppError) : UiState<Nothing>
 }

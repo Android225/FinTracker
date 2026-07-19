@@ -3,50 +3,63 @@ package com.example.fintracker.presentation.screens.analytics
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fintracker.data.mock.analytics.analyticsMockAccounts
-import com.example.fintracker.data.mock.analytics.analyticsMockCategories
-import com.example.fintracker.data.mock.analytics.analyticsMockTransactions
-import com.example.fintracker.domain.analytics.AnalyticsCalculator
+import com.example.fintracker.di.qualifier.DefaultDispatcher
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
+import com.example.fintracker.domain.result.DataResult
+import com.example.fintracker.domain.result.map
+import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
+import com.example.fintracker.presentation.common.model.ScreenEffect
+import com.example.fintracker.presentation.common.model.RefreshableUiState
 import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.common.model.startRefreshing
+import com.example.fintracker.presentation.common.model.updateFrom
+import com.example.fintracker.presentation.common.refresh.RefreshPolicy
 import com.example.fintracker.presentation.screens.analytics.mapper.toUiContent
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.Clock
 import java.time.LocalDate
+import javax.inject.Inject
 
-// Управляет фильтрами, загрузкой и состоянием аналитики.
-class AnalyticsViewModel(
-    private val savedStateHandle: SavedStateHandle
+@HiltViewModel
+class AnalyticsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val getAnalytics: GetAnalyticsUseCase,
+    private val clock: Clock,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<AnalyticsContent>>(UiState.Loading)
-    val uiState: StateFlow<UiState<AnalyticsContent>> = _uiState.asStateFlow()
+    private val refreshPolicy = RefreshPolicy(clock)
+    private val _uiState = MutableStateFlow(RefreshableUiState<AnalyticsContent>())
+    val uiState: StateFlow<RefreshableUiState<AnalyticsContent>> = _uiState.asStateFlow()
 
-    private val currentPeriod: AnalyticsPeriod
-        get() {
-            val today = LocalDate.now()
-            return AnalyticsPeriod(today.withDayOfMonth(1), today)
-        }
+    private val effectChannel = Channel<ScreenEffect>(Channel.BUFFERED)
+    val effects: Flow<ScreenEffect> = effectChannel.receiveAsFlow()
 
     private var filter = restoreFilter()
     private var loadJob: Job? = null
 
     init {
-        loadAnalytics()
+        loadAnalytics(force = true)
     }
 
-    // Обрабатывает действия пользователя на экране аналитики.
     fun onEvent(event: AnalyticsEvent) {
         when (event) {
-            AnalyticsEvent.Refresh -> loadAnalytics()
+            AnalyticsEvent.ScreenVisible -> loadAnalytics(force = false)
+            AnalyticsEvent.Refresh -> loadAnalytics(force = true)
             AnalyticsEvent.ResetFilters -> updateFilter(defaultFilter())
             is AnalyticsEvent.SelectType -> updateFilter(
                 filter.copy(type = event.type, categoryIds = emptySet())
@@ -63,36 +76,55 @@ class AnalyticsViewModel(
         }
     }
 
-    // Сохраняет новый фильтр и пересчитывает аналитику.
+    // Сохраняет новый фильтр и заменяет незавершённый расчёт актуальным запросом.
     private fun updateFilter(updatedFilter: AnalyticsFilter) {
         filter = updatedFilter
         saveFilter(updatedFilter)
-        loadAnalytics()
+        loadAnalytics(force = true, replaceRunning = true)
     }
 
-    // Выполняет mock-загрузку и публикует рассчитанные данные.
-    private fun loadAnalytics() {
-        loadJob?.cancel()
-        loadJob = viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            delay(MOCK_LOADING_DELAY_MS)
+    // Загружает и пересчитывает аналитику, заменяя старый запрос при смене фильтра.
+    private fun loadAnalytics(
+        force: Boolean,
+        replaceRunning: Boolean = false
+    ) {
+        if (loadJob?.isActive == true) {
+            if (!replaceRunning) return
+            loadJob?.cancel()
+        }
+        if (!refreshPolicy.shouldRefresh(force)) return
 
-            val calculation = AnalyticsCalculator.calculate(
-                transactions = analyticsMockTransactions,
-                filter = filter
+        loadJob = viewModelScope.launch {
+            val previousState = _uiState.startRefreshing()
+            val loadedFilter = filter
+            val today = LocalDate.now(clock)
+            val result = getAnalytics(
+                filter = loadedFilter,
+                zoneId = clock.zone
             )
-            _uiState.value = UiState.Content(
-                calculation.toUiContent(
-                    filter = filter,
-                    categories = analyticsMockCategories,
-                    accounts = analyticsMockAccounts,
-                    today = LocalDate.now()
-                )
+            val uiResult = withContext(defaultDispatcher) {
+                result.map { data ->
+                    data.calculation.toUiContent(
+                        filter = loadedFilter,
+                        categories = data.categories,
+                        accounts = data.accounts,
+                        today = today
+                    )
+                }
+            }
+            if (uiResult is DataResult.Success) {
+                refreshPolicy.markSuccessfulRefresh()
+            }
+            _uiState.updateFrom(
+                result = uiResult,
+                previousState = previousState,
+                isEmpty = { content -> content.transactions.isEmpty() },
+                onRefreshError = effectChannel::send
             )
         }
     }
 
-    // Восстанавливает фильтр после пересоздания экрана.
+    // Восстанавливает фильтры после пересоздания экрана и отбрасывает некорректный период.
     private fun restoreFilter(): AnalyticsFilter {
         val defaultFilter = defaultFilter()
         val start = savedStateHandle.get<Long>(KEY_PERIOD_START)?.let(LocalDate::ofEpochDay)
@@ -113,22 +145,24 @@ class AnalyticsViewModel(
             periodKind = savedStateHandle.get<String>(KEY_PERIOD_KIND)
                 ?.let { savedName -> AnalyticsPeriodKind.entries.find { it.name == savedName } }
                 ?: defaultFilter.periodKind,
-            categoryIds = savedStateHandle.get<IntArray>(KEY_CATEGORY_IDS)?.toSet()
-                ?: DEFAULT_CATEGORY_IDS,
+            categoryIds = savedStateHandle.get<IntArray>(KEY_CATEGORY_IDS)?.toSet().orEmpty(),
             accountId = savedStateHandle[KEY_ACCOUNT_ID]
         )
     }
 
-    // Создаёт фильтр аналитики по умолчанию.
-    private fun defaultFilter(): AnalyticsFilter = AnalyticsFilter(
-        type = AnalyticsTransactionType.Expense,
-        period = currentPeriod,
-        periodKind = AnalyticsPeriodKind.Month,
-        categoryIds = emptySet(),
-        accountId = null
-    )
+    // Формирует период от первого дня текущего месяца до сегодняшней даты.
+    private fun defaultFilter(): AnalyticsFilter {
+        val today = LocalDate.now(clock)
+        return AnalyticsFilter(
+            type = AnalyticsTransactionType.Expense,
+            period = AnalyticsPeriod(today.withDayOfMonth(1), today),
+            periodKind = AnalyticsPeriodKind.Month,
+            categoryIds = emptySet(),
+            accountId = null
+        )
+    }
 
-    // Сохраняет фильтр в SavedStateHandle.
+    // Сохраняет только примитивные значения, поддерживаемые SavedStateHandle.
     private fun saveFilter(filter: AnalyticsFilter) {
         savedStateHandle[KEY_TYPE] = filter.type.name
         savedStateHandle[KEY_PERIOD_START] = filter.period.start.toEpochDay()
@@ -139,13 +173,11 @@ class AnalyticsViewModel(
     }
 
     private companion object {
-        const val MOCK_LOADING_DELAY_MS = 150L
         const val KEY_TYPE = "analytics_type"
         const val KEY_PERIOD_START = "analytics_period_start"
         const val KEY_PERIOD_END = "analytics_period_end"
         const val KEY_PERIOD_KIND = "analytics_period_kind"
         const val KEY_CATEGORY_IDS = "analytics_category_ids"
         const val KEY_ACCOUNT_ID = "analytics_account_id"
-        val DEFAULT_CATEGORY_IDS = setOf(1, 2)
     }
 }

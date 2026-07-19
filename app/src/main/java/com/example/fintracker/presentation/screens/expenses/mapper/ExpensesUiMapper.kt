@@ -1,10 +1,9 @@
 package com.example.fintracker.presentation.screens.expenses.mapper
 
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.presentation.common.format.formatMoney
 import com.example.fintracker.presentation.screens.expenses.model.ExpenseTransactionUi
 import com.example.fintracker.presentation.screens.expenses.model.ExpensesContent
-import java.math.BigDecimal
-import java.text.DecimalFormat
 
 // Преобразует расходные операции в содержимое экрана.
 internal fun List<Transaction>.toExpensesContent(): ExpensesContent = ExpensesContent(
@@ -18,7 +17,3 @@ internal fun List<Transaction>.toExpensesContent(): ExpensesContent = ExpensesCo
         )
     }
 )
-
-// Форматирует денежную сумму для интерфейса.
-private fun BigDecimal.formatMoney(): String =
-    "${DecimalFormat("#,###").format(this).replace(',', ' ')} ₽"
