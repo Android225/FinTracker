@@ -24,6 +24,51 @@ internal fun List<AnalyticsBreakdownUi>.toAnalyticsChartSegments(): List<Analyti
     }
 }
 
+internal fun List<AnalyticsBreakdownUi>.toOverviewChartSegments(): List<AnalyticsChartSegment> {
+    val segments = toAnalyticsChartSegments()
+        .sortedByDescending { it.breakdown.percent }
+    if (segments.size <= MAX_OVERVIEW_SEGMENTS) return segments
+
+    val topSegments = segments.take(MAX_OVERVIEW_SEGMENTS - 1)
+    val otherSegments = segments.drop(MAX_OVERVIEW_SEGMENTS - 1)
+    val usedColors = topSegments.mapTo(mutableSetOf(), AnalyticsChartSegment::color)
+    val otherColor = generateSequence(0, Int::inc)
+        .map(::analyticsCategoryColor)
+        .first { it !in usedColors }
+
+    val otherBreakdown = AnalyticsBreakdownUi(
+        categoryId = OTHER_CATEGORY_ID,
+        title = "Другие",
+        amount = "",
+        percent = otherSegments.sumOf { it.breakdown.percent }
+    )
+
+    return topSegments + AnalyticsChartSegment(otherBreakdown, otherColor)
+}
+
+internal fun List<AnalyticsChartSegment>.calculateSweepAngles(): List<Float> {
+    if (isEmpty()) return emptyList()
+    if (size * MIN_VISIBLE_SWEEP >= FULL_SWEEP) {
+        return List(size) { FULL_SWEEP / size }
+    }
+
+    val smallSegmentCount = count { it.breakdown.percent <= MIN_VISIBLE_PERCENT }
+    val largePercentTotal = filter { it.breakdown.percent > MIN_VISIBLE_PERCENT }
+        .sumOf { it.breakdown.percent }
+    if (largePercentTotal == 0) {
+        return List(size) { FULL_SWEEP / size }
+    }
+
+    val remainingSweep = FULL_SWEEP - smallSegmentCount * MIN_VISIBLE_SWEEP
+    return map { segment ->
+        if (segment.breakdown.percent <= MIN_VISIBLE_PERCENT) {
+            MIN_VISIBLE_SWEEP
+        } else {
+            remainingSweep * segment.breakdown.percent / largePercentTotal
+        }
+    }
+}
+
 private fun analyticsCategoryColor(index: Int): Color {
     chartPalette.getOrNull(index)?.let { return it }
 
@@ -53,3 +98,8 @@ private val chartPalette = listOf(
 private const val GOLDEN_ANGLE_DEGREES = 137.50776f
 private const val FULL_HUE_DEGREES = 360f
 private const val HUE_VARIANTS = 12
+private const val MAX_OVERVIEW_SEGMENTS = 5
+private const val OTHER_CATEGORY_ID = Int.MIN_VALUE
+private const val MIN_VISIBLE_PERCENT = 1
+private const val MIN_VISIBLE_SWEEP = 3.6f
+private const val FULL_SWEEP = 360f

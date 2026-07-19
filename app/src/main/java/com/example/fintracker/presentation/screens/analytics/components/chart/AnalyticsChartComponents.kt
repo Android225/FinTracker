@@ -5,16 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +28,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +52,7 @@ internal fun AnalyticsDonutChart(
             val strokePx = strokeWidth.toPx()
             val arcSize = Size(size.toPx() - strokePx, size.toPx() - strokePx)
             val topLeft = Offset(strokePx / 2, strokePx / 2)
-            val totalPercent = segments.sumOf { it.breakdown.percent }.coerceAtLeast(1)
+            val sweepAngles = segments.calculateSweepAngles()
             var startAngle = -90f
 
             if (segments.isEmpty()) {
@@ -66,8 +66,7 @@ internal fun AnalyticsDonutChart(
                     style = Stroke(width = strokePx, cap = StrokeCap.Butt)
                 )
             } else {
-                segments.forEach { segment ->
-                    val sweep = 360f * segment.breakdown.percent / totalPercent
+                segments.zip(sweepAngles).forEach { (segment, sweep) ->
                     drawArc(
                         color = segment.color,
                         startAngle = startAngle,
@@ -107,28 +106,59 @@ internal fun AnalyticsLegend(
     segments: List<AnalyticsChartSegment>,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        segments.take(3).forEachIndexed { index, segment ->
-            if (index > 0) Spacer(modifier = Modifier.width(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(segment.color, CircleShape)
-                )
-                Text(
-                    text = segment.breakdown.title,
-                    modifier = Modifier.padding(start = 8.dp),
-                    fontSize = 14.sp,
-                    lineHeight = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        segments.take(MAX_LEGEND_SEGMENTS).chunked(LEGEND_COLUMNS).forEach { rowSegments ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(rowSegments.size.toFloat() / LEGEND_COLUMNS)
+                    .align(Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowSegments.forEach { segment ->
+                    AnalyticsLegendItem(
+                        segment = segment,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun AnalyticsLegendItem(
+    segment: AnalyticsChartSegment,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(
+        modifier = modifier.heightIn(min = 32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        val itemMaxWidth = maxWidth
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(12.dp)
+                    .background(segment.color, CircleShape)
+            )
+            Text(
+                text = segment.breakdown.title,
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .widthIn(max = itemMaxWidth - 18.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 14.sp,
+                lineHeight = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -213,3 +243,6 @@ internal fun AnalyticsBreakdownItem(segment: AnalyticsChartSegment) {
         }
     }
 }
+
+private const val MAX_LEGEND_SEGMENTS = 5
+private const val LEGEND_COLUMNS = 3

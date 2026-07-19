@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 import com.example.fintracker.presentation.screens.analytics.components.chart.AnalyticsDonutChart
 import com.example.fintracker.presentation.screens.analytics.components.chart.AnalyticsLegend
-import com.example.fintracker.presentation.screens.analytics.components.chart.toAnalyticsChartSegments
+import com.example.fintracker.presentation.screens.analytics.components.chart.toOverviewChartSegments
 import com.example.fintracker.presentation.screens.analytics.components.filters.AnalyticsFilterRow
 import com.example.fintracker.presentation.screens.analytics.components.transactions.AnalyticsTransactionItem
 
@@ -33,7 +33,7 @@ internal fun AnalyticsLoadedContent(
     modifier: Modifier = Modifier
 ) {
     val chartSegments = remember(content.breakdown) {
-        content.breakdown.toAnalyticsChartSegments()
+        content.breakdown.toOverviewChartSegments()
     }
 
     LazyColumn(

@@ -17,8 +17,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.presentation.screens.analytics.AnalyticsCategoryOption
 
@@ -38,7 +43,11 @@ fun AnalyticsCategoriesBottomSheet(
             .height(648.dp)
     ) {
         AnalyticsSheetHeader(title = "Статьи")
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .nestedScroll(consumeVerticalOverscroll)
+        ) {
             itemsIndexed(
                 items = options,
                 key = { _, option -> option.id }
@@ -84,4 +93,18 @@ fun AnalyticsCategoriesBottomSheet(
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp)
         )
     }
+}
+
+// Не передаёт остаток прокрутки родительскому sheet, когда список достиг границы.
+private val consumeVerticalOverscroll = object : NestedScrollConnection {
+    override fun onPostScroll(
+        consumed: Offset,
+        available: Offset,
+        source: NestedScrollSource
+    ): Offset = Offset(x = 0f, y = available.y)
+
+    override suspend fun onPostFling(
+        consumed: Velocity,
+        available: Velocity
+    ): Velocity = Velocity(x = 0f, y = available.y)
 }
