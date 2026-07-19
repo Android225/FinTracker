@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
-import com.example.fintracker.presentation.screens.analytics.mapper.displayName
+import com.example.fintracker.presentation.screens.analytics.displayName
 
 @Composable
 fun AnalyticsTypeBottomSheet(

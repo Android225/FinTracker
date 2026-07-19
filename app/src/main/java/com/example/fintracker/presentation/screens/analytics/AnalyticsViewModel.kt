@@ -17,7 +17,6 @@ import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.common.model.startRefreshing
 import com.example.fintracker.presentation.common.model.updateFrom
 import com.example.fintracker.presentation.common.refresh.RefreshPolicy
-import com.example.fintracker.presentation.screens.analytics.mapper.toUiContent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
