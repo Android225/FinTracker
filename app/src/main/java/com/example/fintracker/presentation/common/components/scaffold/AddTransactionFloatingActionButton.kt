@@ -9,7 +9,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
 
-// Плавающая кнопка добавления новой операции.
 @Composable
 fun AddTransactionFloatingActionButton() {
     FloatingActionButton(

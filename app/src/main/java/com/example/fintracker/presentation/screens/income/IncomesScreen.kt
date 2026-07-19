@@ -30,7 +30,6 @@ import com.example.fintracker.presentation.screens.income.model.IncomesContent
 import com.example.fintracker.presentation.screens.income.model.IncomesEvent
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
-// Подключает ViewModel и общий каркас экрана доходов.
 @Composable
 fun IncomesScreen(
     viewModel: IncomesViewModel = hiltViewModel()
@@ -65,7 +64,6 @@ fun IncomesScreen(
 
 }
 
-// Отображает экран доходов для текущего состояния.
 @Composable
 fun IncomesScreenContent(
     state: UiState<IncomesContent>,
@@ -99,7 +97,6 @@ fun IncomesScreenContent(
     }
 }
 
-// Preview экрана доходов с данными.
 @Preview(showBackground = true)
 @Composable
 fun IncomesScreenPreview() {
@@ -129,7 +126,6 @@ fun IncomesScreenPreview() {
     }
 }
 
-// Preview состояния загрузки доходов.
 @Preview(showBackground = true)
 @Composable
 fun IncomesScreenLoadingPreview() {
@@ -141,7 +137,6 @@ fun IncomesScreenLoadingPreview() {
     }
 }
 
-// Preview пустого состояния доходов.
 @Preview(showBackground = true)
 @Composable
 fun IncomesScreenEmptyPreview() {
@@ -153,7 +148,6 @@ fun IncomesScreenEmptyPreview() {
     }
 }
 
-// Preview ошибки загрузки доходов.
 @Preview(showBackground = true)
 @Composable
 fun IncomesScreenErrorPreview() {

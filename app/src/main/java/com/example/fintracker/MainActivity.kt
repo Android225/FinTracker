@@ -20,10 +20,8 @@ import com.example.fintracker.presentation.screens.splash.SplashScreen
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-// Главная Activity, запускающая тему, splash и навигацию.
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    // Создаёт корневой Compose-интерфейс приложения.
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)

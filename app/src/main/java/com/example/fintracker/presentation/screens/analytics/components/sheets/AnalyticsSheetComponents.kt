@@ -28,13 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 
-// Локальные цвета компонентов аналитических sheet.
 internal val AnalyticsPrimary = Color(0xFF6750A4)
 internal val AnalyticsCheckboxColor = Color(0xFF7B5EA7)
 internal val AnalyticsOutline = Color(0xFFC4C7C5)
 internal val AnalyticsRange = Color(0xFFE7E3F2)
 
-// Заголовок bottom sheet аналитики.
 @Composable
 internal fun AnalyticsSheetHeader(
     title: String,
@@ -52,7 +50,6 @@ internal fun AnalyticsSheetHeader(
     )
 }
 
-// Основная кнопка действия внутри bottom sheet.
 @Composable
 internal fun AnalyticsSheetButton(
     text: String,
@@ -78,7 +75,6 @@ internal fun AnalyticsSheetButton(
     }
 }
 
-// Разделитель строк внутри bottom sheet.
 @Composable
 internal fun AnalyticsSheetDivider() {
     HorizontalDivider(
@@ -86,7 +82,6 @@ internal fun AnalyticsSheetDivider() {
     )
 }
 
-// Круглая иконка категории с эмодзи.
 @Composable
 internal fun AnalyticsEmojiIcon(
     emoji: String,
@@ -103,7 +98,6 @@ internal fun AnalyticsEmojiIcon(
     }
 }
 
-// Радиокнопка для одиночного выбора.
 @Composable
 internal fun AnalyticsSelectionCircle(
     selected: Boolean,
@@ -134,7 +128,6 @@ internal fun AnalyticsSelectionCircle(
     }
 }
 
-// Галочка выбранного элемента.
 @Composable
 internal fun AnalyticsCheckmark(
     visible: Boolean,
@@ -150,7 +143,6 @@ internal fun AnalyticsCheckmark(
     }
 }
 
-// Чекбокс для множественного выбора.
 @Composable
 internal fun AnalyticsCheckbox(
     checked: Boolean,

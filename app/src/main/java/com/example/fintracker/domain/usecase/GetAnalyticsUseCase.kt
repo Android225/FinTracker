@@ -20,7 +20,6 @@ class GetAnalyticsUseCase(
     private val getTransactionsForPeriod: GetTransactionsForPeriodUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) {
-    // Координирует загрузку справочников, транзакций и доменный расчёт аналитики.
     suspend operator fun invoke(
         filter: AnalyticsFilter,
         zoneId: ZoneId

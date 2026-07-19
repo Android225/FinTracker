@@ -7,11 +7,9 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeParseException
 
-// Проверяет обязательное поле ответа до преобразования DTO в доменную модель.
 internal fun <T : Any> T?.requireRemoteField(fieldName: String): T =
     this ?: throw RemoteDataException("Required field '$fieldName' is missing")
 
-// Безопасно преобразует строковую сумму сервера в BigDecimal.
 internal fun String.toRemoteBigDecimal(fieldName: String): BigDecimal =
     try {
         toBigDecimal()

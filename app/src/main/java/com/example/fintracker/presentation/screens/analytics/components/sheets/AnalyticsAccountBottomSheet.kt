@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsAccountOption
 
-// Bottom sheet выбора счёта.
 @Composable
 fun AnalyticsAccountBottomSheet(
     options: List<AnalyticsAccountOption>,

@@ -13,7 +13,6 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsTran
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 import java.time.LocalDate
 
-// Preview аналитики с заполненными данными.
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
 private fun AnalyticsScreenPreview() {
@@ -53,7 +52,6 @@ private fun AnalyticsScreenPreview() {
     }
 }
 
-// Preview состояния загрузки аналитики.
 @Preview(showBackground = true)
 @Composable
 private fun AnalyticsScreenLoadingPreview() {
@@ -66,7 +64,6 @@ private fun AnalyticsScreenLoadingPreview() {
     }
 }
 
-// Preview ошибки загрузки аналитики.
 @Preview(showBackground = true)
 @Composable
 private fun AnalyticsScreenErrorPreview() {

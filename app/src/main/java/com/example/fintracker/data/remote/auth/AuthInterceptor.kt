@@ -6,7 +6,6 @@ import okhttp3.Response
 class AuthInterceptor(
     private val accessTokenProvider: AccessTokenProvider
 ) : Interceptor {
-    // Добавляет Bearer-токен ко всем запросам, если токен задан в конфигурации сборки.
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = accessTokenProvider.getAccessToken().trim()
         val request = if (token.isEmpty()) {

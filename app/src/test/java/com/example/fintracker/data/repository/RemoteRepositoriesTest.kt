@@ -32,19 +32,6 @@ class RemoteRepositoriesTest {
     }
 
     @Test
-    fun `category repository sends type in path`() = withServer { server, api ->
-        server.enqueue(jsonResponse(CATEGORY_JSON))
-
-        val result = runBlocking {
-            CategoriesRepositoryImpl(api, Dispatchers.Unconfined)
-                .getCategoriesByType(isIncome = false)
-        }
-
-        assertTrue(result is DataResult.Success)
-        assertEquals("/categories/type/false", server.takeRequest().path)
-    }
-
-    @Test
     fun `transactions repository sends explicit period and maps response`() =
         withServer { server, api ->
             server.enqueue(jsonResponse(TRANSACTION_JSON))
@@ -126,10 +113,6 @@ class RemoteRepositoriesTest {
               "createdAt": "2026-07-19T10:00:00Z",
               "updatedAt": "2026-07-19T10:00:00Z"
             }
-        ]"""
-
-        const val CATEGORY_JSON = """[
-            {"id": 1, "name": "Продукты", "emoji": "🛒", "isIncome": false}
         ]"""
 
         const val TRANSACTION_JSON = """[

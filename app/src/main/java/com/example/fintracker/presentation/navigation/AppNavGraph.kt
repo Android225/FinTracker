@@ -10,7 +10,6 @@ import com.example.fintracker.presentation.screens.analytics.AnalyticsScreen
 import com.example.fintracker.presentation.screens.expenses.ExpensesScreen
 import com.example.fintracker.presentation.screens.income.IncomesScreen
 
-// Корневой граф навигации между экранами приложения.
 @Composable
 fun AppNavGraph(
     modifier: Modifier = Modifier

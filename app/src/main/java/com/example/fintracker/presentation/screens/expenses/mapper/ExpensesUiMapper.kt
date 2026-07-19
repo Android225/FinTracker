@@ -5,7 +5,6 @@ import com.example.fintracker.presentation.common.format.formatMoney
 import com.example.fintracker.presentation.screens.expenses.model.ExpenseTransactionUi
 import com.example.fintracker.presentation.screens.expenses.model.ExpensesContent
 
-// Преобразует расходные операции в содержимое экрана.
 internal fun List<Transaction>.toExpensesContent(): ExpensesContent = ExpensesContent(
     totalAmount = sumOf(Transaction::amount).formatMoney(),
     expenses = map { transaction ->

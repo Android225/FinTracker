@@ -11,7 +11,6 @@ class GetTransactionsByTypeUseCase(
     private val getTransactionsForPeriod: GetTransactionsForPeriodUseCase,
     private val defaultDispatcher: CoroutineDispatcher
 ) {
-    // Отделяет доходы от расходов после объединения транзакций всех счетов.
     suspend operator fun invoke(
         startDate: LocalDate,
         endDate: LocalDate,

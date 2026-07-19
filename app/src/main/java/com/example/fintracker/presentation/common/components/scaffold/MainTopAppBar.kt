@@ -28,7 +28,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-// Верхняя панель основных экранов с действиями.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTopAppBar(
@@ -61,7 +60,6 @@ fun MainTopAppBar(
                         .align(Alignment.CenterVertically),
                     painter = painterResource(id = R.drawable.calendar_month),
                     contentDescription = stringResource(R.string.pick_date_button)
-                    //modifier = Modifier.size(24.dp)
                     , tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(

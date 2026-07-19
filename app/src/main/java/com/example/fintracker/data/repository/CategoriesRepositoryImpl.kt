@@ -18,10 +18,4 @@ class CategoriesRepositoryImpl @Inject constructor(
     override suspend fun getCategories(): DataResult<List<Category>> = withContext(ioDispatcher) {
         executeRemoteCall { api.getCategories().map { it.toDomain() } }
     }
-
-    override suspend fun getCategoriesByType(
-        isIncome: Boolean
-    ): DataResult<List<Category>> = withContext(ioDispatcher) {
-        executeRemoteCall { api.getCategoriesByType(isIncome).map { it.toDomain() } }
-    }
 }

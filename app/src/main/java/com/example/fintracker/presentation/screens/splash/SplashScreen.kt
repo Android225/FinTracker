@@ -30,7 +30,6 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.fintracker.R
 import kotlinx.coroutines.delay
-// Стартовый экран с анимацией загрузки приложения.
 @Composable
 fun SplashScreen(
     onSplashFinished: () -> Unit
@@ -57,7 +56,6 @@ fun SplashScreen(
         label = "text_alpha"
     )
 
-    // Когда анимация закончилась — ждём 100 мс и уходим
     LaunchedEffect(progress) {
         if (progress == 1f) {
             delay(100)
@@ -82,7 +80,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Текст с анимацией появления
             Text(
                 text = stringResource(R.string.app_name),
                 fontSize = 32.sp,

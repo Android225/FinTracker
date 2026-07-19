@@ -1,6 +1,5 @@
 package com.example.fintracker.presentation.screens.analytics.model
 
-// Отображаемая разбивка суммы по категории.
 data class AnalyticsBreakdownUi(
     val categoryId: Int,
     val title: String,
@@ -8,7 +7,6 @@ data class AnalyticsBreakdownUi(
     val percent: Int
 )
 
-// Отображаемая операция в списке аналитики.
 data class AnalyticsTransactionUi(
     val id: Int,
     val emoji: String,

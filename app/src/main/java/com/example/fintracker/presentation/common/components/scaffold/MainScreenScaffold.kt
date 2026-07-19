@@ -13,7 +13,6 @@ import com.example.fintracker.presentation.navigation.LocalNavController
 import com.example.fintracker.presentation.navigation.model.NavigationPath
 import java.time.LocalDate
 
-// Общий Scaffold основных экранов приложения.
 @Composable
 fun MainScreenScaffold(
     selectedDate: LocalDate,

@@ -11,7 +11,6 @@ import com.example.fintracker.presentation.screens.analytics.model.AnalyticsCont
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsEvent
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
 
-// Показывает нужный bottom sheet аналитики.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsSheetHost(

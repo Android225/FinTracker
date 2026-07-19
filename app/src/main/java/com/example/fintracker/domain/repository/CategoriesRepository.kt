@@ -5,5 +5,4 @@ import com.example.fintracker.domain.result.DataResult
 
 interface CategoriesRepository {
     suspend fun getCategories(): DataResult<List<Category>>
-    suspend fun getCategoriesByType(isIncome: Boolean): DataResult<List<Category>>
 }

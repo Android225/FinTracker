@@ -14,7 +14,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 
-// Верхняя панель аналитики с кнопкой возврата.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsTopBar(

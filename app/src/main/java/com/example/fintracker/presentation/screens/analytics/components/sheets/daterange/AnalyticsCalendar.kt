@@ -33,7 +33,6 @@ import com.example.fintracker.presentation.screens.analytics.components.sheets.A
 import java.time.LocalDate
 import java.time.YearMonth
 
-// Календарная сетка одного месяца.
 @Composable
 internal fun CalendarMonth(
     month: YearMonth,
@@ -104,7 +103,6 @@ internal fun CalendarMonth(
     }
 }
 
-// Кнопка перехода между месяцами.
 @Composable
 private fun MonthArrow(
     contentDescription: String,
@@ -123,7 +121,6 @@ private fun MonthArrow(
     }
 }
 
-// Одна дата календаря с состоянием выбора.
 @Composable
 private fun CalendarDay(
     date: LocalDate?,
@@ -182,10 +179,8 @@ private fun YearMonth.weeks(): List<List<LocalDate?>> {
     return cells.chunked(7)
 }
 
-// Формирует заголовок месяца и года.
 private fun YearMonth.title(): String = "${MONTH_NAMES[monthValue - 1]} $year"
 
-// Подписи дней недели и полные названия месяцев.
 private val WEEKDAY_LABELS = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
 private val MONTH_NAMES = listOf(
     "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",

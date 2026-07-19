@@ -34,7 +34,6 @@ import com.example.fintracker.presentation.screens.analytics.components.sheets.A
 import java.time.LocalDate
 import java.time.YearMonth
 
-// Bottom sheet выбора произвольного диапазона дат.
 @Composable
 fun AnalyticsDateRangeBottomSheet(
     initialPeriod: AnalyticsPeriod,
@@ -158,7 +157,6 @@ fun AnalyticsDateRangeBottomSheet(
     }
 }
 
-// Компактное отображение выбранной даты.
 @Composable
 private fun DateChip(
     text: String,
@@ -181,11 +179,9 @@ private fun DateChip(
     }
 }
 
-// Форматирует дату для верхнего блока выбора.
 private fun LocalDate.formatForChip(): String =
     "$dayOfMonth ${SHORT_MONTH_NAMES[monthValue - 1]} $year"
 
-// Короткие названия месяцев для выбранных дат.
 private val SHORT_MONTH_NAMES = listOf(
     "янв.", "февр.", "мар.", "апр.", "мая", "июн.",
     "июл.", "авг.", "сент.", "окт.", "нояб.", "дек."

@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Базовая компоновка элемента списка из трёх частей.
 @Composable
 fun ListItem(
     lead: @Composable () -> Unit,
@@ -52,7 +51,6 @@ fun ListItem(
     }
 }
 
-// Круглая ведущая иконка с эмодзи.
 @Composable
 fun ListItemLeadEmoji(emoji: String) {
     Box(
@@ -74,7 +72,6 @@ fun ListItemLeadEmoji(emoji: String) {
     }
 }
 
-// Круглая ведущая иконка из drawable-ресурса.
 @Composable
 fun ListItemLeadIcon(
     icon: Int,
@@ -104,7 +101,6 @@ fun ListItemLeadIcon(
     }
 }
 
-// Основной текст элемента списка.
 @Composable
 fun ListItemContentText(title: String) {
     Text(
@@ -116,7 +112,6 @@ fun ListItemContentText(title: String) {
     )
 }
 
-// Сумма в правой части элемента списка.
 @Composable
 fun ListItemTrailAmount(amount: String) {
     Text(
@@ -126,7 +121,6 @@ fun ListItemTrailAmount(amount: String) {
     )
 }
 
-// Готовый элемент списка для основных экранов.
 @Composable
 fun ListItem(
     emoji: String,

@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Круговая диаграмма общей суммы аналитики.
 @Composable
 internal fun AnalyticsDonutChart(
     totalAmount: String,
@@ -103,7 +102,6 @@ internal fun AnalyticsDonutChart(
     }
 }
 
-// Легенда цветов и категорий диаграммы.
 @Composable
 internal fun AnalyticsLegend(
     segments: List<AnalyticsChartSegment>,
@@ -135,7 +133,6 @@ internal fun AnalyticsLegend(
     }
 }
 
-// Список категорий с суммами и процентами.
 @Composable
 internal fun AnalyticsBreakdownList(
     segments: List<AnalyticsChartSegment>,
@@ -160,7 +157,6 @@ internal fun AnalyticsBreakdownList(
     }
 }
 
-// Одна строка детализации категории.
 @Composable
 internal fun AnalyticsBreakdownItem(segment: AnalyticsChartSegment) {
     val item = segment.breakdown

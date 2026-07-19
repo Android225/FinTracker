@@ -3,7 +3,6 @@ package com.example.fintracker.presentation.screens.analytics.model
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 
-// Полное содержимое экрана аналитики.
 data class AnalyticsContent(
     val totalAmount: String,
     val filter: AnalyticsFilterUi,
@@ -17,7 +16,6 @@ data class AnalyticsContent(
     val selectedPeriod: AnalyticsPeriod
 )
 
-// Отображаемые значения выбранных фильтров.
 data class AnalyticsFilterUi(
     val type: String,
     val period: String,

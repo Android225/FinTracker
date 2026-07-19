@@ -3,7 +3,6 @@ package com.example.fintracker.presentation.screens.analytics.components.chart
 import androidx.compose.ui.graphics.Color
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
 
-// Элемент разбивки вместе с цветом на диаграмме.
 internal data class AnalyticsChartSegment(
     val breakdown: AnalyticsBreakdownUi,
     val color: Color
@@ -25,7 +24,6 @@ internal fun List<AnalyticsBreakdownUi>.toAnalyticsChartSegments(): List<Analyti
     }
 }
 
-// Возвращает цвет категории по её позиции.
 private fun analyticsCategoryColor(index: Int): Color {
     chartPalette.getOrNull(index)?.let { return it }
 
@@ -37,7 +35,6 @@ private fun analyticsCategoryColor(index: Int): Color {
     return Color.hsv(hue, saturation, value)
 }
 
-// Основная палитра круговой диаграммы.
 private val chartPalette = listOf(
     Color(0xFFB69DF8),
     Color(0xFFF48FB1),

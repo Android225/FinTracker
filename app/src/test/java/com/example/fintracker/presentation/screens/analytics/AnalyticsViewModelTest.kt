@@ -76,9 +76,6 @@ class AnalyticsViewModelTest {
     private data object EmptyCategoriesRepository : CategoriesRepository {
         override suspend fun getCategories(): DataResult<List<Category>> =
             DataResult.Success(emptyList())
-
-        override suspend fun getCategoriesByType(isIncome: Boolean): DataResult<List<Category>> =
-            DataResult.Success(emptyList())
     }
 
     private data object EmptyTransactionsRepository : TransactionsRepository {

@@ -60,7 +60,6 @@ class AnalyticsViewModel @Inject constructor(
         when (event) {
             AnalyticsEvent.ScreenVisible -> loadAnalytics(force = false)
             AnalyticsEvent.Refresh -> loadAnalytics(force = true)
-            AnalyticsEvent.ResetFilters -> updateFilter(defaultFilter())
             is AnalyticsEvent.SelectType -> updateFilter(
                 filter.copy(type = event.type, categoryIds = emptySet())
             )

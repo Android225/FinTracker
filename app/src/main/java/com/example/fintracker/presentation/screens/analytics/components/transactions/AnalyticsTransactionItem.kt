@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsTransactionUi
 
-// Элемент списка операций на экране аналитики.
 @Composable
 fun AnalyticsTransactionItem(
     transaction: AnalyticsTransactionUi,

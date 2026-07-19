@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.presentation.screens.analytics.model.AnalyticsPeriodOption
 
-// Bottom sheet выбора периода аналитики.
 @Composable
 fun AnalyticsPeriodBottomSheet(
     options: List<AnalyticsPeriodOption>,

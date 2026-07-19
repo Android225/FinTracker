@@ -14,11 +14,6 @@ interface FinanceApi {
     @GET("categories")
     suspend fun getCategories(): List<CategoryDto>
 
-    @GET("categories/type/{isIncome}")
-    suspend fun getCategoriesByType(
-        @Path("isIncome") isIncome: Boolean
-    ): List<CategoryDto>
-
     @GET("transactions/account/{accountId}/period")
     suspend fun getTransactionsForPeriod(
         @Path("accountId") accountId: Int,

@@ -9,7 +9,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.LifecycleResumeEffect
 
-// Добавляет стандартный pull-to-refresh поверх прокручиваемого содержимого экрана.
 @Composable
 fun RefreshableContent(
     isRefreshing: Boolean,
