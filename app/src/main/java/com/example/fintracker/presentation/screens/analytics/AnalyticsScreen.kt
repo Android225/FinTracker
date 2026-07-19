@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fintracker.presentation.common.components.feedback.EmptyContent
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
@@ -26,7 +25,7 @@ import com.example.fintracker.presentation.screens.analytics.components.topbar.A
 
 @Composable
 fun AnalyticsScreen(
-    viewModel: AnalyticsViewModel = hiltViewModel()
+    viewModel: AnalyticsViewModel
 ) {
     val navController = LocalNavController.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
