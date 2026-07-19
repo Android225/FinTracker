@@ -8,11 +8,11 @@ import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
+import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
-import com.example.fintracker.presentation.common.model.ScreenEffect
-import com.example.fintracker.presentation.common.model.RefreshableUiState
+import com.example.fintracker.presentation.common.model.ScreenUiState
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.common.model.startRefreshing
 import com.example.fintracker.presentation.common.model.updateFrom
@@ -40,11 +40,11 @@ class AnalyticsViewModel @Inject constructor(
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private val refreshPolicy = RefreshPolicy(clock)
-    private val _uiState = MutableStateFlow(RefreshableUiState<AnalyticsContent>())
-    val uiState: StateFlow<RefreshableUiState<AnalyticsContent>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ScreenUiState<AnalyticsContent>())
+    val uiState: StateFlow<ScreenUiState<AnalyticsContent>> = _uiState.asStateFlow()
 
-    private val effectChannel = Channel<ScreenEffect>(Channel.BUFFERED)
-    val effects: Flow<ScreenEffect> = effectChannel.receiveAsFlow()
+    private val errorChannel = Channel<AppError>(Channel.BUFFERED)
+    val errors: Flow<AppError> = errorChannel.receiveAsFlow()
 
     private var filter = restoreFilter()
     private var loadJob: Job? = null
@@ -115,7 +115,7 @@ class AnalyticsViewModel @Inject constructor(
                 result = uiResult,
                 previousState = previousState,
                 isEmpty = { content -> content.transactions.isEmpty() },
-                onRefreshError = effectChannel::send
+                onRefreshError = errorChannel::send
             )
         }
     }

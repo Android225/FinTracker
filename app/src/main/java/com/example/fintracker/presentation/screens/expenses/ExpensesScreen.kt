@@ -27,7 +27,7 @@ fun ExpensesScreen(
     val retry = { viewModel.onEvent(TransactionListEvent.Refresh) }
 
     ErrorSnackbarEffect(
-        effects = viewModel.effects,
+        errors = viewModel.errors,
         snackbarHostState = snackbarHostState,
         onRetry = retry
     )
@@ -44,7 +44,7 @@ fun ExpensesScreen(
             onRefresh = retry
         ) {
             ExpensesScreenContent(
-                state = state.dataState,
+                state = state.loadState,
                 onRetryClick = retry
             )
         }

@@ -34,7 +34,7 @@ fun AnalyticsScreen(
     val retry = { viewModel.onEvent(AnalyticsEvent.Refresh) }
 
     ErrorSnackbarEffect(
-        effects = viewModel.effects,
+        errors = viewModel.errors,
         snackbarHostState = snackbarHostState,
         onRetry = retry
     )
@@ -43,7 +43,7 @@ fun AnalyticsScreen(
     }
 
     AnalyticsScreenContent(
-        state = state.dataState,
+        state = state.loadState,
         isRefreshing = state.isRefreshing,
         onRefresh = retry,
         onBackClick = { navController.popBackStack() },

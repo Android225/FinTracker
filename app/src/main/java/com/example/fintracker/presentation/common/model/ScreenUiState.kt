@@ -1,25 +1,31 @@
 package com.example.fintracker.presentation.common.model
 
+import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.result.DataResult
 import kotlinx.coroutines.flow.MutableStateFlow
 
-// Начинает загрузку, сохраняя уже показанный контент во время фонового обновления.
-internal fun <T> MutableStateFlow<RefreshableUiState<T>>.startRefreshing(): UiState<T> {
-    val previousState = value.dataState
+data class ScreenUiState<T>(
+    val loadState: UiState<T> = UiState.Loading,
+    val isRefreshing: Boolean = false
+)
+
+// Начинает фоновое обновление, не скрывая уже показанные данные.
+internal fun <T> MutableStateFlow<ScreenUiState<T>>.startRefreshing(): UiState<T> {
+    val previousState = value.loadState
     value = if (previousState is UiState.Content || previousState is UiState.Empty) {
         value.copy(isRefreshing = true)
     } else {
-        RefreshableUiState(dataState = UiState.Loading)
+        ScreenUiState(loadState = UiState.Loading)
     }
     return previousState
 }
 
-// Завершает загрузку новым состоянием либо сохраняет старые данные при refresh-ошибке.
-internal suspend fun <T> MutableStateFlow<RefreshableUiState<T>>.updateFrom(
+// При refresh-ошибке сохраняет старые данные и передаёт ошибку для Snackbar.
+internal suspend fun <T> MutableStateFlow<ScreenUiState<T>>.updateFrom(
     result: DataResult<T>,
     previousState: UiState<T>,
     isEmpty: (T) -> Boolean,
-    onRefreshError: suspend (ScreenEffect.ShowError) -> Unit
+    onRefreshError: suspend (AppError) -> Unit
 ) {
     val updatedState = when (result) {
         is DataResult.Success -> {
@@ -27,12 +33,12 @@ internal suspend fun <T> MutableStateFlow<RefreshableUiState<T>>.updateFrom(
         }
         is DataResult.Failure -> {
             if (previousState is UiState.Content || previousState is UiState.Empty) {
-                onRefreshError(ScreenEffect.ShowError(result.error))
+                onRefreshError(result.error)
                 previousState
             } else {
                 UiState.Error(result.error)
             }
         }
     }
-    value = RefreshableUiState(dataState = updatedState)
+    value = ScreenUiState(loadState = updatedState)
 }

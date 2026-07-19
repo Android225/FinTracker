@@ -39,7 +39,7 @@ fun AccountsScreen(
     val retry = { viewModel.onEvent(AccountsEvent.Refresh) }
 
     ErrorSnackbarEffect(
-        effects = viewModel.effects,
+        errors = viewModel.errors,
         snackbarHostState = snackbarHostState,
         onRetry = retry
     )
@@ -56,7 +56,7 @@ fun AccountsScreen(
             onRefresh = retry
         ) {
             AccountsScreenContent(
-                state = state.dataState,
+                state = state.loadState,
                 onRetryClick = retry
             )
         }

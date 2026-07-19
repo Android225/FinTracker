@@ -3,11 +3,11 @@ package com.example.fintracker.presentation.screens.accounts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
-import com.example.fintracker.presentation.common.model.RefreshableUiState
-import com.example.fintracker.presentation.common.model.ScreenEffect
+import com.example.fintracker.presentation.common.model.ScreenUiState
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.common.model.startRefreshing
 import com.example.fintracker.presentation.common.model.updateFrom
@@ -39,11 +39,11 @@ class AccountsViewModel @Inject constructor(
     val selectedDate: LocalDate = LocalDate.now(clock)
 
     private val refreshPolicy = RefreshPolicy(clock)
-    private val _uiState = MutableStateFlow(RefreshableUiState<AccountsContent>())
-    val uiState: StateFlow<RefreshableUiState<AccountsContent>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ScreenUiState<AccountsContent>())
+    val uiState: StateFlow<ScreenUiState<AccountsContent>> = _uiState.asStateFlow()
 
-    private val effectChannel = Channel<ScreenEffect>(Channel.BUFFERED)
-    val effects: Flow<ScreenEffect> = effectChannel.receiveAsFlow()
+    private val errorChannel = Channel<AppError>(Channel.BUFFERED)
+    val errors: Flow<AppError> = errorChannel.receiveAsFlow()
 
     private var loadJob: Job? = null
 
@@ -74,7 +74,7 @@ class AccountsViewModel @Inject constructor(
                 result = uiResult,
                 previousState = previousState,
                 isEmpty = { it.accounts.isEmpty() },
-                onRefreshError = effectChannel::send
+                onRefreshError = errorChannel::send
             )
         }
     }

@@ -51,7 +51,7 @@ class AnalyticsViewModelTest {
                 defaultDispatcher = mainDispatcherRule.dispatcher
             )
 
-            val content = (viewModel.uiState.value.dataState as UiState.Empty).data!!
+            val content = (viewModel.uiState.value.loadState as UiState.Empty).data!!
             assertEquals(LocalDate.of(2026, 7, 1), content.selectedPeriod.start)
             assertEquals(LocalDate.of(2026, 7, 19), content.selectedPeriod.end)
         }
