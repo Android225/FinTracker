@@ -2,7 +2,7 @@ package com.example.fintracker.presentation.screens.analytics.components
 
 import androidx.compose.ui.graphics.toArgb
 import com.example.fintracker.presentation.screens.analytics.components.chart.toAnalyticsChartSegments
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
+import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

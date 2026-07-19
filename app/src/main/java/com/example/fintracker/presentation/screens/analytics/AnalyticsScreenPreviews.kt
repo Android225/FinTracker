@@ -6,10 +6,6 @@ import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import com.example.fintracker.presentation.common.model.UiState
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsFilterUi
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsTransactionUi
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 import java.time.LocalDate
 

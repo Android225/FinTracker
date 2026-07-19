@@ -5,9 +5,9 @@ import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsAccountOption
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsCategoryOption
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsPeriodOption
+import com.example.fintracker.presentation.screens.analytics.AnalyticsAccountOption
+import com.example.fintracker.presentation.screens.analytics.AnalyticsCategoryOption
+import com.example.fintracker.presentation.screens.analytics.AnalyticsPeriodOption
 import java.time.LocalDate
 
 internal fun createPeriodOptions(

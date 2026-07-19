@@ -7,9 +7,9 @@ import androidx.compose.ui.unit.dp
 import com.example.fintracker.presentation.common.components.bottomsheet.FinTrackerBottomSheet
 import com.example.fintracker.presentation.screens.analytics.components.sheets.daterange.AnalyticsDateRangeBottomSheet
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsEvent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
+import com.example.fintracker.presentation.screens.analytics.AnalyticsContent
+import com.example.fintracker.presentation.screens.analytics.AnalyticsEvent
+import com.example.fintracker.presentation.screens.analytics.AnalyticsSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

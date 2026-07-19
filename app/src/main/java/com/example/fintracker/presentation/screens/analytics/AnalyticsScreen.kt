@@ -23,9 +23,6 @@ import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.navigation.LocalNavController
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsSheetHost
 import com.example.fintracker.presentation.screens.analytics.components.topbar.AnalyticsTopBar
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsEvent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
 
 @Composable
 fun AnalyticsScreen(

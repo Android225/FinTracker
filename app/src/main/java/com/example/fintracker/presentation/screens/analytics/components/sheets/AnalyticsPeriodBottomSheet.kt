@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsPeriodOption
+import com.example.fintracker.presentation.screens.analytics.AnalyticsPeriodOption
 
 @Composable
 fun AnalyticsPeriodBottomSheet(

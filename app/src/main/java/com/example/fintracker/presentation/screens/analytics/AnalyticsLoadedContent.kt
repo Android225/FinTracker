@@ -24,8 +24,6 @@ import com.example.fintracker.presentation.screens.analytics.components.chart.An
 import com.example.fintracker.presentation.screens.analytics.components.chart.toAnalyticsChartSegments
 import com.example.fintracker.presentation.screens.analytics.components.filters.AnalyticsFilterRow
 import com.example.fintracker.presentation.screens.analytics.components.transactions.AnalyticsTransactionItem
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsSheet
 
 @Composable
 internal fun AnalyticsLoadedContent(

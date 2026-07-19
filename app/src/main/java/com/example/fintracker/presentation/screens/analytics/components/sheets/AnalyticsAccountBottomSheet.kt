@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsAccountOption
+import com.example.fintracker.presentation.screens.analytics.AnalyticsAccountOption
 
 @Composable
 fun AnalyticsAccountBottomSheet(

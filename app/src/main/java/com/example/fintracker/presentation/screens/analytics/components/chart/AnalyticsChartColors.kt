@@ -1,7 +1,7 @@
 package com.example.fintracker.presentation.screens.analytics.components.chart
 
 import androidx.compose.ui.graphics.Color
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
+import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
 
 internal data class AnalyticsChartSegment(
     val breakdown: AnalyticsBreakdownUi,

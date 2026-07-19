@@ -7,10 +7,10 @@ import com.example.fintracker.domain.analytics.model.AnalyticsCalculation
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsTransactionType
 import com.example.fintracker.presentation.common.format.formatMoney
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsBreakdownUi
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsContent
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsFilterUi
-import com.example.fintracker.presentation.screens.analytics.model.AnalyticsTransactionUi
+import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
+import com.example.fintracker.presentation.screens.analytics.AnalyticsContent
+import com.example.fintracker.presentation.screens.analytics.AnalyticsFilterUi
+import com.example.fintracker.presentation.screens.analytics.AnalyticsTransactionUi
 import java.time.LocalDate
 
 internal fun AnalyticsCalculation.toUiContent(
