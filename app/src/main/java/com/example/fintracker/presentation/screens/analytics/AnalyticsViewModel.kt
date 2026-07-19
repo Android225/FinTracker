@@ -39,14 +39,15 @@ class AnalyticsViewModel @Inject constructor(
     private val clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
-    private val refreshPolicy = RefreshPolicy(clock)
+    private var filter = restoreFilter()
+
     private val _uiState = MutableStateFlow(ScreenUiState<AnalyticsContent>())
     val uiState: StateFlow<ScreenUiState<AnalyticsContent>> = _uiState.asStateFlow()
 
     private val errorChannel = Channel<AppError>(Channel.BUFFERED)
     val errors: Flow<AppError> = errorChannel.receiveAsFlow()
 
-    private var filter = restoreFilter()
+    private val refreshPolicy = RefreshPolicy(clock)
     private var loadJob: Job? = null
 
     init {
@@ -72,45 +73,40 @@ class AnalyticsViewModel @Inject constructor(
         }
     }
 
-    // Сохраняет новый фильтр и заменяет незавершённый расчёт актуальным запросом.
-    private fun updateFilter(updatedFilter: AnalyticsFilter) {
-        filter = updatedFilter
-        saveFilter(updatedFilter)
-        loadAnalytics(force = true, replaceRunning = true)
-    }
-
     // Загружает и пересчитывает аналитику, заменяя старый запрос при смене фильтра.
     private fun loadAnalytics(
         force: Boolean,
         replaceRunning: Boolean = false
     ) {
-        if (loadJob?.isActive == true) {
-            if (!replaceRunning) return
-            loadJob?.cancel()
-        }
+        if (loadJob?.isActive == true && !replaceRunning) return
+        if (replaceRunning) loadJob?.cancel()
         if (!refreshPolicy.shouldRefresh(force)) return
 
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
-            val loadedFilter = filter
+            val requestFilter = filter
             val today = LocalDate.now(clock)
-            val result = getAnalytics(
-                filter = loadedFilter,
+
+            val domainResult = getAnalytics(
+                filter = requestFilter,
                 zoneId = clock.zone
             )
+
             val uiResult = withContext(defaultDispatcher) {
-                result.map { data ->
+                domainResult.map { data ->
                     data.calculation.toUiContent(
-                        filter = loadedFilter,
+                        filter = requestFilter,
                         categories = data.categories,
                         accounts = data.accounts,
                         today = today
                     )
                 }
             }
+
             if (uiResult is DataResult.Success) {
                 refreshPolicy.markSuccessfulRefresh()
             }
+
             _uiState.updateFrom(
                 result = uiResult,
                 previousState = previousState,
@@ -118,6 +114,13 @@ class AnalyticsViewModel @Inject constructor(
                 onRefreshError = errorChannel::send
             )
         }
+    }
+
+    // Сохраняет новый фильтр и заменяет незавершённый расчёт актуальным запросом.
+    private fun updateFilter(updatedFilter: AnalyticsFilter) {
+        filter = updatedFilter
+        saveFilter(updatedFilter)
+        loadAnalytics(force = true, replaceRunning = true)
     }
 
     // Восстанавливает фильтры после пересоздания экрана и отбрасывает некорректный период.

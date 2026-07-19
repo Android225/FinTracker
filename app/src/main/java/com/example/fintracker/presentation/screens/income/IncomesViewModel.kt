@@ -39,13 +39,13 @@ class IncomesViewModel @Inject constructor(
 ) : ViewModel() {
     val selectedDate: LocalDate = LocalDate.now(clock)
 
-    private val refreshPolicy = RefreshPolicy(clock)
     private val _uiState = MutableStateFlow(ScreenUiState<TransactionListContent>())
     val uiState: StateFlow<ScreenUiState<TransactionListContent>> = _uiState.asStateFlow()
 
     private val errorChannel = Channel<AppError>(Channel.BUFFERED)
     val errors: Flow<AppError> = errorChannel.receiveAsFlow()
 
+    private val refreshPolicy = RefreshPolicy(clock)
     private var loadJob: Job? = null
 
     init {
