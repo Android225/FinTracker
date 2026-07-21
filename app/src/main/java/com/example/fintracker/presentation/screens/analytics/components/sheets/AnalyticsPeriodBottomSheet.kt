@@ -11,9 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fintracker.R
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.presentation.screens.analytics.AnalyticsPeriodOption
 
@@ -29,7 +31,7 @@ fun AnalyticsPeriodBottomSheet(
             .fillMaxWidth()
             .height(548.dp)
     ) {
-        AnalyticsSheetHeader(title = "Период")
+        AnalyticsSheetHeader(title = stringResource(R.string.period_for_calculate_transactions))
         options.forEachIndexed { index, option ->
             Row(
                 modifier = Modifier

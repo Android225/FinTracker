@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,28 +64,28 @@ internal fun AnalyticsLoadedContent(
                     .padding(vertical = 8.dp)
             ) {
                 AnalyticsFilterRow(
-                    title = "Тип",
+                    title = stringResource(R.string.type_transaction),
                     value = content.filter.type,
                     iconRes = R.drawable.analytics_filter_type,
                     showDivider = true,
                     onClick = { onFilterClick(AnalyticsSheet.Type) }
                 )
                 AnalyticsFilterRow(
-                    title = "Период",
+                    title = stringResource(R.string.period_for_calculate_transactions),
                     value = content.filter.period,
                     iconRes = R.drawable.analytics_filter_period,
                     showDivider = true,
                     onClick = { onFilterClick(AnalyticsSheet.Period) }
                 )
                 AnalyticsFilterRow(
-                    title = "Статьи",
+                    title = stringResource(R.string.states),
                     value = content.filter.categories,
                     iconRes = R.drawable.analytics_filter_category,
                     showDivider = true,
                     onClick = { onFilterClick(AnalyticsSheet.Categories) }
                 )
                 AnalyticsFilterRow(
-                    title = "Счёт",
+                    title = stringResource(R.string.account),
                     value = content.filter.account,
                     iconRes = R.drawable.analytics_filter_account,
                     showDivider = false,
@@ -94,7 +95,7 @@ internal fun AnalyticsLoadedContent(
         }
         item {
             Text(
-                text = "Транзакции",
+                text = stringResource(R.string.transactions),
                 modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 8.dp),
                 fontSize = 22.sp,
                 lineHeight = 26.sp,
@@ -105,7 +106,7 @@ internal fun AnalyticsLoadedContent(
         if (content.transactions.isEmpty()) {
             item {
                 Text(
-                    text = "Нет транзакций по выбранным фильтрам",
+                    text = stringResource(R.string.transaction_for_filters_not_exist),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 24.dp, vertical = 32.dp),

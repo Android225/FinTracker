@@ -60,13 +60,17 @@ class ExpensesViewModel @Inject constructor(
     }
 
     // Загружает расходные транзакции за выбранный день с ограничением автообновлений.
+    //TODO("Реализовать логику на экране в левом верхнем угле выбор либо всего периода отображения либо конкретной даты
+    //      пока что реализация от
+    // ")
     private fun loadExpenses(force: Boolean) {
         if (loadJob?.isActive == true || !refreshPolicy.shouldRefresh(force)) return
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
             val result = getTransactions(
                 type = TransactionType.Expense,
-                startDate = selectedDate,
+                //TODO("Реализовтаь данную логику в верхне TODO Здесь добавить ее в state чтобы автоматом подхватывалось")
+                startDate = LocalDate.of(1990,1,1), //selectedDate
                 endDate = selectedDate
             )
             val uiResult = withContext(defaultDispatcher) {

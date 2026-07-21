@@ -28,6 +28,7 @@ fun ErrorSnackbarEffect(
             errors.collect { error ->
                 val result = snackbarHostState.showSnackbar(
                     message = error.toUserMessage(),
+                    //TODO("ТУТ тоже проблема с добавлением в стринг ресурсы в некст реализации добавить в стринги")
                     actionLabel = "Повторить",
                     withDismissAction = true,
                     duration = SnackbarDuration.Long

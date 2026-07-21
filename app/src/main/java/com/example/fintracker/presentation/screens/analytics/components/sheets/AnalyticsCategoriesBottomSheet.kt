@@ -21,10 +21,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.sp
+import com.example.fintracker.R
 import com.example.fintracker.presentation.screens.analytics.AnalyticsCategoryOption
 
 @Composable
@@ -42,7 +44,7 @@ fun AnalyticsCategoriesBottomSheet(
             .fillMaxWidth()
             .height(648.dp)
     ) {
-        AnalyticsSheetHeader(title = "Статьи")
+        AnalyticsSheetHeader(title = stringResource(R.string.states))
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -87,7 +89,7 @@ fun AnalyticsCategoriesBottomSheet(
             }
         }
         AnalyticsSheetButton(
-            text = "Применить",
+            text = stringResource(R.string.apply),
             onClick = { onApply(selectedIds) },
             height = 48.dp,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp)

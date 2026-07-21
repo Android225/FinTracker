@@ -1,8 +1,11 @@
 package com.example.fintracker.presentation.screens.analytics
 
+import android.app.Application
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.fintracker.FinTrackerApplication
 import com.example.fintracker.di.qualifier.DefaultDispatcher
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
@@ -91,7 +94,6 @@ class AnalyticsViewModel @Inject constructor(
                 filter = requestFilter,
                 zoneId = clock.zone
             )
-
             val uiResult = withContext(defaultDispatcher) {
                 domainResult.map { data ->
                     data.calculation.toUiContent(

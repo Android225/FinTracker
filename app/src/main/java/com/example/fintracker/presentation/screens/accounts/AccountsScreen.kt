@@ -10,10 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fintracker.R
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.presentation.common.components.feedback.EmptyContent
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
@@ -74,12 +76,12 @@ fun AccountsScreenContent(
     ) {
         when (state) {
             UiState.Loading -> LoadingContent()
-            is UiState.Empty -> EmptyContent(text = "Счетов пока нет")
+            is UiState.Empty -> EmptyContent(text = stringResource(R.string.accounts_not_exist))
             is UiState.Error -> ErrorContent(error = state.error, onRetryClick = onRetryClick)
 
             is UiState.Content -> {
                 HeroSection(
-                    label = "баланс, всего",
+                    label = stringResource(R.string.balance_all),
                     amount = state.data.totalBalance
                 )
                 LazyColumn(

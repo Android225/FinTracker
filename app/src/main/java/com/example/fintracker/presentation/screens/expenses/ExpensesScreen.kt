@@ -4,9 +4,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fintracker.R
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
 import com.example.fintracker.presentation.common.components.refresh.RefreshableContent
@@ -58,8 +60,8 @@ fun ExpensesScreenContent(
 ) {
     TransactionListContent(
         state = state,
-        totalAmountLabel = "расходы, всего",
-        emptyStateText = "Расходов пока нет",
+        totalAmountLabel = stringResource(R.string.expenses_all),
+        emptyStateText = stringResource(R.string.expenses_not_exist),
         onRetryClick = onRetryClick
     )
 }

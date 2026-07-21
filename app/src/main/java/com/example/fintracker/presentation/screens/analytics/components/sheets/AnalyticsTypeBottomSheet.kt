@@ -16,9 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fintracker.R
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.presentation.screens.analytics.displayName
 
@@ -36,7 +38,7 @@ fun AnalyticsTypeBottomSheet(
             .fillMaxWidth()
             .height(319.dp)
     ) {
-        AnalyticsSheetHeader(title = "Тип")
+        AnalyticsSheetHeader(title = stringResource(R.string.type_transaction))
         options.forEachIndexed { index, type ->
             Row(
                 modifier = Modifier
@@ -63,7 +65,7 @@ fun AnalyticsTypeBottomSheet(
         }
         Spacer(modifier = Modifier.weight(1f))
         AnalyticsSheetButton(
-            text = "Готово",
+            text = stringResource(R.string.ready),
             onClick = { onApply(draftType) },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )

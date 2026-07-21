@@ -10,6 +10,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
@@ -23,7 +24,7 @@ fun AnalyticsTopBar(
     TopAppBar(
         title = {
             Text(
-                text = "Аналитика",
+                text = stringResource(R.string.analytics_button),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -32,7 +33,7 @@ fun AnalyticsTopBar(
             IconButton(onClick = onBackClick) {
                 Icon(
                     painter = painterResource(R.drawable.analytics_chevron_left),
-                    contentDescription = "Назад"
+                    contentDescription = stringResource(R.string.back_button)
                 )
             }
         },

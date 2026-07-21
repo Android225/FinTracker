@@ -11,7 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.fintracker.R
 import com.example.fintracker.presentation.common.components.feedback.EmptyContent
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
 import com.example.fintracker.presentation.common.components.feedback.ErrorContent
@@ -77,7 +79,7 @@ fun AnalyticsScreenContent(
                 is UiState.Empty -> {
                     val content = state.data
                     if (content == null) {
-                        EmptyContent(text = "Данных для аналитики пока нет")
+                        EmptyContent(text = stringResource(R.string.data_for_analytics_not_exist))
                     } else {
                         AnalyticsAvailableContent(
                             content = content,

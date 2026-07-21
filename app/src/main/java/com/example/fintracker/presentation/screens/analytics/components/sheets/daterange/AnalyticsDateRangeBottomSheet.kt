@@ -25,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fintracker.R
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsOutline
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsPrimary
@@ -67,7 +69,7 @@ fun AnalyticsDateRangeBottomSheet(
             .height(698.dp)
     ) {
         Text(
-            text = "Произвольный период",
+            text = stringResource(R.string.any_period),
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 16.dp),
             fontSize = 20.sp,
             lineHeight = 23.sp,
@@ -132,7 +134,7 @@ fun AnalyticsDateRangeBottomSheet(
         ) {
             TextButton(onClick = onCancel) {
                 Text(
-                    text = "Отмена",
+                    text = stringResource(R.string.cancel),
                     fontSize = 14.sp,
                     lineHeight = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -147,7 +149,7 @@ fun AnalyticsDateRangeBottomSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = AnalyticsPrimary)
             ) {
                 Text(
-                    text = "Применить",
+                    text = stringResource(R.string.apply),
                     fontSize = 14.sp,
                     lineHeight = 16.sp,
                     fontWeight = FontWeight.Medium

@@ -48,7 +48,7 @@ internal fun AnalyticsCalculation.toUiContent(
         selectedPeriod = filter.period
     )
 }
-
+//TODO("В 3 передавать контекст дял stringResouces() for localization")
 private fun AnalyticsFilter.toUi(
     categories: List<Category>,
     accounts: List<AccountBrief>
