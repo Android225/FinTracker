@@ -40,7 +40,8 @@ fun AnalyticsDetailBottomSheet(
             .height(525.dp)
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp),
+            .padding(bottom = 32.dp)
+        ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(

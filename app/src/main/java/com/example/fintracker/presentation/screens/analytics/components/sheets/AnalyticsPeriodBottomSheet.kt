@@ -3,9 +3,11 @@ package com.example.fintracker.presentation.screens.analytics.components.sheets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +31,6 @@ fun AnalyticsPeriodBottomSheet(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(548.dp)
     ) {
         AnalyticsSheetHeader(title = stringResource(R.string.period_for_calculate_transactions))
         options.forEachIndexed { index, option ->

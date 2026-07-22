@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +37,6 @@ fun AnalyticsTypeBottomSheet(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(319.dp)
     ) {
         AnalyticsSheetHeader(title = stringResource(R.string.type_transaction))
         options.forEachIndexed { index, type ->
@@ -63,7 +63,7 @@ fun AnalyticsTypeBottomSheet(
             }
             if (index != options.lastIndex) AnalyticsSheetDivider()
         }
-        Spacer(modifier = Modifier.weight(1f))
+
         AnalyticsSheetButton(
             text = stringResource(R.string.ready),
             onClick = { onApply(draftType) },

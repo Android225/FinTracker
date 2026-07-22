@@ -42,13 +42,11 @@ fun AnalyticsCategoriesBottomSheet(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(648.dp)
     ) {
         AnalyticsSheetHeader(title = stringResource(R.string.states))
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .nestedScroll(consumeVerticalOverscroll)
         ) {
             itemsIndexed(
                 items = options,
@@ -92,21 +90,7 @@ fun AnalyticsCategoriesBottomSheet(
             text = stringResource(R.string.apply),
             onClick = { onApply(selectedIds) },
             height = 48.dp,
-            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp)
+            modifier = Modifier.padding(20.dp)
         )
     }
-}
-
-// Не передаёт остаток прокрутки родительскому sheet, когда список достиг границы.
-private val consumeVerticalOverscroll = object : NestedScrollConnection {
-    override fun onPostScroll(
-        consumed: Offset,
-        available: Offset,
-        source: NestedScrollSource
-    ): Offset = Offset(x = 0f, y = available.y)
-
-    override suspend fun onPostFling(
-        consumed: Velocity,
-        available: Velocity
-    ): Velocity = Velocity(x = 0f, y = available.y)
 }
