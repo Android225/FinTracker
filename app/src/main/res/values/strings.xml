@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">FinTracker</string>
+    <string name="bottom_nav_account">Счета</string>
+    <string name="bottom_nav_expenses">Расходы</string>
+    <string name="bottom_nav_income">Доходы</string>
+    <string name="analytics_button">Аналитика</string>
+    <string name="parameters_button">Параметры</string>
+    <string name="pick_date_button">Дата</string>
+    <string name="manage_your_finances">Управляйте своими финансами</string>
+</resources>
