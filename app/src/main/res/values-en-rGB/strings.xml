@@ -29,4 +29,17 @@
     <string name="balance_all">баланс, всего</string>
     <string name="add">Add</string>
     <string name="retry">Повторить</string>
+    <string name="error_network">Не удалось подключиться к интернету</string>
+    <string name="error_bad_request">Сервер не смог обработать запрос</string>
+    <string name="error_unauthorized">Нужна авторизация</string>
+    <string name="error_not_found">Данные не найдены</string>
+    <string name="error_rate_limited">Слишком много запросов. Попробуйте позже</string>
+    <string name="error_server">На сервере что-то пошло не так</string>
+    <string name="error_invalid_data">Сервер вернул некорректные данные</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="all_for_period">Всего за период</string>
+    <string name="no_data_for_pick_period">Нет данных за выбранный период</string>
+    <string name="all_categories">Все категории</string>
+    <string name="last_month">Предыдущий месяц</string>
+    <string name="next_month">Следующий месяц</string>
 </resources>

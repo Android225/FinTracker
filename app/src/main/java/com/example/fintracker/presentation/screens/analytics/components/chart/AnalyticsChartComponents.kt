@@ -27,12 +27,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fintracker.R
 
 @Composable
 internal fun AnalyticsDonutChart(
@@ -85,7 +87,7 @@ internal fun AnalyticsDonutChart(
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Всего за период",
+                text = stringResource(R.string.all_for_period),
                 fontSize = if (size > 220.dp) 16.sp else 14.sp,
                 lineHeight = if (size > 220.dp) 19.sp else 16.sp,
                 fontWeight = FontWeight.Medium,
@@ -179,7 +181,7 @@ internal fun AnalyticsBreakdownList(
         }
         if (segments.isEmpty()) {
             Text(
-                text = "Нет данных за выбранный период",
+                text = stringResource(R.string.no_data_for_pick_period),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

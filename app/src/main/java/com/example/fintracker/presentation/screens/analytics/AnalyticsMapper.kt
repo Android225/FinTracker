@@ -48,7 +48,7 @@ internal fun AnalyticsCalculation.toUiContent(
         selectedPeriod = filter.period
     )
 }
-//TODO("В 3 передавать контекст дял stringResouces() for localization")
+//TODO("контекст чтоб сюда доходил? чтобы в ресурсы поместить глянуть как можно еще это обойти")
 private fun AnalyticsFilter.toUi(
     categories: List<Category>,
     accounts: List<AccountBrief>
@@ -75,6 +75,7 @@ private fun Transaction.toUi(): AnalyticsTransactionUi =
         amount = amount.formatMoney()
     )
 
+//TODO("контекст чтоб сюда доходил? чтобы в ресурсы поместить глянуть как можно еще это обойти")
 internal fun createPeriodOptions(
     filter: AnalyticsFilter,
     today: LocalDate
@@ -132,6 +133,7 @@ internal fun createCategoryOptions(
     )
 }
 
+//TODO("контекст чтоб сюда доходил? чтобы в ресурсы поместить глянуть как можно еще это обойти")
 internal fun createAccountOptions(
     accounts: List<AccountBrief>,
     selectedAccountId: Int?
@@ -156,6 +158,7 @@ internal fun createAccountOptions(
 internal fun AnalyticsPeriod.formatForDisplay(): String =
     "${start.format(dateFormatter)} – ${end.format(dateFormatter)}"
 
+//TODO("контекст чтоб сюда доходил? чтобы в ресурсы поместить глянуть как можно еще это обойти")
 internal val TransactionType.displayName: String
     get() = when (this) {
         TransactionType.Expense -> "Расходы"

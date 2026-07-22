@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 
+
 internal val AnalyticsPrimary = Color(0xFF6750A4)
 internal val AnalyticsCheckboxColor = Color(0xFF7B5EA7)
 internal val AnalyticsOutline = Color(0xFFC4C7C5)

@@ -10,7 +10,7 @@ internal fun List<Transaction>.toTransactionListContent(): TransactionListConten
             TransactionItemUi(
                 id = transaction.id,
                 emoji = transaction.category.emoji,
-                title = transaction.category.name,
+                title = transaction.comment?:transaction.category.name,
                 amount = transaction.amount.formatMoney()
             )
         }

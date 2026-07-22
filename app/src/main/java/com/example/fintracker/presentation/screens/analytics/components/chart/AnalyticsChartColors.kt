@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.screens.analytics.components.chart
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
 
 internal data class AnalyticsChartSegment(
@@ -35,7 +36,7 @@ internal fun List<AnalyticsBreakdownUi>.toOverviewChartSegments(): List<Analytic
     val otherColor = generateSequence(0, Int::inc)
         .map(::analyticsCategoryColor)
         .first { it !in usedColors }
-
+    val context = LocalContext
     val otherBreakdown = AnalyticsBreakdownUi(
         categoryId = OTHER_CATEGORY_ID,
         title = "Другие",

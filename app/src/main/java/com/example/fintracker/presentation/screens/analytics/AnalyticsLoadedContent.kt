@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,7 @@ internal fun AnalyticsLoadedContent(
     val chartSegments = remember(content.breakdown) {
         content.breakdown.toOverviewChartSegments()
     }
-
+    val context = LocalContext.current
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 40.dp)
@@ -80,7 +81,7 @@ internal fun AnalyticsLoadedContent(
                 )
                 AnalyticsFilterRow(
                     title = stringResource(R.string.states),
-                    value = formatCategoriesForDisplay(content.filter.categories),
+                    value = formatCategoriesForDisplay(context,content.filter.categories),
                     iconRes = R.drawable.analytics_filter_category,
                     showDivider = true,
                     onClick = { onFilterClick(AnalyticsSheet.Categories) }
