@@ -36,7 +36,7 @@ internal fun List<AnalyticsBreakdownUi>.toOverviewChartSegments(): List<Analytic
     val otherColor = generateSequence(0, Int::inc)
         .map(::analyticsCategoryColor)
         .first { it !in usedColors }
-    val context = LocalContext
+    //TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
     val otherBreakdown = AnalyticsBreakdownUi(
         categoryId = OTHER_CATEGORY_ID,
         title = "Другие",
