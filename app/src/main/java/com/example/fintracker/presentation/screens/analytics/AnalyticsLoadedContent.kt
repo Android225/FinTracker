@@ -24,6 +24,7 @@ import com.example.fintracker.presentation.screens.analytics.components.chart.An
 import com.example.fintracker.presentation.screens.analytics.components.chart.AnalyticsLegend
 import com.example.fintracker.presentation.screens.analytics.components.chart.toOverviewChartSegments
 import com.example.fintracker.presentation.screens.analytics.components.filters.AnalyticsFilterRow
+import com.example.fintracker.presentation.screens.analytics.components.filters.formatCategoriesForDisplay
 import com.example.fintracker.presentation.screens.analytics.components.transactions.AnalyticsTransactionItem
 
 @Composable
@@ -79,7 +80,7 @@ internal fun AnalyticsLoadedContent(
                 )
                 AnalyticsFilterRow(
                     title = stringResource(R.string.states),
-                    value = content.filter.categories,
+                    value = formatCategoriesForDisplay(content.filter.categories),
                     iconRes = R.drawable.analytics_filter_category,
                     showDivider = true,
                     onClick = { onFilterClick(AnalyticsSheet.Categories) }
