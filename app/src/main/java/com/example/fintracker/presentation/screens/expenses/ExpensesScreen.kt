@@ -16,6 +16,7 @@ import com.example.fintracker.presentation.common.components.refresh.Refreshable
 import com.example.fintracker.presentation.common.components.refresh.RefreshOnResumeEffect
 import com.example.fintracker.presentation.common.components.scaffold.MainScreenScaffold
 import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.common.format.MoneyTotalUi
 import com.example.fintracker.presentation.screens.transactions.TransactionItemUi
 import com.example.fintracker.presentation.screens.transactions.TransactionListContent
 import com.example.fintracker.presentation.screens.transactions.TransactionListEvent
@@ -61,7 +62,7 @@ fun ExpensesScreen(
     }
     TransactionEditorHost(
         viewModel = editorViewModel,
-        onSaved = { viewModel.onEvent(TransactionListEvent.ScreenVisible) }
+        onSaved = { viewModel.onEvent(TransactionListEvent.LocalDataChanged) }
     )
 }
 
@@ -87,7 +88,7 @@ fun ExpensesScreenPreview() {
         ExpensesScreenContent(
             state = UiState.Content(
                 TransactionListContent(
-                    totalAmount = "1 950 ₽",
+                    totalAmounts = listOf(MoneyTotalUi("RUB", "1 950 ₽")),
                     transactions = listOf(
                         TransactionItemUi(
                             id = 1,

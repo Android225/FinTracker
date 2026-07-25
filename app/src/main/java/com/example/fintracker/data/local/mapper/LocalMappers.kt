@@ -2,6 +2,7 @@ package com.example.fintracker.data.local.mapper
 
 import com.example.fintracker.data.local.entity.AccountEntity
 import com.example.fintracker.data.local.entity.CategoryEntity
+import com.example.fintracker.data.local.entity.SyncStatus
 import com.example.fintracker.data.local.entity.TransactionRecord
 import com.example.fintracker.domain.Account
 import com.example.fintracker.domain.AccountBrief
@@ -19,7 +20,8 @@ fun AccountEntity.toDomain(): Account = Account(
     balance = BigDecimal(balance),
     currency = currency,
     createdAt = Instant.ofEpochMilli(createdAtEpochMillis),
-    updatedAt = Instant.ofEpochMilli(updatedAtEpochMillis)
+    updatedAt = Instant.ofEpochMilli(updatedAtEpochMillis),
+    syncPending = syncStatus != SyncStatus.SYNCED
 )
 
 fun AccountEntity.toBrief(): AccountBrief = AccountBrief(
@@ -47,5 +49,6 @@ fun TransactionRecord.toDomain(): Transaction = Transaction(
     transactionDate = Instant.ofEpochMilli(transaction.transactionDateEpochMillis),
     comment = transaction.comment,
     createdAt = Instant.ofEpochMilli(transaction.createdAtEpochMillis),
-    updatedAt = Instant.ofEpochMilli(transaction.updatedAtEpochMillis)
+    updatedAt = Instant.ofEpochMilli(transaction.updatedAtEpochMillis),
+    syncPending = transaction.syncStatus != SyncStatus.SYNCED
 )

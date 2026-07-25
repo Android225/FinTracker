@@ -42,3 +42,21 @@ internal suspend fun <T> MutableStateFlow<ScreenUiState<T>>.updateFrom(
     }
     value = ScreenUiState(loadState = updatedState)
 }
+
+// Завершает сетевое обновление с ошибкой, не скрывая уже прочитанные из Room данные.
+internal suspend fun <T> MutableStateFlow<ScreenUiState<T>>.finishRefreshWith(
+    error: AppError,
+    onRefreshError: suspend (AppError) -> Unit
+) {
+    when (val localState = value.loadState) {
+        is UiState.Content, is UiState.Empty -> {
+            value = ScreenUiState(loadState = localState)
+            onRefreshError(error)
+        }
+        else -> value = ScreenUiState(loadState = UiState.Error(error))
+    }
+}
+
+internal fun <T> MutableStateFlow<ScreenUiState<T>>.finishRefreshSilently() {
+    value = value.copy(isRefreshing = false)
+}

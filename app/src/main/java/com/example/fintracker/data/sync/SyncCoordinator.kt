@@ -10,20 +10,25 @@ import com.example.fintracker.data.local.entity.TransactionEntity
 import com.example.fintracker.data.remote.api.FinanceApi
 import com.example.fintracker.data.remote.dto.AccountMutationRequestDto
 import com.example.fintracker.data.remote.dto.TransactionMutationRequestDto
+import com.example.fintracker.data.remote.dto.TransactionMutationResponseDto
 import com.example.fintracker.data.remote.mapper.toDomain
 import com.example.fintracker.data.remote.util.executeRemoteCall
+import com.example.fintracker.data.remote.util.ServerRetryPolicy
 import com.example.fintracker.di.qualifier.IoDispatcher
 import com.example.fintracker.domain.Account
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.result.DataResult
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,6 +49,7 @@ class SyncCoordinator @Inject constructor(
                 ?: pullAccounts().onFailureReturn()
                 ?: pullCategories().onFailureReturn()
                 ?: pushTransactions().onFailureReturn()
+                ?: pullAccounts().onFailureReturn()
                 ?: pullTransactions().onFailureReturn()
                 ?: DataResult.Success(Unit)
         }
@@ -57,16 +63,16 @@ class SyncCoordinator @Inject constructor(
                 balance = account.balance,
                 currency = account.currency
             )
-            val result = executeRemoteCall {
-                if (account.serverId == null) {
-                    api.createAccount(request)
-                } else {
-                    api.updateAccount(account.serverId, request)
-                }.toDomain()
+            val result = if (account.serverId == null) {
+                createAccountSafely(account, request)
+            } else {
+                executeRemoteCall {
+                    api.updateAccount(account.serverId, request).toDomain()
+                }
             }
             when (result) {
                 is DataResult.Failure -> return result
-                is DataResult.Success -> saveSyncedAccount(account.localId, result.data)
+                is DataResult.Success -> saveSyncedAccount(account, result.data)
             }
         }
         return DataResult.Success(Unit)
@@ -107,41 +113,206 @@ class SyncCoordinator @Inject constructor(
                 ).toString(),
                 comment = transaction.comment
             )
-            val result = executeRemoteCall {
-                if (transaction.serverId == null) {
-                    api.createTransaction(request)
-                } else {
+            val result = if (transaction.serverId == null) {
+                createTransactionSafely(transaction, accountServerId, request)
+            } else {
+                executeRemoteCall {
                     api.updateTransaction(transaction.serverId, request)
-                }
+                }.alsoSuccess { response ->
+                    saveSyncedTransaction(transaction, response)
+                }.unitResult()
             }
-            when (result) {
-                is DataResult.Failure -> return result
-                is DataResult.Success -> {
-                    val response = result.data
-                    transactionDao.update(
-                        transaction.copy(
-                            serverId = requireNotNull(response.id),
-                            amount = response.amount ?: transaction.amount,
-                            transactionDateEpochMillis = response.transactionDate
-                                ?.let(Instant::parse)
-                                ?.toEpochMilli()
-                                ?: transaction.transactionDateEpochMillis,
-                            comment = response.comment,
-                            createdAtEpochMillis = response.createdAt
-                                ?.let(Instant::parse)
-                                ?.toEpochMilli()
-                                ?: transaction.createdAtEpochMillis,
-                            updatedAtEpochMillis = response.updatedAt
-                                ?.let(Instant::parse)
-                                ?.toEpochMilli()
-                                ?: clock.millis(),
-                            syncStatus = SyncStatus.SYNCED
-                        )
-                    )
-                }
+            if (result is DataResult.Failure) {
+                return result
             }
         }
         return DataResult.Success(Unit)
+    }
+
+    private suspend fun createAccountSafely(
+        localAccount: AccountEntity,
+        request: AccountMutationRequestDto
+    ): DataResult<Account> {
+        when (val existing = findMatchingRemoteAccount(localAccount)) {
+            is DataResult.Failure -> return existing
+            is DataResult.Success -> existing.data?.let { return DataResult.Success(it) }
+        }
+
+        repeat(ServerRetryPolicy.MAX_RETRIES + 1) { attempt ->
+            val createResult = executeRemoteCall { api.createAccount(request).toDomain() }
+            when (createResult) {
+                is DataResult.Success -> return createResult
+                is DataResult.Failure -> {
+                    if (createResult.error != AppError.Server) {
+                        return createResult
+                    }
+                    when (val existing = findMatchingRemoteAccount(localAccount)) {
+                        is DataResult.Failure -> return existing
+                        is DataResult.Success -> {
+                            existing.data?.let { return DataResult.Success(it) }
+                        }
+                    }
+                    if (attempt < ServerRetryPolicy.MAX_RETRIES) {
+                        delay(ServerRetryPolicy.DELAY_MILLIS)
+                    }
+                }
+            }
+        }
+        return DataResult.Failure(AppError.Server)
+    }
+
+    private suspend fun findMatchingRemoteAccount(
+        local: AccountEntity
+    ): DataResult<Account?> =
+        when (val result = executeRemoteCall { api.getAccounts().map { it.toDomain() } }) {
+            is DataResult.Failure -> result
+            is DataResult.Success -> DataResult.Success(
+                result.data.firstOrNull { remote ->
+                    remote.name == local.name &&
+                        remote.emoji == local.emoji &&
+                        remote.currency == local.currency &&
+                        remote.balance.compareTo(local.balance.toBigDecimal()) == 0 &&
+                        remote.createdAt.toEpochMilli() >=
+                        local.createdAtEpochMillis - ACCOUNT_CLOCK_SKEW_MILLIS
+                }
+            )
+        }
+
+    private suspend fun createTransactionSafely(
+        localTransaction: TransactionEntity,
+        accountServerId: Int,
+        request: TransactionMutationRequestDto
+    ): DataResult<Unit> {
+        when (val existing = findMatchingRemoteTransaction(localTransaction, accountServerId)) {
+            is DataResult.Failure -> return existing
+            is DataResult.Success -> existing.data?.let { remote ->
+                saveSyncedTransaction(localTransaction, remote)
+                return DataResult.Success(Unit)
+            }
+        }
+
+        repeat(ServerRetryPolicy.MAX_RETRIES + 1) { attempt ->
+            val createResult = executeRemoteCall { api.createTransaction(request) }
+            when (createResult) {
+                is DataResult.Success -> {
+                    saveSyncedTransaction(localTransaction, createResult.data)
+                    return DataResult.Success(Unit)
+                }
+                is DataResult.Failure -> {
+                    if (createResult.error != AppError.Server) {
+                        return createResult
+                    }
+                    when (
+                        val existing = findMatchingRemoteTransaction(
+                            localTransaction,
+                            accountServerId
+                        )
+                    ) {
+                        is DataResult.Failure -> return existing
+                        is DataResult.Success -> existing.data?.let { remote ->
+                            saveSyncedTransaction(localTransaction, remote)
+                            return DataResult.Success(Unit)
+                        }
+                    }
+                    if (attempt < ServerRetryPolicy.MAX_RETRIES) {
+                        delay(ServerRetryPolicy.DELAY_MILLIS)
+                    }
+                }
+            }
+        }
+        return DataResult.Failure(AppError.Server)
+    }
+
+    private suspend fun findMatchingRemoteTransaction(
+        local: TransactionEntity,
+        accountServerId: Int
+    ): DataResult<Transaction?> {
+        val transactionDate = Instant.ofEpochMilli(local.transactionDateEpochMillis)
+            .atZone(ZoneOffset.UTC)
+            .toLocalDate()
+        return when (
+            val result = executeRemoteCall {
+                api.getTransactionsForPeriod(
+                    accountId = accountServerId,
+                    startDate = transactionDate.minusDays(1).toString(),
+                    endDate = transactionDate.plusDays(1).toString()
+                ).map { it.toDomain() }
+            }
+        ) {
+            is DataResult.Failure -> result
+            is DataResult.Success -> DataResult.Success(
+                result.data.firstOrNull { remote ->
+                    remote.category.id == local.categoryId &&
+                        remote.amount.compareTo(local.amount.toBigDecimal()) == 0 &&
+                        remote.transactionDate.toEpochMilli() ==
+                        local.transactionDateEpochMillis &&
+                        remote.comment.orEmpty() == local.comment.orEmpty()
+                }
+            )
+        }
+    }
+
+    private suspend fun saveSyncedTransaction(
+        local: TransactionEntity,
+        response: TransactionMutationResponseDto
+    ) {
+        val current = transactionDao.getByLocalId(local.localId)?.transaction ?: return
+        if (current.updatedAtEpochMillis > local.updatedAtEpochMillis) {
+            transactionDao.update(
+                current.copy(
+                    serverId = requireNotNull(response.id),
+                    syncStatus = SyncStatus.PENDING_UPDATE
+                )
+            )
+            return
+        }
+        transactionDao.update(
+            local.copy(
+                serverId = requireNotNull(response.id),
+                amount = response.amount ?: local.amount,
+                transactionDateEpochMillis = response.transactionDate
+                    ?.let(Instant::parse)
+                    ?.toEpochMilli()
+                    ?: local.transactionDateEpochMillis,
+                comment = response.comment,
+                createdAtEpochMillis = response.createdAt
+                    ?.let(Instant::parse)
+                    ?.toEpochMilli()
+                    ?: local.createdAtEpochMillis,
+                updatedAtEpochMillis = response.updatedAt
+                    ?.let(Instant::parse)
+                    ?.toEpochMilli()
+                    ?: clock.millis(),
+                syncStatus = SyncStatus.SYNCED
+            )
+        )
+    }
+
+    private suspend fun saveSyncedTransaction(
+        local: TransactionEntity,
+        remote: Transaction
+    ) {
+        val current = transactionDao.getByLocalId(local.localId)?.transaction ?: return
+        if (current.updatedAtEpochMillis > local.updatedAtEpochMillis) {
+            transactionDao.update(
+                current.copy(
+                    serverId = requireNotNull(remote.serverId),
+                    syncStatus = SyncStatus.PENDING_UPDATE
+                )
+            )
+            return
+        }
+        transactionDao.update(
+            local.copy(
+                serverId = requireNotNull(remote.serverId),
+                amount = remote.amount.toPlainString(),
+                transactionDateEpochMillis = remote.transactionDate.toEpochMilli(),
+                comment = remote.comment,
+                createdAtEpochMillis = remote.createdAt.toEpochMilli(),
+                updatedAtEpochMillis = remote.updatedAt.toEpochMilli(),
+                syncStatus = SyncStatus.SYNCED
+            )
+        )
     }
 
     private suspend fun pullTransactions(): DataResult<Unit> {
@@ -164,17 +335,31 @@ class SyncCoordinator @Inject constructor(
         return DataResult.Success(Unit)
     }
 
-    private suspend fun saveSyncedAccount(localId: Long, account: Account) {
+    private suspend fun saveSyncedAccount(
+        sentAccount: AccountEntity,
+        remoteAccount: Account
+    ) {
+        val current = accountDao.getByLocalId(sentAccount.localId) ?: return
+        if (current.updatedAtEpochMillis > sentAccount.updatedAtEpochMillis) {
+            accountDao.update(
+                current.copy(
+                    serverId = requireNotNull(remoteAccount.serverId),
+                    userId = remoteAccount.userId,
+                    syncStatus = SyncStatus.PENDING_UPDATE
+                )
+            )
+            return
+        }
         accountDao.markSynced(
-            localId = localId,
-            serverId = requireNotNull(account.serverId),
-            userId = account.userId,
-            name = account.name,
-            emoji = account.emoji,
-            balance = account.balance.toPlainString(),
-            currency = account.currency,
-            createdAt = account.createdAt.toEpochMilli(),
-            updatedAt = account.updatedAt.toEpochMilli()
+            localId = sentAccount.localId,
+            serverId = requireNotNull(remoteAccount.serverId),
+            userId = remoteAccount.userId,
+            name = remoteAccount.name,
+            emoji = remoteAccount.emoji,
+            balance = remoteAccount.balance.toPlainString(),
+            currency = remoteAccount.currency,
+            createdAt = remoteAccount.createdAt.toEpochMilli(),
+            updatedAt = remoteAccount.updatedAt.toEpochMilli()
         )
     }
 
@@ -203,6 +388,7 @@ class SyncCoordinator @Inject constructor(
 
     private companion object {
         val SYNC_START_DATE: LocalDate = LocalDate.of(1990, 1, 1)
+        const val ACCOUNT_CLOCK_SKEW_MILLIS = 5 * 60 * 1000L
     }
 }
 

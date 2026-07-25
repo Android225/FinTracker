@@ -2,12 +2,11 @@ package com.example.fintracker.data.remote.util
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ServerRetryInterceptor @Inject constructor() : Interceptor {
-    private var maxRetries: Int = MAX_RETRIES
-    private var retryDelayMillis: Long = RETRY_DELAY_MILLIS
+    private var maxRetries: Int = ServerRetryPolicy.MAX_RETRIES
+    private var retryDelayMillis: Long = ServerRetryPolicy.DELAY_MILLIS
 
     internal constructor(maxRetries: Int, retryDelayMillis: Long) : this() {
         this.maxRetries = maxRetries
@@ -15,7 +14,10 @@ class ServerRetryInterceptor @Inject constructor() : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        var response = chain.proceed(chain.request())
+        val request = chain.request()
+        var response = chain.proceed(request)
+        if (request.method !in IDEMPOTENT_METHODS) return response
+
         var retries = 0
 
         while (response.code == HTTP_INTERNAL_SERVER_ERROR && retries < maxRetries) {
@@ -27,14 +29,13 @@ class ServerRetryInterceptor @Inject constructor() : Interceptor {
                 Thread.currentThread().interrupt()
                 throw interrupted
             }
-            response = chain.proceed(chain.request())
+            response = chain.proceed(request)
         }
         return response
     }
 
     private companion object {
         const val HTTP_INTERNAL_SERVER_ERROR = 500
-        const val MAX_RETRIES = 3
-        val RETRY_DELAY_MILLIS = TimeUnit.SECONDS.toMillis(2)
+        val IDEMPOTENT_METHODS = setOf("GET", "PUT", "DELETE", "HEAD", "OPTIONS")
     }
 }

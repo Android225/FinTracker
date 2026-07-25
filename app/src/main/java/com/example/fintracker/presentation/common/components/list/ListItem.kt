@@ -2,6 +2,7 @@ package com.example.fintracker.presentation.common.components.list
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -104,14 +105,28 @@ fun ListItemLeadIcon(
 }
 
 @Composable
-fun ListItemContentText(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
+fun ListItemContentText(
+    title: String,
+    supportingText: String? = null
+) {
+    Column {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        supportingText?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }
 
 @Composable
@@ -128,12 +143,13 @@ fun ListItem(
     emoji: String,
     title: String,
     amount: String,
+    supportingText: String? = null,
     modifier: Modifier = Modifier
 ) {
     ListItem(
         modifier = modifier,
         lead = { ListItemLeadEmoji(emoji) },
-        content = { ListItemContentText(title) },
+        content = { ListItemContentText(title, supportingText) },
         trail = { ListItemTrailAmount(amount) }
     )
 }

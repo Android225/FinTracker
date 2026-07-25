@@ -28,6 +28,7 @@ import com.example.fintracker.presentation.common.components.refresh.RefreshOnRe
 import com.example.fintracker.presentation.common.components.scaffold.HeroSection
 import com.example.fintracker.presentation.common.components.scaffold.MainScreenScaffold
 import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.common.format.MoneyTotalUi
 import com.example.fintracker.presentation.screens.accounts.model.AccountUi
 import com.example.fintracker.presentation.screens.accounts.model.AccountsContent
 import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
@@ -71,7 +72,7 @@ fun AccountsScreen(
     }
     AccountEditorHost(
         viewModel = editorViewModel,
-        onSaved = { viewModel.onEvent(AccountsEvent.ScreenVisible) }
+        onSaved = { viewModel.onEvent(AccountsEvent.LocalDataChanged) }
     )
 }
 
@@ -92,7 +93,7 @@ fun AccountsScreenContent(
             is UiState.Content -> {
                 HeroSection(
                     label = stringResource(R.string.balance_all),
-                    amount = state.data.totalBalance
+                    amounts = state.data.totalBalances
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -103,6 +104,11 @@ fun AccountsScreenContent(
                             emoji = account.emoji,
                             title = account.name,
                             amount = account.balance,
+                            supportingText = if (account.syncPending) {
+                                stringResource(R.string.pending_sync)
+                            } else {
+                                null
+                            },
                             modifier = Modifier.clickable { onAccountClick(account.id) }
                         )
                     }
@@ -119,7 +125,7 @@ fun AccountsScreenPreview() {
         AccountsScreenContent(
             state = UiState.Content(
                 AccountsContent(
-                    totalBalance = "245 644 ₽",
+                    totalBalances = listOf(MoneyTotalUi("RUB", "245 644 ₽")),
                     accounts = listOf(
                         AccountUi(
                             id = 1,

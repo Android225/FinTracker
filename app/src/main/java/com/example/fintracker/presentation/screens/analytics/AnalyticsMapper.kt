@@ -28,14 +28,21 @@ internal fun AnalyticsCalculation.toUiContent(
             TransactionType.All -> true
         }
     }
+    val requiresSingleCurrencyAccount = filter.accountId == null &&
+        transactions.map { it.account.currency }.distinct().size > 1
 
     return AnalyticsContent(
-        totalAmount = transactions.formatMoneyByCurrency(
-            amount = Transaction::amount,
-            currency = { it.account.currency }
-        ),
+        totalAmount = if (requiresSingleCurrencyAccount) {
+            "—"
+        } else {
+            transactions.formatMoneyByCurrency(
+                amount = Transaction::amount,
+                currency = { it.account.currency }
+            )
+        },
+        requiresSingleCurrencyAccount = requiresSingleCurrencyAccount,
         filter = filter.toUi(availableCategories, accounts),
-        breakdown = breakdown.map { item ->
+        breakdown = if (requiresSingleCurrencyAccount) emptyList() else breakdown.map { item ->
             AnalyticsBreakdownUi(
                 categoryId = item.categoryId,
                 title = item.title,

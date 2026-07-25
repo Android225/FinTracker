@@ -6,6 +6,7 @@ import com.example.fintracker.data.remote.util.ServerRetryInterceptor
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
@@ -77,6 +78,27 @@ class FinanceApiCrudTest {
                 assertEquals(200, response.code)
             }
             assertEquals(4, server.requestCount)
+        } finally {
+            server.shutdown()
+        }
+    }
+
+    @Test
+    fun `server retry does not repeat non idempotent post`() {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setResponseCode(500))
+        val client = OkHttpClient.Builder()
+            .addInterceptor(ServerRetryInterceptor(maxRetries = 3, retryDelayMillis = 0))
+            .build()
+        try {
+            client.newCall(
+                okhttp3.Request.Builder()
+                    .url(server.url("/transactions"))
+                    .post(ByteArray(0).toRequestBody())
+                    .build()
+            ).execute().close()
+
+            assertEquals(1, server.requestCount)
         } finally {
             server.shutdown()
         }

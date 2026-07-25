@@ -44,7 +44,14 @@ data class TransactionEditorState(
     val loading: Boolean = false,
     val saving: Boolean = false,
     val validationError: TransactionValidationError? = null
-)
+) {
+    val selectedAccountCurrency: String
+        get() = accounts.firstOrNull { it.id == accountId }?.currency ?: DEFAULT_CURRENCY
+
+    private companion object {
+        const val DEFAULT_CURRENCY = "RUB"
+    }
+}
 
 enum class TransactionValidationError {
     Amount,

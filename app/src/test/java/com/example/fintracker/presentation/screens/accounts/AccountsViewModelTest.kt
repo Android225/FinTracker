@@ -6,6 +6,7 @@ import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.common.format.MoneyTotalUi
 import com.example.fintracker.presentation.screens.accounts.model.AccountsContent
 import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
 import com.example.fintracker.test.MainDispatcherRule
@@ -29,7 +30,7 @@ class AccountsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun `visible event always reads local data while manual refresh also reloads`() =
+    fun `manual refresh replaces active load and later events read local data`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = BlockingAccountsRepository()
             val viewModel = AccountsViewModel(
@@ -40,19 +41,24 @@ class AccountsViewModelTest {
 
             viewModel.onEvent(AccountsEvent.ScreenVisible)
             viewModel.onEvent(AccountsEvent.Refresh)
-            assertEquals(1, repository.requestCount)
+            assertEquals(2, repository.requestCount)
 
             repository.complete(DataResult.Success(emptyList()))
             assertEquals(
-                UiState.Empty(AccountsContent(totalBalance = "0 ₽", accounts = emptyList())),
+                UiState.Empty(
+                    AccountsContent(
+                        totalBalances = listOf(MoneyTotalUi("RUB", "0 ₽")),
+                        accounts = emptyList()
+                    )
+                ),
                 viewModel.uiState.value.loadState
             )
 
             viewModel.onEvent(AccountsEvent.ScreenVisible)
-            assertEquals(2, repository.requestCount)
+            assertEquals(3, repository.requestCount)
 
             viewModel.onEvent(AccountsEvent.Refresh)
-            assertEquals(3, repository.requestCount)
+            assertEquals(4, repository.requestCount)
         }
 
     @Test
@@ -60,6 +66,7 @@ class AccountsViewModelTest {
         val viewModel = createViewModel(
             SequentialAccountsRepository(DataResult.Failure(AppError.Network))
         )
+        viewModel.onEvent(AccountsEvent.ScreenVisible)
 
         assertEquals(
             UiState.Error(AppError.Network),
@@ -75,6 +82,7 @@ class AccountsViewModelTest {
                 DataResult.Failure(AppError.Server)
             )
             val viewModel = createViewModel(repository)
+            viewModel.onEvent(AccountsEvent.ScreenVisible)
             val loadedState = viewModel.uiState.value.loadState
 
             viewModel.onEvent(AccountsEvent.Refresh)

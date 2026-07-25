@@ -12,7 +12,8 @@ data class Account(
     val balance: BigDecimal,
     val currency: String,
     val createdAt: Instant,
-    val updatedAt: Instant
+    val updatedAt: Instant,
+    val syncPending: Boolean = false
 )
 
 data class AccountBrief(

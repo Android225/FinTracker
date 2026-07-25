@@ -10,7 +10,8 @@ import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetTransactionsUseCase
 import com.example.fintracker.presentation.common.model.ScreenUiState
-import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.presentation.common.model.finishRefreshWith
+import com.example.fintracker.presentation.common.model.finishRefreshSilently
 import com.example.fintracker.presentation.common.model.startRefreshing
 import com.example.fintracker.presentation.common.model.updateFrom
 import com.example.fintracker.presentation.common.refresh.RefreshPolicy
@@ -50,14 +51,14 @@ class ExpensesViewModel @Inject constructor(
     private val refreshPolicy = RefreshPolicy(clock)
     private var loadJob: Job? = null
 
-    init {
-        loadExpenses(force = true)
-    }
-
     fun onEvent(event: TransactionListEvent) {
         when (event) {
             TransactionListEvent.ScreenVisible -> loadExpenses(force = false)
             TransactionListEvent.Refresh -> loadExpenses(force = true)
+            TransactionListEvent.LocalDataChanged -> loadExpenses(
+                force = true,
+                synchronize = false
+            )
         }
     }
 
@@ -65,45 +66,53 @@ class ExpensesViewModel @Inject constructor(
     //TODO("Реализовать логику на экране в левом верхнем угле выбор либо всего периода отображения либо конкретной даты
     //      пока что реализация от
     // ")
-    private fun loadExpenses(force: Boolean) {
-        if (loadJob?.isActive == true) return
+    private fun loadExpenses(force: Boolean, synchronize: Boolean = true) {
+        if (loadJob?.isActive == true) {
+            if (!force) return
+            loadJob?.cancel()
+        }
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
-            val shouldSync = refreshPolicy.shouldRefresh(force)
-            val syncResult = if (shouldSync) {
-                syncCoordinator?.sync() ?: DataResult.Success(Unit)
-            } else {
-                DataResult.Success(Unit)
-            }
-            val result = getTransactions(
-                type = TransactionType.Expense,
-                //TODO("Реализовтаь данную логику в верхне TODO Здесь добавить ее в state чтобы автоматом подхватывалось")
-                startDate = LocalDate.of(1990,1,1), //selectedDate
-                endDate = selectedDate
-            )
-            val uiResult = withContext(defaultDispatcher) {
-                result.map { transactions -> transactions.toTransactionListContent() }
-            }
-            if (shouldSync && syncResult is DataResult.Success) {
-                refreshPolicy.markSuccessfulRefresh()
-            }
-            val effectiveResult = when {
-                syncResult is DataResult.Failure &&
-                    uiResult is DataResult.Success &&
-                    uiResult.data.transactions.isEmpty() -> syncResult
-                else -> uiResult
-            }
-            if (syncResult is DataResult.Failure && uiResult is DataResult.Success &&
-                uiResult.data.transactions.isNotEmpty()
-            ) {
-                errorChannel.send(syncResult.error)
-            }
+            val shouldSync = synchronize && refreshPolicy.shouldRefresh(force)
             _uiState.updateFrom(
-                result = effectiveResult,
+                result = readLocalExpenses(),
                 previousState = previousState,
                 isEmpty = { it.transactions.isEmpty() },
                 onRefreshError = errorChannel::send
             )
+            if (!shouldSync) return@launch
+            val coordinator = syncCoordinator ?: return@launch
+
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            when (val syncResult = coordinator.sync()) {
+                is DataResult.Success -> {
+                    refreshPolicy.markSuccessfulRefresh()
+                    _uiState.updateFrom(
+                        result = readLocalExpenses(),
+                        previousState = _uiState.value.loadState,
+                        isEmpty = { it.transactions.isEmpty() },
+                        onRefreshError = errorChannel::send
+                    )
+                }
+                is DataResult.Failure -> {
+                    if (force) {
+                        _uiState.finishRefreshWith(syncResult.error, errorChannel::send)
+                    } else {
+                        _uiState.finishRefreshSilently()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun readLocalExpenses(): DataResult<TransactionListContent> {
+        val result = getTransactions(
+            type = TransactionType.Expense,
+            startDate = LocalDate.of(1990, 1, 1),
+            endDate = selectedDate
+        )
+        return withContext(defaultDispatcher) {
+            result.map { transactions -> transactions.toTransactionListContent() }
         }
     }
 }

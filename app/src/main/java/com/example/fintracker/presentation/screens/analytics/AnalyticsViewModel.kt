@@ -17,6 +17,8 @@ import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
 import com.example.fintracker.presentation.common.model.ScreenUiState
+import com.example.fintracker.presentation.common.model.finishRefreshWith
+import com.example.fintracker.presentation.common.model.finishRefreshSilently
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.common.model.startRefreshing
 import com.example.fintracker.presentation.common.model.updateFrom
@@ -55,10 +57,6 @@ class AnalyticsViewModel @Inject constructor(
     private val refreshPolicy = RefreshPolicy(clock)
     private var loadJob: Job? = null
 
-    init {
-        loadAnalytics(force = true)
-    }
-
     fun onEvent(event: AnalyticsEvent) {
         when (event) {
             AnalyticsEvent.ScreenVisible -> loadAnalytics(force = false)
@@ -91,40 +89,54 @@ class AnalyticsViewModel @Inject constructor(
             val previousState = _uiState.startRefreshing()
             val requestFilter = filter
             val today = LocalDate.now(clock)
-            val syncResult = if (shouldSync) {
-                syncCoordinator?.sync() ?: DataResult.Success(Unit)
-            } else {
-                DataResult.Success(Unit)
-            }
-
-            val domainResult = getAnalytics(
-                filter = requestFilter,
-                zoneId = clock.zone
-            )
-            val uiResult = withContext(defaultDispatcher) {
-                domainResult.map { data ->
-                    data.calculation.toUiContent(
-                        filter = requestFilter,
-                        categories = data.categories,
-                        accounts = data.accounts,
-                        today = today
-                    )
-                }
-            }
-
-            if (shouldSync && syncResult is DataResult.Success) {
-                refreshPolicy.markSuccessfulRefresh()
-            }
-            if (syncResult is DataResult.Failure && uiResult is DataResult.Success) {
-                errorChannel.send(syncResult.error)
-            }
-
             _uiState.updateFrom(
-                result = uiResult,
+                result = readLocalAnalytics(requestFilter, today),
                 previousState = previousState,
                 isEmpty = { content -> content.transactions.isEmpty() },
                 onRefreshError = errorChannel::send
             )
+            if (!shouldSync) return@launch
+            val coordinator = syncCoordinator ?: return@launch
+
+            _uiState.value = _uiState.value.copy(isRefreshing = true)
+            when (val syncResult = coordinator.sync()) {
+                is DataResult.Success -> {
+                    refreshPolicy.markSuccessfulRefresh()
+                    _uiState.updateFrom(
+                        result = readLocalAnalytics(requestFilter, today),
+                        previousState = _uiState.value.loadState,
+                        isEmpty = { content -> content.transactions.isEmpty() },
+                        onRefreshError = errorChannel::send
+                    )
+                }
+                is DataResult.Failure -> {
+                    if (force) {
+                        _uiState.finishRefreshWith(syncResult.error, errorChannel::send)
+                    } else {
+                        _uiState.finishRefreshSilently()
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun readLocalAnalytics(
+        requestFilter: AnalyticsFilter,
+        today: LocalDate
+    ): DataResult<AnalyticsContent> {
+        val domainResult = getAnalytics(
+            filter = requestFilter,
+            zoneId = clock.zone
+        )
+        return withContext(defaultDispatcher) {
+            domainResult.map { data ->
+                data.calculation.toUiContent(
+                    filter = requestFilter,
+                    categories = data.categories,
+                    accounts = data.accounts,
+                    today = today
+                )
+            }
         }
     }
 

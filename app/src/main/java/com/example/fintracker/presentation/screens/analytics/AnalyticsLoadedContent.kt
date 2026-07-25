@@ -50,13 +50,22 @@ internal fun AnalyticsLoadedContent(
                     .padding(top = 32.dp, bottom = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AnalyticsDonutChart(
-                    totalAmount = content.totalAmount,
-                    segments = chartSegments,
-                    onClick = onDonutClick
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                AnalyticsLegend(segments = chartSegments)
+                if (content.requiresSingleCurrencyAccount) {
+                    Text(
+                        text = stringResource(R.string.analytics_select_single_currency_account),
+                        modifier = Modifier.padding(horizontal = 32.dp, vertical = 40.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    AnalyticsDonutChart(
+                        totalAmount = content.totalAmount,
+                        segments = chartSegments,
+                        onClick = onDonutClick
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    AnalyticsLegend(segments = chartSegments)
+                }
             }
         }
         item {

@@ -128,7 +128,9 @@ fun TransactionEditorHost(
         )
         TransactionPicker.Account -> SingleChoiceDialog(
             title = stringResource(R.string.account),
-            options = state.accounts.map { it.id.toString() to "${it.emoji} ${it.name}" },
+            options = state.accounts.map {
+                it.id.toString() to "${it.emoji} ${it.name} · ${it.currency}"
+            },
             selectedKey = state.accountId?.toString(),
             onSelect = {
                 viewModel.setAccount(it.toLong())
@@ -182,7 +184,7 @@ private fun TransactionEditorContent(
     ) {
         AmountField(
             value = state.amount,
-            currency = account?.currency.orEmpty(),
+            currency = state.selectedAccountCurrency,
             onValueChange = onAmountChange,
             error = state.validationError == TransactionValidationError.Amount
         )

@@ -55,6 +55,7 @@ class AnalyticsViewModelTest {
                 clock = Clock.fixed(Instant.parse("2026-07-19T12:00:00Z"), ZoneOffset.UTC),
                 defaultDispatcher = mainDispatcherRule.dispatcher
             )
+            viewModel.onEvent(AnalyticsEvent.ScreenVisible)
 
             val content = (viewModel.uiState.value.loadState as UiState.Empty).data!!
             assertEquals(LocalDate.of(2026, 7, 1), content.selectedPeriod.start)

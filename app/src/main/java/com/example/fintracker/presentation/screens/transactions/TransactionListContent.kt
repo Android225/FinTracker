@@ -8,7 +8,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.fintracker.R
 import com.example.fintracker.presentation.common.components.feedback.EmptyContent
 import com.example.fintracker.presentation.common.components.feedback.ErrorContent
 import com.example.fintracker.presentation.common.components.feedback.LoadingContent
@@ -33,7 +35,7 @@ fun TransactionListContent(
             is UiState.Content -> {
                 HeroSection(
                     label = totalAmountLabel,
-                    amount = state.data.totalAmount
+                    amounts = state.data.totalAmounts
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -44,6 +46,11 @@ fun TransactionListContent(
                             emoji = transaction.emoji,
                             title = transaction.title,
                             amount = transaction.amount,
+                            supportingText = if (transaction.syncPending) {
+                                stringResource(R.string.pending_sync)
+                            } else {
+                                null
+                            },
                             modifier = Modifier.clickable {
                                 onTransactionClick(transaction.id)
                             }

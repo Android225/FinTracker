@@ -54,4 +54,6 @@
     <string name="invalid_amount">Введите корректную сумму</string>
     <string name="field_required">Заполните поле</string>
     <string name="save">Сохранить</string>
+    <string name="analytics_select_single_currency_account">Для корректной аналитики выберите один счёт. Суммы в разных валютах нельзя складывать без курса конвертации.</string>
+    <string name="pending_sync">Ожидает синхронизации</string>
 </resources>

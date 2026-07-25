@@ -28,6 +28,7 @@ enum class AnalyticsSheet {
 
 data class AnalyticsContent(
     val totalAmount: String,
+    val requiresSingleCurrencyAccount: Boolean = false,
     val filter: AnalyticsFilterUi,
     val breakdown: List<AnalyticsBreakdownUi>,
     val transactions: List<AnalyticsTransactionUi>,

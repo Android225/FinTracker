@@ -30,7 +30,7 @@ class SyncWorker(
         return when (val result = entryPoint.syncCoordinator().sync()) {
             is DataResult.Success<*> -> Result.success()
             is DataResult.Failure -> when (result.error) {
-                AppError.Network, AppError.Server, AppError.RateLimited -> Result.retry()
+                AppError.Network, AppError.RateLimited -> Result.retry()
                 else -> Result.failure()
             }
         }
@@ -58,7 +58,6 @@ object SyncScheduler {
             ExistingPeriodicWorkPolicy.KEEP,
             periodic
         )
-        enqueueNow(context)
     }
 
     fun enqueueNow(context: Context) {

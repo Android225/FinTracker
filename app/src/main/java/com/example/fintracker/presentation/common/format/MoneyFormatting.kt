@@ -2,27 +2,46 @@ package com.example.fintracker.presentation.common.format
 
 import java.math.BigDecimal
 import java.text.DecimalFormat
+import java.util.Locale
+
+data class MoneyTotalUi(
+    val currency: String,
+    val formattedAmount: String
+)
 
 internal fun BigDecimal.formatMoney(currency: String = "RUB"): String =
     "${DecimalFormat("#,###.##").format(this).replace(',', ' ')} ${currencySymbol(currency)}"
 
-internal fun <T> Iterable<T>.formatMoneyByCurrency(
+internal fun <T> Iterable<T>.moneyTotalsByCurrency(
     amount: (T) -> BigDecimal,
     currency: (T) -> String
-): String {
+): List<MoneyTotalUi> {
     val items = toList()
-    if (items.isEmpty()) return BigDecimal.ZERO.formatMoney()
+    if (items.isEmpty()) {
+        return listOf(MoneyTotalUi(currency = "RUB", formattedAmount = BigDecimal.ZERO.formatMoney()))
+    }
     return items
-        .groupBy(currency)
-        .entries
-        .joinToString(" · ") { (code, currencyItems) ->
-            currencyItems.sumOf(amount).formatMoney(code)
+        .groupBy { item -> normalizeCurrency(currency(item)) }
+        .map { (code, currencyItems) ->
+            MoneyTotalUi(
+                currency = code,
+                formattedAmount = currencyItems.sumOf(amount).formatMoney(code)
+            )
         }
 }
 
-internal fun currencySymbol(currency: String): String = when (currency) {
+internal fun <T> Iterable<T>.formatMoneyByCurrency(
+    amount: (T) -> BigDecimal,
+    currency: (T) -> String
+): String = moneyTotalsByCurrency(amount, currency)
+    .joinToString(" · ", transform = MoneyTotalUi::formattedAmount)
+
+internal fun currencySymbol(currency: String): String = when (normalizeCurrency(currency)) {
     "RUB" -> "₽"
     "USD" -> "$"
     "EUR" -> "€"
-    else -> currency
+    else -> normalizeCurrency(currency)
 }
+
+internal fun normalizeCurrency(currency: String): String =
+    currency.trim().uppercase(Locale.ROOT)

@@ -14,8 +14,19 @@ class MoneyFormattingTest {
         )
 
         assertEquals(
-            "150 ₽ · 3 $",
-            values.formatMoneyByCurrency(Pair<BigDecimal, String>::first, Pair<BigDecimal, String>::second)
+            listOf(
+                MoneyTotalUi("RUB", "150 ₽"),
+                MoneyTotalUi("USD", "3 $")
+            ),
+            values.moneyTotalsByCurrency(
+                Pair<BigDecimal, String>::first,
+                Pair<BigDecimal, String>::second
+            )
         )
+    }
+
+    @Test
+    fun `currency codes are normalized before formatting`() {
+        assertEquals("$", currencySymbol(" usd "))
     }
 }
