@@ -42,4 +42,17 @@
     <string name="all_categories">Все категории</string>
     <string name="last_month">Предыдущий месяц</string>
     <string name="next_month">Следующий месяц</string>
+    <string name="offline_mode">No internet — changes will be saved on this device</string>
+    <string name="transaction_category">Category</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="currency">Currency</string>
+    <string name="comment">Comment</string>
+    <string name="account_name">Account name</string>
+    <string name="account_emoji">Icon</string>
+    <string name="add_account">Add account</string>
+    <string name="edit_account">Edit account</string>
+    <string name="invalid_amount">Enter a valid amount</string>
+    <string name="field_required">Fill in this field</string>
+    <string name="save">Save</string>
 </resources>

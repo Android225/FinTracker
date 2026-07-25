@@ -9,6 +9,7 @@ import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.presentation.common.format.formatMoney
+import com.example.fintracker.presentation.common.format.formatMoneyByCurrency
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -29,13 +30,21 @@ internal fun AnalyticsCalculation.toUiContent(
     }
 
     return AnalyticsContent(
-        totalAmount = totalAmount.formatMoney(),
+        totalAmount = transactions.formatMoneyByCurrency(
+            amount = Transaction::amount,
+            currency = { it.account.currency }
+        ),
         filter = filter.toUi(availableCategories, accounts),
         breakdown = breakdown.map { item ->
             AnalyticsBreakdownUi(
                 categoryId = item.categoryId,
                 title = item.title,
-                amount = item.amount.formatMoney(),
+                amount = transactions
+                    .filter { transaction -> transaction.category.id == item.categoryId }
+                    .formatMoneyByCurrency(
+                        amount = Transaction::amount,
+                        currency = { it.account.currency }
+                    ),
                 percent = item.percent
             )
         },
@@ -72,7 +81,7 @@ private fun Transaction.toUi(): AnalyticsTransactionUi =
         emoji = category.emoji,
         title = comment ?: category.name,
         subtitle = account.name,
-        amount = amount.formatMoney()
+        amount = amount.formatMoney(account.currency)
     )
 
 //TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
@@ -136,7 +145,7 @@ internal fun createCategoryOptions(
 //TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
 internal fun createAccountOptions(
     accounts: List<AccountBrief>,
-    selectedAccountId: Int?
+    selectedAccountId: Long?
 ): List<AnalyticsAccountOption> {
     val allAccounts = AnalyticsAccountOption(
         id = null,

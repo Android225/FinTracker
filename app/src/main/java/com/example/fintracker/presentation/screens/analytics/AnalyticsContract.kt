@@ -14,7 +14,7 @@ sealed interface AnalyticsEvent {
     ) : AnalyticsEvent
 
     data class SelectCategories(val categoryIds: Set<Int>) : AnalyticsEvent
-    data class SelectAccount(val accountId: Int?) : AnalyticsEvent
+    data class SelectAccount(val accountId: Long?) : AnalyticsEvent
 }
 
 enum class AnalyticsSheet {
@@ -54,7 +54,7 @@ data class AnalyticsBreakdownUi(
 )
 
 data class AnalyticsTransactionUi(
-    val id: Int,
+    val id: Long,
     val emoji: String,
     val title: String,
     val subtitle: String,
@@ -77,7 +77,7 @@ data class AnalyticsCategoryOption(
 )
 
 data class AnalyticsAccountOption(
-    val id: Int?,
+    val id: Long?,
     val title: String,
     val subtitle: String? = null,
     val emoji: String,

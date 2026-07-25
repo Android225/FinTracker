@@ -3,6 +3,7 @@ package com.example.fintracker.presentation.screens.income
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.data.sync.SyncCoordinator
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.result.DataResult
@@ -34,6 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class IncomesViewModel @Inject constructor(
     private val getTransactions: GetTransactionsUseCase,
+    private val syncCoordinator: SyncCoordinator? = null,
     clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -65,9 +67,15 @@ class IncomesViewModel @Inject constructor(
     //      пока что реализация от
     // ")
     private fun loadIncomes(force: Boolean) {
-        if (loadJob?.isActive == true || !refreshPolicy.shouldRefresh(force)) return
+        if (loadJob?.isActive == true) return
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
+            val shouldSync = refreshPolicy.shouldRefresh(force)
+            val syncResult = if (shouldSync) {
+                syncCoordinator?.sync() ?: DataResult.Success(Unit)
+            } else {
+                DataResult.Success(Unit)
+            }
             val result = getTransactions(
                 type = TransactionType.Income,
                 //TODO("Реализовтаь данную логику в верхне TODO Здесь добавить ее в state чтобы автоматом подхватывалось")
@@ -77,11 +85,22 @@ class IncomesViewModel @Inject constructor(
             val uiResult = withContext(defaultDispatcher) {
                 result.map { transactions -> transactions.toTransactionListContent() }
             }
-            if (uiResult is DataResult.Success) {
+            if (shouldSync && syncResult is DataResult.Success) {
                 refreshPolicy.markSuccessfulRefresh()
             }
+            val effectiveResult = when {
+                syncResult is DataResult.Failure &&
+                    uiResult is DataResult.Success &&
+                    uiResult.data.transactions.isEmpty() -> syncResult
+                else -> uiResult
+            }
+            if (syncResult is DataResult.Failure && uiResult is DataResult.Success &&
+                uiResult.data.transactions.isNotEmpty()
+            ) {
+                errorChannel.send(syncResult.error)
+            }
             _uiState.updateFrom(
-                result = uiResult,
+                result = effectiveResult,
                 previousState = previousState,
                 isEmpty = { it.transactions.isEmpty() },
                 onRefreshError = errorChannel::send

@@ -6,7 +6,8 @@ import com.example.fintracker.domain.Account
 import com.example.fintracker.domain.AccountBrief
 
 internal fun AccountDto.toDomain(): Account = Account(
-    id = id.requireRemoteField("account.id"),
+    id = id.requireRemoteField("account.id").toLong(),
+    serverId = id,
     userId = userId.requireRemoteField("account.userId"),
     name = name.requireRemoteField("account.name"),
     emoji = emoji.requireRemoteField("account.emoji"),
@@ -17,7 +18,8 @@ internal fun AccountDto.toDomain(): Account = Account(
 )
 
 internal fun AccountBriefDto.toDomain(): AccountBrief = AccountBrief(
-    id = id.requireRemoteField("account.id"),
+    id = id.requireRemoteField("account.id").toLong(),
+    serverId = id,
     name = name.requireRemoteField("account.name"),
     emoji = emoji.requireRemoteField("account.emoji"),
     balance = balance.requireRemoteField("account.balance").toRemoteBigDecimal("account.balance"),

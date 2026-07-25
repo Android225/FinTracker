@@ -7,5 +7,5 @@ data class AnalyticsFilter(
     val period: AnalyticsPeriod,
     val periodKind: AnalyticsPeriodKind,
     val categoryIds: Set<Int>,
-    val accountId: Int?
+    val accountId: Long?
 )

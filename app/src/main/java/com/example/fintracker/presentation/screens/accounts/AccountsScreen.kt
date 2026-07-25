@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.screens.accounts
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,11 +31,14 @@ import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.screens.accounts.model.AccountUi
 import com.example.fintracker.presentation.screens.accounts.model.AccountsContent
 import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
+import com.example.fintracker.presentation.screens.editor.AccountEditorHost
+import com.example.fintracker.presentation.screens.editor.AccountEditorViewModel
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
 fun AccountsScreen(
-    viewModel: AccountsViewModel = hiltViewModel()
+    viewModel: AccountsViewModel = hiltViewModel(),
+    editorViewModel: AccountEditorViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -51,7 +55,8 @@ fun AccountsScreen(
 
     MainScreenScaffold(
         selectedDate = viewModel.selectedDate,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
+        onAddClick = { editorViewModel.open(null) }
     ) {
         RefreshableContent(
             isRefreshing = state.isRefreshing,
@@ -59,17 +64,22 @@ fun AccountsScreen(
         ) {
             AccountsScreenContent(
                 state = state.loadState,
-                onRetryClick = retry
+                onRetryClick = retry,
+                onAccountClick = editorViewModel::open
             )
         }
     }
-
+    AccountEditorHost(
+        viewModel = editorViewModel,
+        onSaved = { viewModel.onEvent(AccountsEvent.ScreenVisible) }
+    )
 }
 
 @Composable
 fun AccountsScreenContent(
     state: UiState<AccountsContent>,
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
+    onAccountClick: (Long) -> Unit = {}
 ) {
     Column(
 
@@ -92,7 +102,8 @@ fun AccountsScreenContent(
                         ListItem(
                             emoji = account.emoji,
                             title = account.name,
-                            amount = account.balance
+                            amount = account.balance,
+                            modifier = Modifier.clickable { onAccountClick(account.id) }
                         )
                     }
                 }

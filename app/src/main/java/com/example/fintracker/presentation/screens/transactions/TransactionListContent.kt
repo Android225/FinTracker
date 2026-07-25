@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.screens.transactions
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,8 @@ fun TransactionListContent(
     state: UiState<TransactionListContent>,
     totalAmountLabel: String,
     emptyStateText: String,
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
+    onTransactionClick: (Long) -> Unit = {}
 ) {
     Column {
         when (state) {
@@ -41,7 +43,10 @@ fun TransactionListContent(
                         ListItem(
                             emoji = transaction.emoji,
                             title = transaction.title,
-                            amount = transaction.amount
+                            amount = transaction.amount,
+                            modifier = Modifier.clickable {
+                                onTransactionClick(transaction.id)
+                            }
                         )
                     }
                 }

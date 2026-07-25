@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.screens.accounts
 
 import com.example.fintracker.domain.Account
+import com.example.fintracker.domain.AccountDraft
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.result.DataResult
@@ -11,6 +12,8 @@ import com.example.fintracker.test.MainDispatcherRule
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -26,7 +29,7 @@ class AccountsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun `visible event is throttled while manual refresh bypasses freshness`() =
+    fun `visible event always reads local data while manual refresh also reloads`() =
         runTest(mainDispatcherRule.dispatcher) {
             val repository = BlockingAccountsRepository()
             val viewModel = AccountsViewModel(
@@ -46,10 +49,10 @@ class AccountsViewModelTest {
             )
 
             viewModel.onEvent(AccountsEvent.ScreenVisible)
-            assertEquals(1, repository.requestCount)
+            assertEquals(2, repository.requestCount)
 
             viewModel.onEvent(AccountsEvent.Refresh)
-            assertEquals(2, repository.requestCount)
+            assertEquals(3, repository.requestCount)
         }
 
     @Test
@@ -94,6 +97,14 @@ class AccountsViewModelTest {
         private val results = results.toMutableList()
 
         override suspend fun getAccounts(): DataResult<List<Account>> = results.removeFirst()
+
+        override fun observeAccounts(): Flow<List<Account>> = flowOf(emptyList())
+
+        override suspend fun getAccount(id: Long): DataResult<Account> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private class BlockingAccountsRepository : AccountsRepository {
@@ -106,13 +117,22 @@ class AccountsViewModelTest {
             return firstResult.await()
         }
 
+        override fun observeAccounts(): Flow<List<Account>> = flowOf(emptyList())
+
+        override suspend fun getAccount(id: Long): DataResult<Account> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
+            DataResult.Failure(AppError.BadRequest)
+
         fun complete(result: DataResult<List<Account>>) {
             firstResult.complete(result)
         }
     }
 
     private fun account(): Account = Account(
-        id = 1,
+        id = 1L,
+        serverId = 1,
         userId = 1,
         name = "Main",
         emoji = "💳",

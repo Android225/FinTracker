@@ -3,6 +3,7 @@ package com.example.fintracker.presentation.screens.accounts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.data.sync.SyncCoordinator
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.result.DataResult
@@ -33,6 +34,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
     private val accountsRepository: AccountsRepository,
+    private val syncCoordinator: SyncCoordinator? = null,
     clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -60,18 +62,35 @@ class AccountsViewModel @Inject constructor(
 
     // Загружает счета, если данные устарели или обновление было запрошено явно.
     private fun loadAccounts(force: Boolean) {
-        if (loadJob?.isActive == true || !refreshPolicy.shouldRefresh(force)) return
+        if (loadJob?.isActive == true) return
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
+            val shouldSync = refreshPolicy.shouldRefresh(force)
+            val syncResult = if (shouldSync) {
+                syncCoordinator?.sync() ?: DataResult.Success(Unit)
+            } else {
+                DataResult.Success(Unit)
+            }
             val result = accountsRepository.getAccounts()
             val uiResult = withContext(defaultDispatcher) {
                 result.map { accounts -> accounts.toAccountsContent() }
             }
-            if (uiResult is DataResult.Success) {
+            if (shouldSync && syncResult is DataResult.Success) {
                 refreshPolicy.markSuccessfulRefresh()
             }
+            val effectiveResult = when {
+                syncResult is DataResult.Failure &&
+                    uiResult is DataResult.Success &&
+                    uiResult.data.accounts.isEmpty() -> syncResult
+                else -> uiResult
+            }
+            if (syncResult is DataResult.Failure && uiResult is DataResult.Success &&
+                uiResult.data.accounts.isNotEmpty()
+            ) {
+                errorChannel.send(syncResult.error)
+            }
             _uiState.updateFrom(
-                result = uiResult,
+                result = effectiveResult,
                 previousState = previousState,
                 isEmpty = { it.accounts.isEmpty() },
                 onRefreshError = errorChannel::send

@@ -4,6 +4,7 @@ import com.example.fintracker.BuildConfig
 import com.example.fintracker.data.remote.api.FinanceApi
 import com.example.fintracker.data.remote.auth.AccessTokenProvider
 import com.example.fintracker.data.remote.auth.AuthInterceptor
+import com.example.fintracker.data.remote.util.ServerRetryInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -50,9 +51,11 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
+        serverRetryInterceptor: ServerRetryInterceptor,
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
+        .addInterceptor(serverRetryInterceptor)
         .addInterceptor(loggingInterceptor)
         .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
         .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)

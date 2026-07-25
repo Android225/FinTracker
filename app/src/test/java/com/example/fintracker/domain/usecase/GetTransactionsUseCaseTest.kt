@@ -2,14 +2,18 @@ package com.example.fintracker.domain.usecase
 
 import com.example.fintracker.domain.Account
 import com.example.fintracker.domain.AccountBrief
+import com.example.fintracker.domain.AccountDraft
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.domain.TransactionDraft
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.repository.TransactionsRepository
 import com.example.fintracker.domain.result.DataResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -22,8 +26,8 @@ class GetTransactionsUseCaseTest {
     fun `loads multiple accounts and sorts merged transactions newest first`() = runBlocking {
         val transactionsRepository = FakeTransactionsRepository(
             mapOf(
-                1 to DataResult.Success(listOf(transaction(1, "2026-07-18T10:00:00Z", 1))),
-                2 to DataResult.Success(listOf(transaction(2, "2026-07-19T10:00:00Z", 2)))
+                1L to DataResult.Success(listOf(transaction(1, "2026-07-18T10:00:00Z", 1))),
+                2L to DataResult.Success(listOf(transaction(2, "2026-07-19T10:00:00Z", 2)))
             )
         )
         val useCase = createUseCase(
@@ -33,15 +37,15 @@ class GetTransactionsUseCaseTest {
 
         val result = useCase(TransactionType.All, PERIOD_START, PERIOD_END)
 
-        assertEquals(listOf(2, 1), (result as DataResult.Success).data.map(Transaction::id))
-        assertEquals(setOf(1, 2), transactionsRepository.requestedAccountIds.toSet())
+        assertEquals(listOf(2L, 1L), (result as DataResult.Success).data.map(Transaction::id))
+        assertEquals(setOf(1L, 2L), transactionsRepository.requestedAccountIds.toSet())
     }
 
     @Test
     fun `filters expense income and all transaction types`() = runBlocking {
         val transactionsRepository = FakeTransactionsRepository(
             mapOf(
-                1 to DataResult.Success(
+                1L to DataResult.Success(
                     listOf(
                         transaction(1, "2026-07-18T10:00:00Z", 1, isIncome = false),
                         transaction(2, "2026-07-19T10:00:00Z", 1, isIncome = true)
@@ -58,16 +62,16 @@ class GetTransactionsUseCaseTest {
         val incomes = useCase(TransactionType.Income, PERIOD_START, PERIOD_END)
         val all = useCase(TransactionType.All, PERIOD_START, PERIOD_END)
 
-        assertEquals(listOf(1), (expenses as DataResult.Success).data.map(Transaction::id))
-        assertEquals(listOf(2), (incomes as DataResult.Success).data.map(Transaction::id))
-        assertEquals(listOf(2, 1), (all as DataResult.Success).data.map(Transaction::id))
+        assertEquals(listOf(1L), (expenses as DataResult.Success).data.map(Transaction::id))
+        assertEquals(listOf(2L), (incomes as DataResult.Success).data.map(Transaction::id))
+        assertEquals(listOf(2L, 1L), (all as DataResult.Success).data.map(Transaction::id))
     }
 
     @Test
     fun `uses explicit account ids without loading all accounts`() = runBlocking {
         val accountsRepository = FakeAccountsRepository(DataResult.Failure(AppError.Network))
         val transactionsRepository = FakeTransactionsRepository(
-            mapOf(2 to DataResult.Success(listOf(transaction(2, "2026-07-19T10:00:00Z", 2))))
+            mapOf(2L to DataResult.Success(listOf(transaction(2, "2026-07-19T10:00:00Z", 2))))
         )
         val useCase = GetTransactionsUseCase(
             accountsRepository,
@@ -82,15 +86,15 @@ class GetTransactionsUseCaseTest {
             accountIds = setOf(2)
         )
 
-        assertEquals(listOf(2), (result as DataResult.Success).data.map(Transaction::id))
+        assertEquals(listOf(2L), (result as DataResult.Success).data.map(Transaction::id))
         assertEquals(0, accountsRepository.requestCount)
-        assertEquals(listOf(2), transactionsRepository.requestedAccountIds)
+        assertEquals(listOf(2L), transactionsRepository.requestedAccountIds)
     }
 
     @Test
     fun `returns empty list when account has no transactions`() = runBlocking {
         val transactionsRepository = FakeTransactionsRepository(
-            mapOf(1 to DataResult.Success(emptyList()))
+            mapOf(1L to DataResult.Success(emptyList()))
         )
         val useCase = createUseCase(
             accountsResult = DataResult.Success(listOf(account(1))),
@@ -100,7 +104,7 @@ class GetTransactionsUseCaseTest {
         val result = useCase(TransactionType.All, PERIOD_START, PERIOD_END)
 
         assertEquals(emptyList<Transaction>(), (result as DataResult.Success).data)
-        assertEquals(listOf(1), transactionsRepository.requestedAccountIds)
+        assertEquals(listOf(1L), transactionsRepository.requestedAccountIds)
     }
 
     @Test
@@ -114,7 +118,7 @@ class GetTransactionsUseCaseTest {
         val result = useCase(TransactionType.All, PERIOD_START, PERIOD_END)
 
         assertEquals(emptyList<Transaction>(), (result as DataResult.Success).data)
-        assertEquals(emptyList<Int>(), transactionsRepository.requestedAccountIds)
+        assertEquals(emptyList<Long>(), transactionsRepository.requestedAccountIds)
     }
 
     @Test
@@ -123,8 +127,8 @@ class GetTransactionsUseCaseTest {
             accountsResult = DataResult.Success(listOf(account(1), account(2))),
             transactionsRepository = FakeTransactionsRepository(
                 mapOf(
-                    1 to DataResult.Success(listOf(transaction(1, "2026-07-18T10:00:00Z", 1))),
-                    2 to DataResult.Failure(AppError.Network)
+                    1L to DataResult.Success(listOf(transaction(1, "2026-07-18T10:00:00Z", 1))),
+                    2L to DataResult.Failure(AppError.Network)
                 )
             )
         )
@@ -168,25 +172,42 @@ class GetTransactionsUseCaseTest {
             requestCount++
             return result
         }
+
+        override fun observeAccounts(): Flow<List<Account>> = flowOf(emptyList())
+
+        override suspend fun getAccount(id: Long): DataResult<Account> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private class FakeTransactionsRepository(
-        private val results: Map<Int, DataResult<List<Transaction>>>
+        private val results: Map<Long, DataResult<List<Transaction>>>
     ) : TransactionsRepository {
-        val requestedAccountIds = mutableListOf<Int>()
+        val requestedAccountIds = mutableListOf<Long>()
 
         override suspend fun getTransactionsForPeriod(
-            accountId: Int,
+            accountId: Long,
             startDate: LocalDate,
             endDate: LocalDate
         ): DataResult<List<Transaction>> {
             requestedAccountIds += accountId
             return results.getValue(accountId)
         }
+
+        override suspend fun getTransaction(id: Long): DataResult<Transaction> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun saveTransaction(
+            id: Long?,
+            draft: TransactionDraft
+        ): DataResult<Long> = DataResult.Failure(AppError.BadRequest)
     }
 
-    private fun account(id: Int): Account = Account(
+    private fun account(id: Long): Account = Account(
         id = id,
+        serverId = id.toInt(),
         userId = 1,
         name = "Account $id",
         emoji = "💳",
@@ -197,22 +218,24 @@ class GetTransactionsUseCaseTest {
     )
 
     private fun transaction(
-        id: Int,
+        id: Long,
         timestamp: String,
-        accountId: Int,
+        accountId: Long,
         isIncome: Boolean = false
     ): Transaction {
         val instant = Instant.parse(timestamp)
         return Transaction(
             id = id,
+            serverId = id.toInt(),
             account = AccountBrief(
                 id = accountId,
+                serverId = accountId.toInt(),
                 name = "Account $accountId",
                 emoji = "💳",
                 balance = BigDecimal.ZERO,
                 currency = "RUB"
             ),
-            category = Category(id, "Category $id", "", isIncome),
+            category = Category(id.toInt(), "Category $id", "", isIncome),
             amount = BigDecimal.ONE,
             transactionDate = instant,
             comment = null,

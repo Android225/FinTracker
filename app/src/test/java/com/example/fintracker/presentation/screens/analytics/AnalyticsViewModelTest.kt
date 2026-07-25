@@ -2,8 +2,11 @@ package com.example.fintracker.presentation.screens.analytics
 
 import androidx.lifecycle.SavedStateHandle
 import com.example.fintracker.domain.Account
+import com.example.fintracker.domain.AccountDraft
 import com.example.fintracker.domain.Category
 import com.example.fintracker.domain.Transaction
+import com.example.fintracker.domain.TransactionDraft
+import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.repository.CategoriesRepository
 import com.example.fintracker.domain.repository.TransactionsRepository
@@ -13,6 +16,8 @@ import com.example.fintracker.domain.usecase.GetTransactionsUseCase
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.test.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -60,7 +65,8 @@ class AnalyticsViewModelTest {
         override suspend fun getAccounts(): DataResult<List<Account>> = DataResult.Success(
             listOf(
                 Account(
-                    id = 1,
+                    id = 1L,
+                    serverId = 1,
                     userId = 1,
                     name = "Main",
                     emoji = "",
@@ -71,18 +77,39 @@ class AnalyticsViewModelTest {
                 )
             )
         )
+
+        override fun observeAccounts(): Flow<List<Account>> = flowOf(emptyList())
+
+        override suspend fun getAccount(id: Long): DataResult<Account> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private data object EmptyCategoriesRepository : CategoriesRepository {
         override suspend fun getCategories(): DataResult<List<Category>> =
             DataResult.Success(emptyList())
+
+        override fun observeCategories(): Flow<List<Category>> = flowOf(emptyList())
+
+        override suspend fun getCategories(isIncome: Boolean): DataResult<List<Category>> =
+            DataResult.Success(emptyList())
     }
 
     private data object EmptyTransactionsRepository : TransactionsRepository {
         override suspend fun getTransactionsForPeriod(
-            accountId: Int,
+            accountId: Long,
             startDate: LocalDate,
             endDate: LocalDate
         ): DataResult<List<Transaction>> = DataResult.Success(emptyList())
+
+        override suspend fun getTransaction(id: Long): DataResult<Transaction> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun saveTransaction(
+            id: Long?,
+            draft: TransactionDraft
+        ): DataResult<Long> = DataResult.Failure(AppError.BadRequest)
     }
 }

@@ -6,7 +6,7 @@ data class TransactionListContent(
 )
 
 data class TransactionItemUi(
-    val id: Int,
+    val id: Long,
     val emoji: String,
     val title: String,
     val amount: String

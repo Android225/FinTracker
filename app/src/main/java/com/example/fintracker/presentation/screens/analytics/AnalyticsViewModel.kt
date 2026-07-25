@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.FinTrackerApplication
 import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.data.sync.SyncCoordinator
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
@@ -39,6 +40,7 @@ import javax.inject.Inject
 class AnalyticsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getAnalytics: GetAnalyticsUseCase,
+    private val syncCoordinator: SyncCoordinator? = null,
     private val clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -83,12 +85,17 @@ class AnalyticsViewModel @Inject constructor(
     ) {
         if (loadJob?.isActive == true && !replaceRunning) return
         if (replaceRunning) loadJob?.cancel()
-        if (!refreshPolicy.shouldRefresh(force)) return
+        val shouldSync = refreshPolicy.shouldRefresh(force)
 
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
             val requestFilter = filter
             val today = LocalDate.now(clock)
+            val syncResult = if (shouldSync) {
+                syncCoordinator?.sync() ?: DataResult.Success(Unit)
+            } else {
+                DataResult.Success(Unit)
+            }
 
             val domainResult = getAnalytics(
                 filter = requestFilter,
@@ -105,8 +112,11 @@ class AnalyticsViewModel @Inject constructor(
                 }
             }
 
-            if (uiResult is DataResult.Success) {
+            if (shouldSync && syncResult is DataResult.Success) {
                 refreshPolicy.markSuccessfulRefresh()
+            }
+            if (syncResult is DataResult.Failure && uiResult is DataResult.Success) {
+                errorChannel.send(syncResult.error)
             }
 
             _uiState.updateFrom(

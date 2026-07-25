@@ -6,7 +6,7 @@ data class AccountsContent(
 )
 
 data class AccountUi(
-    val id: Int,
+    val id: Long,
     val emoji: String,
     val name: String,
     val balance: String

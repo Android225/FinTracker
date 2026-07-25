@@ -11,9 +11,9 @@ import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
 
 @Composable
-fun AddTransactionFloatingActionButton() {
+fun AddTransactionFloatingActionButton(onClick: () -> Unit) {
     FloatingActionButton(
-        onClick = {},
+        onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         shape = RoundedCornerShape(16.dp)

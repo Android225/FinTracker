@@ -22,7 +22,7 @@ class GetTransactionsUseCase(
         type: TransactionType,
         startDate: LocalDate,
         endDate: LocalDate,
-        accountIds: Set<Int>? = null
+        accountIds: Set<Long>? = null
     ): DataResult<List<Transaction>> = withContext(defaultDispatcher) {
         if (endDate.isBefore(startDate)) {
             return@withContext DataResult.Failure(AppError.BadRequest)

@@ -29,7 +29,7 @@ class AnalyticsCalculatorTest {
         )
 
         assertEquals(BigDecimal("150"), result.totalAmount)
-        assertEquals(listOf(2, 1), result.transactions.map { it.id })
+        assertEquals(listOf(2L, 1L), result.transactions.map { it.id })
         assertEquals(listOf(1, 2), result.breakdown.map { it.categoryId })
         assertEquals(listOf(67, 33), result.breakdown.map { it.percent })
     }
@@ -51,7 +51,7 @@ class AnalyticsCalculatorTest {
             zoneId = ZoneOffset.UTC
         )
 
-        assertEquals(listOf(1), result.transactions.map { it.id })
+        assertEquals(listOf(1L), result.transactions.map { it.id })
         assertEquals(BigDecimal("100"), result.totalAmount)
     }
 
@@ -68,7 +68,7 @@ class AnalyticsCalculatorTest {
     private fun filter(
         type: TransactionType,
         categoryIds: Set<Int> = emptySet(),
-        accountId: Int? = null
+        accountId: Long? = null
     ): AnalyticsFilter = AnalyticsFilter(
         type = type,
         period = AnalyticsPeriod(
@@ -81,18 +81,20 @@ class AnalyticsCalculatorTest {
     )
 
     private fun transaction(
-        id: Int,
+        id: Long,
         amount: String,
         date: String,
-        accountId: Int,
+        accountId: Long,
         categoryId: Int,
         isIncome: Boolean = false
     ): Transaction {
         val timestamp = Instant.parse(date)
         return Transaction(
             id = id,
+            serverId = id.toInt(),
             account = AccountBrief(
                 id = accountId,
+                serverId = accountId.toInt(),
                 name = "Account $accountId",
                 emoji = "💳",
                 balance = BigDecimal.ZERO,

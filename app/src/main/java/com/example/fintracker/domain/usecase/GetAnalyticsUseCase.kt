@@ -74,6 +74,7 @@ class GetAnalyticsUseCase(
 
 private fun Account.toBrief(): AccountBrief = AccountBrief(
     id = id,
+    serverId = serverId,
     name = name,
     emoji = emoji,
     balance = balance,

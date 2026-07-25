@@ -4,7 +4,8 @@ import com.example.fintracker.data.remote.dto.TransactionResponseDto
 import com.example.fintracker.domain.Transaction
 
 internal fun TransactionResponseDto.toDomain(): Transaction = Transaction(
-    id = id.requireRemoteField("transaction.id"),
+    id = id.requireRemoteField("transaction.id").toLong(),
+    serverId = id,
     account = account.requireRemoteField("transaction.account").toDomain(),
     category = category.requireRemoteField("transaction.category").toDomain(),
     amount = amount.requireRemoteField("transaction.amount")

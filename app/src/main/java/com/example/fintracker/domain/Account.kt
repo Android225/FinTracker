@@ -4,7 +4,8 @@ import java.math.BigDecimal
 import java.time.Instant
 
 data class Account(
-    val id: Int,
+    val id: Long,
+    val serverId: Int?,
     val userId: Int,
     val name: String,
     val emoji: String,
@@ -15,7 +16,15 @@ data class Account(
 )
 
 data class AccountBrief(
-    val id: Int,
+    val id: Long,
+    val serverId: Int?,
+    val name: String,
+    val emoji: String,
+    val balance: BigDecimal,
+    val currency: String
+)
+
+data class AccountDraft(
     val name: String,
     val emoji: String,
     val balance: BigDecimal,

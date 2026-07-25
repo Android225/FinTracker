@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.fintracker.R
+import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
 import com.example.fintracker.presentation.common.components.refresh.RefreshableContent
@@ -18,11 +19,14 @@ import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.screens.transactions.TransactionItemUi
 import com.example.fintracker.presentation.screens.transactions.TransactionListContent
 import com.example.fintracker.presentation.screens.transactions.TransactionListEvent
+import com.example.fintracker.presentation.screens.editor.TransactionEditorHost
+import com.example.fintracker.presentation.screens.editor.TransactionEditorViewModel
 import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
 fun IncomesScreen(
-    viewModel: IncomesViewModel = hiltViewModel()
+    viewModel: IncomesViewModel = hiltViewModel(),
+    editorViewModel: TransactionEditorViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -39,7 +43,8 @@ fun IncomesScreen(
 
     MainScreenScaffold(
         selectedDate = viewModel.selectedDate,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
+        onAddClick = { editorViewModel.open(TransactionType.Income, null) }
     ) {
         RefreshableContent(
             isRefreshing = state.isRefreshing,
@@ -47,23 +52,31 @@ fun IncomesScreen(
         ) {
             IncomesScreenContent(
                 state = state.loadState,
-                onRetryClick = retry
+                onRetryClick = retry,
+                onTransactionClick = {
+                    editorViewModel.open(TransactionType.Income, it)
+                }
             )
         }
     }
-
+    TransactionEditorHost(
+        viewModel = editorViewModel,
+        onSaved = { viewModel.onEvent(TransactionListEvent.ScreenVisible) }
+    )
 }
 
 @Composable
 fun IncomesScreenContent(
     state: UiState<TransactionListContent>,
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
+    onTransactionClick: (Long) -> Unit = {}
 ) {
     TransactionListContent(
         state = state,
         totalAmountLabel = stringResource(R.string.incomes_all),
         emptyStateText = stringResource(R.string.income_not_exist),
-        onRetryClick = onRetryClick
+        onRetryClick = onRetryClick,
+        onTransactionClick = onTransactionClick
     )
 }
 

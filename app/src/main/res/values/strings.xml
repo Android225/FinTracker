@@ -41,4 +41,17 @@
     <string name="all_categories">Все категории</string>
     <string name="last_month">Предыдущий месяц</string>
     <string name="next_month">Следующий месяц</string>
+    <string name="offline_mode">Нет интернета — изменения сохранятся на устройстве</string>
+    <string name="transaction_category">Статья</string>
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="currency">Валюта</string>
+    <string name="comment">Комментарий</string>
+    <string name="account_name">Название счёта</string>
+    <string name="account_emoji">Иконка</string>
+    <string name="add_account">Добавить счёт</string>
+    <string name="edit_account">Редактировать счёт</string>
+    <string name="invalid_amount">Введите корректную сумму</string>
+    <string name="field_required">Заполните поле</string>
+    <string name="save">Сохранить</string>
 </resources>
