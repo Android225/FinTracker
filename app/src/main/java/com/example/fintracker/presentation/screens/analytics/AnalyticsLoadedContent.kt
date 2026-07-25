@@ -1,7 +1,9 @@
 package com.example.fintracker.presentation.screens.analytics
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ internal fun AnalyticsLoadedContent(
     content: AnalyticsContent,
     onDonutClick: () -> Unit,
     onFilterClick: (AnalyticsSheet) -> Unit,
+    onCurrencySelect: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val chartSegments = remember(content.breakdown) {
@@ -50,22 +54,28 @@ internal fun AnalyticsLoadedContent(
                     .padding(top = 32.dp, bottom = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (content.requiresSingleCurrencyAccount) {
-                    Text(
-                        text = stringResource(R.string.analytics_select_single_currency_account),
-                        modifier = Modifier.padding(horizontal = 32.dp, vertical = 40.dp),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    AnalyticsDonutChart(
-                        totalAmount = content.totalAmount,
-                        segments = chartSegments,
-                        onClick = onDonutClick
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    AnalyticsLegend(segments = chartSegments)
+                if (content.showCurrencySelector) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        content.currencyOptions.forEach { currency ->
+                            FilterChip(
+                                selected = currency == content.selectedCurrency,
+                                onClick = { onCurrencySelect(currency) },
+                                label = { Text(currency) }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
+                AnalyticsDonutChart(
+                    totalAmount = content.totalAmount,
+                    segments = chartSegments,
+                    onClick = onDonutClick
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                AnalyticsLegend(segments = chartSegments)
             }
         }
         item {

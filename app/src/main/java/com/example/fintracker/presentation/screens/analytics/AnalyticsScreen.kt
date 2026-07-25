@@ -119,7 +119,10 @@ private fun AnalyticsAvailableContent(
         content = content,
         modifier = modifier,
         onDonutClick = { onSheetChange(AnalyticsSheet.Detail) },
-        onFilterClick = onSheetChange
+        onFilterClick = onSheetChange,
+        onCurrencySelect = { currency ->
+            onEvent(AnalyticsEvent.SelectCurrency(currency))
+        }
     )
 
     sheet?.let { selectedSheet ->

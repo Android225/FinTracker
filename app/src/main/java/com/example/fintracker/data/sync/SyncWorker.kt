@@ -17,6 +17,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.TimeUnit
+import java.util.UUID
+import kotlinx.coroutines.flow.first
 
 class SyncWorker(
     appContext: Context,
@@ -60,15 +62,22 @@ object SyncScheduler {
         )
     }
 
-    fun enqueueNow(context: Context) {
+    fun enqueueNow(context: Context): UUID {
         val immediate = OneTimeWorkRequestBuilder<SyncWorker>()
             .setConstraints(networkConstraint)
             .build()
         WorkManager.getInstance(context).enqueueUniqueWork(
             IMMEDIATE_WORK_NAME,
-            ExistingWorkPolicy.KEEP,
+            ExistingWorkPolicy.REPLACE,
             immediate
         )
+        return immediate.id
+    }
+
+    suspend fun awaitCompletion(context: Context, workId: UUID) {
+        WorkManager.getInstance(context)
+            .getWorkInfoByIdFlow(workId)
+            .first { workInfo -> workInfo?.state?.isFinished == true }
     }
 
     private const val PERIODIC_WORK_NAME = "periodic-finance-sync"

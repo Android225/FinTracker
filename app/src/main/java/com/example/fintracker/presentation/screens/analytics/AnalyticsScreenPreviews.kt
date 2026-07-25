@@ -18,6 +18,9 @@ private fun AnalyticsScreenPreview() {
             state = UiState.Content(
                 AnalyticsContent(
                     totalAmount = "132 244 ₽",
+                    selectedCurrency = "RUB",
+                    currencyOptions = listOf("RUB", "USD", "EUR"),
+                    showCurrencySelector = true,
                     filter = AnalyticsFilterUi(
                         type = "Расходы",
                         period = "01.07.2026 – 16.07.2026",

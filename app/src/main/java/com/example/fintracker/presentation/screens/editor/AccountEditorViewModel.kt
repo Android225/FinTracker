@@ -128,8 +128,10 @@ class AccountEditorViewModel @Inject constructor(
             )
             when (result) {
                 is DataResult.Success -> {
-                    SyncScheduler.enqueueNow(context)
+                    val syncWorkId = SyncScheduler.enqueueNow(context)
                     dismiss()
+                    savedChannel.send(Unit)
+                    SyncScheduler.awaitCompletion(context, syncWorkId)
                     savedChannel.send(Unit)
                 }
                 is DataResult.Failure -> {

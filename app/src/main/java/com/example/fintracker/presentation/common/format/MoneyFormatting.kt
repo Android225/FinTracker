@@ -30,12 +30,6 @@ internal fun <T> Iterable<T>.moneyTotalsByCurrency(
         }
 }
 
-internal fun <T> Iterable<T>.formatMoneyByCurrency(
-    amount: (T) -> BigDecimal,
-    currency: (T) -> String
-): String = moneyTotalsByCurrency(amount, currency)
-    .joinToString(" · ", transform = MoneyTotalUi::formattedAmount)
-
 internal fun currencySymbol(currency: String): String = when (normalizeCurrency(currency)) {
     "RUB" -> "₽"
     "USD" -> "$"

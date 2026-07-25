@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.screens.analytics
 
 import androidx.lifecycle.SavedStateHandle
+import com.example.fintracker.data.repository.FixedExchangeRatesRepository
 import com.example.fintracker.domain.Account
 import com.example.fintracker.domain.AccountDraft
 import com.example.fintracker.domain.Category
@@ -52,6 +53,7 @@ class AnalyticsViewModelTest {
             val viewModel = AnalyticsViewModel(
                 savedStateHandle = SavedStateHandle(),
                 getAnalytics = analyticsUseCase,
+                exchangeRatesRepository = FixedExchangeRatesRepository(),
                 clock = Clock.fixed(Instant.parse("2026-07-19T12:00:00Z"), ZoneOffset.UTC),
                 defaultDispatcher = mainDispatcherRule.dispatcher
             )

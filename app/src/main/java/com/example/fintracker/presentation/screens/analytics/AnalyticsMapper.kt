@@ -9,7 +9,8 @@ import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.presentation.common.format.formatMoney
-import com.example.fintracker.presentation.common.format.formatMoneyByCurrency
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -19,7 +20,10 @@ internal fun AnalyticsCalculation.toUiContent(
     filter: AnalyticsFilter,
     categories: List<Category>,
     accounts: List<AccountBrief>,
-    today: LocalDate
+    today: LocalDate,
+    selectedCurrency: String,
+    currencyOptions: List<String>,
+    convert: (BigDecimal, String, String) -> BigDecimal
 ): AnalyticsContent {
     val availableCategories = categories.filter { category ->
         when (filter.type) {
@@ -28,34 +32,45 @@ internal fun AnalyticsCalculation.toUiContent(
             TransactionType.All -> true
         }
     }
-    val requiresSingleCurrencyAccount = filter.accountId == null &&
-        transactions.map { it.account.currency }.distinct().size > 1
+    val showCurrencySelector = filter.accountId == null
+    val displayCurrency = if (showCurrencySelector) {
+        selectedCurrency
+    } else {
+        accounts.firstOrNull { it.id == filter.accountId }?.currency ?: selectedCurrency
+    }
+    val convertedAmounts = transactions.associateWith { transaction ->
+        convert(transaction.amount, transaction.account.currency, displayCurrency)
+    }
+    val totalAmount = convertedAmounts.values.fold(BigDecimal.ZERO, BigDecimal::add)
+    val convertedBreakdown = transactions
+        .groupBy(Transaction::category)
+        .map { (category, categoryTransactions) ->
+            val amount = categoryTransactions.fold(BigDecimal.ZERO) { sum, transaction ->
+                sum + requireNotNull(convertedAmounts[transaction])
+            }
+            amount to AnalyticsBreakdownUi(
+                categoryId = category.id,
+                title = category.name,
+                amount = amount.formatMoney(displayCurrency),
+                percent = amount.percentOf(totalAmount)
+            )
+        }
+        .sortedByDescending { (amount) -> amount }
+        .map { (_, item) -> item }
 
     return AnalyticsContent(
-        totalAmount = if (requiresSingleCurrencyAccount) {
-            "—"
-        } else {
-            transactions.formatMoneyByCurrency(
-                amount = Transaction::amount,
-                currency = { it.account.currency }
-            )
-        },
-        requiresSingleCurrencyAccount = requiresSingleCurrencyAccount,
+        totalAmount = totalAmount.formatMoney(displayCurrency),
+        selectedCurrency = displayCurrency,
+        currencyOptions = currencyOptions,
+        showCurrencySelector = showCurrencySelector,
         filter = filter.toUi(availableCategories, accounts),
-        breakdown = if (requiresSingleCurrencyAccount) emptyList() else breakdown.map { item ->
-            AnalyticsBreakdownUi(
-                categoryId = item.categoryId,
-                title = item.title,
-                amount = transactions
-                    .filter { transaction -> transaction.category.id == item.categoryId }
-                    .formatMoneyByCurrency(
-                        amount = Transaction::amount,
-                        currency = { it.account.currency }
-                    ),
-                percent = item.percent
+        breakdown = convertedBreakdown,
+        transactions = transactions.map { transaction ->
+            transaction.toUi(
+                displayCurrency = displayCurrency,
+                convertedAmount = requireNotNull(convertedAmounts[transaction])
             )
         },
-        transactions = transactions.map(Transaction::toUi),
         typeOptions = TransactionType.entries,
         periodOptions = createPeriodOptions(filter, today),
         categoryOptions = createCategoryOptions(availableCategories, filter.categoryIds),
@@ -82,14 +97,24 @@ private fun AnalyticsFilter.toUi(
     )
 }
 
-private fun Transaction.toUi(): AnalyticsTransactionUi =
+private fun Transaction.toUi(
+    displayCurrency: String,
+    convertedAmount: BigDecimal
+): AnalyticsTransactionUi =
     AnalyticsTransactionUi(
         id = id,
         emoji = category.emoji,
         title = comment ?: category.name,
         subtitle = account.name,
-        amount = amount.formatMoney(account.currency)
+        amount = convertedAmount.formatMoney(displayCurrency)
     )
+
+private fun BigDecimal.percentOf(total: BigDecimal): Int {
+    if (total <= BigDecimal.ZERO) return 0
+    return multiply(BigDecimal(100))
+        .divide(total, 0, RoundingMode.HALF_UP)
+        .toInt()
+}
 
 //TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
 internal fun createPeriodOptions(

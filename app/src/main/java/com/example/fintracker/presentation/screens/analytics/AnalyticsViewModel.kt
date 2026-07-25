@@ -13,6 +13,7 @@ import com.example.fintracker.domain.analytics.model.AnalyticsFilter
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.domain.error.AppError
+import com.example.fintracker.domain.repository.ExchangeRatesRepository
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
@@ -42,11 +43,13 @@ import javax.inject.Inject
 class AnalyticsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getAnalytics: GetAnalyticsUseCase,
+    private val exchangeRatesRepository: ExchangeRatesRepository,
     private val syncCoordinator: SyncCoordinator? = null,
     private val clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private var filter = restoreFilter()
+    private var selectedCurrency = savedStateHandle[KEY_CURRENCY] ?: DEFAULT_CURRENCY
 
     private val _uiState = MutableStateFlow(ScreenUiState<AnalyticsContent>())
     val uiState: StateFlow<ScreenUiState<AnalyticsContent>> = _uiState.asStateFlow()
@@ -73,17 +76,19 @@ class AnalyticsViewModel @Inject constructor(
             is AnalyticsEvent.SelectAccount -> updateFilter(
                 filter.copy(accountId = event.accountId)
             )
+            is AnalyticsEvent.SelectCurrency -> updateCurrency(event.currency)
         }
     }
 
     // Загружает и пересчитывает аналитику, заменяя старый запрос при смене фильтра.
     private fun loadAnalytics(
         force: Boolean,
-        replaceRunning: Boolean = false
+        replaceRunning: Boolean = false,
+        synchronize: Boolean = true
     ) {
         if (loadJob?.isActive == true && !replaceRunning) return
         if (replaceRunning) loadJob?.cancel()
-        val shouldSync = refreshPolicy.shouldRefresh(force)
+        val shouldSync = synchronize && refreshPolicy.shouldRefresh(force)
 
         loadJob = viewModelScope.launch {
             val previousState = _uiState.startRefreshing()
@@ -134,17 +139,27 @@ class AnalyticsViewModel @Inject constructor(
                     filter = requestFilter,
                     categories = data.categories,
                     accounts = data.accounts,
-                    today = today
+                    today = today,
+                    selectedCurrency = selectedCurrency,
+                    currencyOptions = exchangeRatesRepository.supportedCurrencies,
+                    convert = exchangeRatesRepository::convert
                 )
             }
         }
+    }
+
+    private fun updateCurrency(currency: String) {
+        if (currency !in exchangeRatesRepository.supportedCurrencies) return
+        selectedCurrency = currency
+        savedStateHandle[KEY_CURRENCY] = currency
+        loadAnalytics(force = false, replaceRunning = true, synchronize = false)
     }
 
     // Сохраняет новый фильтр и заменяет незавершённый расчёт актуальным запросом.
     private fun updateFilter(updatedFilter: AnalyticsFilter) {
         filter = updatedFilter
         saveFilter(updatedFilter)
-        loadAnalytics(force = true, replaceRunning = true)
+        loadAnalytics(force = false, replaceRunning = true, synchronize = false)
     }
 
     // Восстанавливает фильтры после пересоздания экрана и отбрасывает некорректный период.
@@ -202,5 +217,7 @@ class AnalyticsViewModel @Inject constructor(
         const val KEY_PERIOD_KIND = "analytics_period_kind"
         const val KEY_CATEGORY_IDS = "analytics_category_ids"
         const val KEY_ACCOUNT_ID = "analytics_account_id"
+        const val KEY_CURRENCY = "analytics_currency"
+        const val DEFAULT_CURRENCY = "RUB"
     }
 }

@@ -55,6 +55,5 @@
     <string name="invalid_amount">Enter a valid amount</string>
     <string name="field_required">Fill in this field</string>
     <string name="save">Save</string>
-    <string name="analytics_select_single_currency_account">Select one account for accurate analytics. Amounts in different currencies cannot be combined without an exchange rate.</string>
     <string name="pending_sync">Waiting to sync</string>
 </resources>

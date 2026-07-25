@@ -2,9 +2,11 @@ package com.example.fintracker.di
 
 import com.example.fintracker.data.repository.AccountsRepositoryImpl
 import com.example.fintracker.data.repository.CategoriesRepositoryImpl
+import com.example.fintracker.data.repository.FixedExchangeRatesRepository
 import com.example.fintracker.data.repository.TransactionsRepositoryImpl
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.repository.CategoriesRepository
+import com.example.fintracker.domain.repository.ExchangeRatesRepository
 import com.example.fintracker.domain.repository.TransactionsRepository
 import dagger.Binds
 import dagger.Module
@@ -32,4 +34,10 @@ abstract class RepositoryModule {
     abstract fun bindTransactionsRepository(
         implementation: TransactionsRepositoryImpl
     ): TransactionsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExchangeRatesRepository(
+        implementation: FixedExchangeRatesRepository
+    ): ExchangeRatesRepository
 }

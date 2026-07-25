@@ -15,6 +15,7 @@ sealed interface AnalyticsEvent {
 
     data class SelectCategories(val categoryIds: Set<Int>) : AnalyticsEvent
     data class SelectAccount(val accountId: Long?) : AnalyticsEvent
+    data class SelectCurrency(val currency: String) : AnalyticsEvent
 }
 
 enum class AnalyticsSheet {
@@ -28,7 +29,9 @@ enum class AnalyticsSheet {
 
 data class AnalyticsContent(
     val totalAmount: String,
-    val requiresSingleCurrencyAccount: Boolean = false,
+    val selectedCurrency: String,
+    val currencyOptions: List<String>,
+    val showCurrencySelector: Boolean,
     val filter: AnalyticsFilterUi,
     val breakdown: List<AnalyticsBreakdownUi>,
     val transactions: List<AnalyticsTransactionUi>,
