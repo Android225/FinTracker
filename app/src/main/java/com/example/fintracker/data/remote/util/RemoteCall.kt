@@ -31,6 +31,7 @@ private fun HttpException.toAppError(): AppError = when (code()) {
     400 -> AppError.BadRequest
     401, 403 -> AppError.Unauthorized
     404 -> AppError.NotFound
+    409 -> AppError.Conflict
     429 -> AppError.RateLimited
     in 400..499 -> AppError.BadRequest
     in 500..599 -> AppError.Server

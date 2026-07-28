@@ -56,6 +56,9 @@ fun ExpensesScreen(
                 onRetryClick = retry,
                 onTransactionClick = {
                     editorViewModel.open(TransactionType.Expense, it)
+                },
+                onTransactionDelete = {
+                    viewModel.onEvent(TransactionListEvent.Delete(it))
                 }
             )
         }
@@ -70,14 +73,16 @@ fun ExpensesScreen(
 fun ExpensesScreenContent(
     state: UiState<TransactionListContent>,
     onRetryClick: () -> Unit,
-    onTransactionClick: (Long) -> Unit = {}
+    onTransactionClick: (Long) -> Unit = {},
+    onTransactionDelete: (Long) -> Unit = {}
 ) {
     TransactionListContent(
         state = state,
         totalAmountLabel = stringResource(R.string.expenses_all),
         emptyStateText = stringResource(R.string.expenses_not_exist),
         onRetryClick = onRetryClick,
-        onTransactionClick = onTransactionClick
+        onTransactionClick = onTransactionClick,
+        onTransactionDelete = onTransactionDelete
     )
 }
 

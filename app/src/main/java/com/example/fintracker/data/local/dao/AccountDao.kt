@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AccountDao {
-    @Query("SELECT * FROM accounts ORDER BY localId")
+    @Query("SELECT * FROM accounts WHERE syncStatus != 'PENDING_DELETE' ORDER BY localId")
     suspend fun getAll(): List<AccountEntity>
 
-    @Query("SELECT * FROM accounts ORDER BY localId")
+    @Query("SELECT * FROM accounts WHERE syncStatus != 'PENDING_DELETE' ORDER BY localId")
     fun observeAll(): Flow<List<AccountEntity>>
 
     @Query("SELECT * FROM accounts WHERE localId = :localId")
@@ -31,6 +31,9 @@ interface AccountDao {
 
     @Update
     suspend fun update(account: AccountEntity)
+
+    @Query("DELETE FROM accounts WHERE localId = :localId")
+    suspend fun deleteByLocalId(localId: Long)
 
     @Query(
         """

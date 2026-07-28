@@ -23,6 +23,7 @@ import com.example.fintracker.presentation.common.components.feedback.ErrorSnack
 import com.example.fintracker.presentation.common.components.feedback.ErrorContent
 import com.example.fintracker.presentation.common.components.feedback.LoadingContent
 import com.example.fintracker.presentation.common.components.list.ListItem
+import com.example.fintracker.presentation.common.components.list.SwipeToDeleteItem
 import com.example.fintracker.presentation.common.components.refresh.RefreshableContent
 import com.example.fintracker.presentation.common.components.refresh.RefreshOnResumeEffect
 import com.example.fintracker.presentation.common.components.scaffold.HeroSection
@@ -66,7 +67,8 @@ fun AccountsScreen(
             AccountsScreenContent(
                 state = state.loadState,
                 onRetryClick = retry,
-                onAccountClick = editorViewModel::open
+                onAccountClick = editorViewModel::open,
+                onAccountDelete = { viewModel.onEvent(AccountsEvent.Delete(it)) }
             )
         }
     }
@@ -80,7 +82,8 @@ fun AccountsScreen(
 fun AccountsScreenContent(
     state: UiState<AccountsContent>,
     onRetryClick: () -> Unit,
-    onAccountClick: (Long) -> Unit = {}
+    onAccountClick: (Long) -> Unit = {},
+    onAccountDelete: (Long) -> Unit = {}
 ) {
     Column(
 
@@ -100,17 +103,23 @@ fun AccountsScreenContent(
                     contentPadding = PaddingValues(bottom = 8.dp)
                 ) {
                     items(state.data.accounts, key = { it.id }) { account ->
-                        ListItem(
-                            emoji = account.emoji,
-                            title = account.name,
-                            amount = account.balance,
-                            supportingText = if (account.syncPending) {
-                                stringResource(R.string.pending_sync)
-                            } else {
-                                null
-                            },
-                            modifier = Modifier.clickable { onAccountClick(account.id) }
-                        )
+                        SwipeToDeleteItem(
+                            confirmationTitle = stringResource(R.string.delete_account_title),
+                            confirmationMessage = stringResource(R.string.delete_account_message),
+                            onDelete = { onAccountDelete(account.id) }
+                        ) {
+                            ListItem(
+                                emoji = account.emoji,
+                                title = account.name,
+                                amount = account.balance,
+                                supportingText = if (account.syncPending) {
+                                    stringResource(R.string.pending_sync)
+                                } else {
+                                    null
+                                },
+                                modifier = Modifier.clickable { onAccountClick(account.id) }
+                            )
+                        }
                     }
                 }
             }

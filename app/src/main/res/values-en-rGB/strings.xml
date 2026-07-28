@@ -32,7 +32,8 @@
     <string name="error_network">Не удалось подключиться к интернету</string>
     <string name="error_bad_request">Сервер не смог обработать запрос</string>
     <string name="error_unauthorized">Нужна авторизация</string>
-    <string name="error_not_found">Данные не найдены</string>
+    <string name="error_not_found">Data not found</string>
+    <string name="error_account_has_transactions">The account cannot be deleted while it has transactions</string>
     <string name="error_rate_limited">Слишком много запросов. Попробуйте позже</string>
     <string name="error_server">На сервере что-то пошло не так</string>
     <string name="error_invalid_data">Сервер вернул некорректные данные</string>
@@ -56,4 +57,9 @@
     <string name="field_required">Fill in this field</string>
     <string name="save">Save</string>
     <string name="pending_sync">Waiting to sync</string>
+    <string name="delete">Delete</string>
+    <string name="delete_transaction_title">Delete transaction?</string>
+    <string name="delete_transaction_message">The transaction will disappear from the list. If you are offline, it will be deleted during the next synchronization.</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_message">An account can only be deleted after all its transactions are deleted. Continue?</string>
 </resources>

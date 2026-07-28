@@ -88,6 +88,9 @@ class AnalyticsViewModelTest {
 
         override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
             DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun deleteAccount(id: Long): DataResult<Unit> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private data object EmptyCategoriesRepository : CategoriesRepository {
@@ -114,5 +117,8 @@ class AnalyticsViewModelTest {
             id: Long?,
             draft: TransactionDraft
         ): DataResult<Long> = DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun deleteTransaction(id: Long): DataResult<Unit> =
+            DataResult.Failure(AppError.BadRequest)
     }
 }

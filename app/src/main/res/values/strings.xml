@@ -32,6 +32,7 @@
     <string name="error_bad_request">Сервер не смог обработать запрос</string>
     <string name="error_unauthorized">Нужна авторизация</string>
     <string name="error_not_found">Данные не найдены</string>
+    <string name="error_account_has_transactions">Нельзя удалить счёт, пока у него есть транзакции</string>
     <string name="error_rate_limited">Слишком много запросов. Попробуйте позже</string>
     <string name="error_server">На сервере что-то пошло не так</string>
     <string name="error_invalid_data">Сервер вернул некорректные данные</string>
@@ -55,4 +56,9 @@
     <string name="field_required">Заполните поле</string>
     <string name="save">Сохранить</string>
     <string name="pending_sync">Ожидает синхронизации</string>
+    <string name="delete">Удалить</string>
+    <string name="delete_transaction_title">Удалить транзакцию?</string>
+    <string name="delete_transaction_message">Транзакция исчезнет из списка. Если интернета нет, удаление выполнится при следующей синхронизации.</string>
+    <string name="delete_account_title">Удалить счёт?</string>
+    <string name="delete_account_message">Счёт можно удалить только после удаления всех его транзакций. Продолжить?</string>
 </resources>

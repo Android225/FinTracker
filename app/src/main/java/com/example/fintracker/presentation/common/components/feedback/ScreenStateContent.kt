@@ -85,6 +85,7 @@ internal fun AppError.toUserMessage(context: Context): String = when (this) {
     AppError.BadRequest -> context.getString(R.string.error_bad_request)
     AppError.Unauthorized -> context.getString(R.string.error_unauthorized)
     AppError.NotFound -> context.getString(R.string.error_not_found)
+    AppError.Conflict -> context.getString(R.string.error_account_has_transactions)
     AppError.RateLimited -> context.getString(R.string.error_rate_limited)
     AppError.Server -> context.getString(R.string.error_server)
     is AppError.InvalidData -> context.getString(R.string.error_invalid_data)

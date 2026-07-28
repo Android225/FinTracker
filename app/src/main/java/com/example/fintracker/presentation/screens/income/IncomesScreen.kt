@@ -56,6 +56,9 @@ fun IncomesScreen(
                 onRetryClick = retry,
                 onTransactionClick = {
                     editorViewModel.open(TransactionType.Income, it)
+                },
+                onTransactionDelete = {
+                    viewModel.onEvent(TransactionListEvent.Delete(it))
                 }
             )
         }
@@ -70,14 +73,16 @@ fun IncomesScreen(
 fun IncomesScreenContent(
     state: UiState<TransactionListContent>,
     onRetryClick: () -> Unit,
-    onTransactionClick: (Long) -> Unit = {}
+    onTransactionClick: (Long) -> Unit = {},
+    onTransactionDelete: (Long) -> Unit = {}
 ) {
     TransactionListContent(
         state = state,
         totalAmountLabel = stringResource(R.string.incomes_all),
         emptyStateText = stringResource(R.string.income_not_exist),
         onRetryClick = onRetryClick,
-        onTransactionClick = onTransactionClick
+        onTransactionClick = onTransactionClick,
+        onTransactionDelete = onTransactionDelete
     )
 }
 

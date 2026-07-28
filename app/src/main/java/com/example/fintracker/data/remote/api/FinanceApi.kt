@@ -7,6 +7,7 @@ import com.example.fintracker.data.remote.dto.TransactionMutationRequestDto
 import com.example.fintracker.data.remote.dto.TransactionMutationResponseDto
 import com.example.fintracker.data.remote.dto.TransactionResponseDto
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -30,6 +31,9 @@ interface FinanceApi {
         @Path("id") id: Int,
         @Body request: AccountMutationRequestDto
     ): AccountDto
+
+    @DELETE("accounts/{id}")
+    suspend fun deleteAccount(@Path("id") id: Int)
 
     @GET("categories")
     suspend fun getCategories(): List<CategoryDto>
@@ -56,4 +60,7 @@ interface FinanceApi {
         @Path("id") id: Int,
         @Body request: TransactionMutationRequestDto
     ): TransactionMutationResponseDto
+
+    @DELETE("transactions/{id}")
+    suspend fun deleteTransaction(@Path("id") id: Int)
 }

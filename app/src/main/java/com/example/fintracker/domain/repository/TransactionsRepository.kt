@@ -14,4 +14,5 @@ interface TransactionsRepository {
 
     suspend fun getTransaction(id: Long): DataResult<Transaction>
     suspend fun saveTransaction(id: Long?, draft: TransactionDraft): DataResult<Long>
+    suspend fun deleteTransaction(id: Long): DataResult<Unit>
 }

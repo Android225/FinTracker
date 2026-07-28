@@ -64,6 +64,28 @@ class FinanceApiCrudTest {
     }
 
     @Test
+    fun `delete transaction sends swagger request`() = withServer { server, api ->
+        server.enqueue(MockResponse().setResponseCode(204))
+
+        runBlocking { api.deleteTransaction(17) }
+
+        val request = server.takeRequest()
+        assertEquals("DELETE", request.method)
+        assertEquals("/transactions/17", request.path)
+    }
+
+    @Test
+    fun `delete account sends swagger request`() = withServer { server, api ->
+        server.enqueue(MockResponse().setResponseCode(204))
+
+        runBlocking { api.deleteAccount(9) }
+
+        val request = server.takeRequest()
+        assertEquals("DELETE", request.method)
+        assertEquals("/accounts/9", request.path)
+    }
+
+    @Test
     fun `server retry performs three retries for 500`() {
         val server = MockWebServer()
         repeat(3) { server.enqueue(MockResponse().setResponseCode(500)) }

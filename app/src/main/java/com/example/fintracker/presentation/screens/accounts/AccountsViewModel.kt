@@ -1,9 +1,11 @@
 package com.example.fintracker.presentation.screens.accounts
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
 import com.example.fintracker.data.sync.SyncCoordinator
+import com.example.fintracker.data.sync.SyncScheduler
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.result.DataResult
@@ -18,6 +20,7 @@ import com.example.fintracker.presentation.screens.accounts.mapper.toAccountsCon
 import com.example.fintracker.presentation.screens.accounts.model.AccountsContent
 import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -36,6 +39,7 @@ import javax.inject.Inject
 class AccountsViewModel @Inject constructor(
     private val accountsRepository: AccountsRepository,
     private val syncCoordinator: SyncCoordinator? = null,
+    @param:ApplicationContext private val context: Context? = null,
     clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -58,6 +62,25 @@ class AccountsViewModel @Inject constructor(
                 force = true,
                 synchronize = false
             )
+            is AccountsEvent.Delete -> deleteAccount(event.id)
+        }
+    }
+
+    private fun deleteAccount(id: Long) {
+        viewModelScope.launch {
+            when (val result = accountsRepository.deleteAccount(id)) {
+                is DataResult.Failure -> errorChannel.send(result.error)
+                is DataResult.Success -> {
+                    loadAccounts(force = true, synchronize = false)
+                    val applicationContext = context ?: return@launch
+                    val workInfo = SyncScheduler.awaitCompletion(
+                        applicationContext,
+                        SyncScheduler.enqueueNow(applicationContext)
+                    )
+                    loadAccounts(force = true, synchronize = false)
+                    SyncScheduler.failureError(workInfo)?.let { errorChannel.send(it) }
+                }
+            }
         }
     }
 

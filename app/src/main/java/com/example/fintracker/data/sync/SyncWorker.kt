@@ -8,8 +8,10 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.result.DataResult
 import dagger.hilt.EntryPoint
@@ -33,9 +35,15 @@ class SyncWorker(
             is DataResult.Success<*> -> Result.success()
             is DataResult.Failure -> when (result.error) {
                 AppError.Network, AppError.RateLimited -> Result.retry()
-                else -> Result.failure()
+                else -> Result.failure(
+                    workDataOf(ERROR_KEY to result.error.toWorkErrorCode())
+                )
             }
         }
+    }
+
+    companion object {
+        const val ERROR_KEY = "sync_error"
     }
 }
 
@@ -74,12 +82,39 @@ object SyncScheduler {
         return immediate.id
     }
 
-    suspend fun awaitCompletion(context: Context, workId: UUID) {
-        WorkManager.getInstance(context)
+    suspend fun awaitCompletion(context: Context, workId: UUID): WorkInfo =
+        requireNotNull(
+            WorkManager.getInstance(context)
             .getWorkInfoByIdFlow(workId)
             .first { workInfo -> workInfo?.state?.isFinished == true }
+        )
+
+    fun failureError(workInfo: WorkInfo): AppError? {
+        if (workInfo.state != WorkInfo.State.FAILED) return null
+        return when (workInfo.outputData.getString(SyncWorker.ERROR_KEY)) {
+            "bad_request" -> AppError.BadRequest
+            "unauthorized" -> AppError.Unauthorized
+            "not_found" -> AppError.NotFound
+            "conflict" -> AppError.Conflict
+            "rate_limited" -> AppError.RateLimited
+            "server" -> AppError.Server
+            "invalid_data" -> AppError.InvalidData()
+            else -> AppError.Unknown()
+        }
     }
 
     private const val PERIODIC_WORK_NAME = "periodic-finance-sync"
     private const val IMMEDIATE_WORK_NAME = "immediate-finance-sync"
+}
+
+private fun AppError.toWorkErrorCode(): String = when (this) {
+    AppError.Network -> "network"
+    AppError.BadRequest -> "bad_request"
+    AppError.Unauthorized -> "unauthorized"
+    AppError.NotFound -> "not_found"
+    AppError.Conflict -> "conflict"
+    AppError.RateLimited -> "rate_limited"
+    AppError.Server -> "server"
+    is AppError.InvalidData -> "invalid_data"
+    is AppError.Unknown -> "unknown"
 }

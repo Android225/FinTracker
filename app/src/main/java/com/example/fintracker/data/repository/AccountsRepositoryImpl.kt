@@ -1,6 +1,7 @@
 package com.example.fintracker.data.repository
 
 import com.example.fintracker.data.local.dao.AccountDao
+import com.example.fintracker.data.local.dao.TransactionDao
 import com.example.fintracker.data.local.entity.AccountEntity
 import com.example.fintracker.data.local.entity.SyncStatus
 import com.example.fintracker.data.local.mapper.toDomain
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 class AccountsRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao,
+    private val transactionDao: TransactionDao,
     private val clock: Clock,
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AccountsRepository {
@@ -79,6 +81,29 @@ class AccountsRepositoryImpl @Inject constructor(
                 )
                 current.localId
             }
+        }
+    }
+
+    override suspend fun deleteAccount(id: Long): DataResult<Unit> = withContext(ioDispatcher) {
+        try {
+            val account = accountDao.getByLocalId(id)
+                ?: return@withContext DataResult.Failure(AppError.NotFound)
+            if (transactionDao.countActiveForAccount(id) > 0) {
+                return@withContext DataResult.Failure(AppError.Conflict)
+            }
+            if (account.serverId == null) {
+                accountDao.deleteByLocalId(id)
+            } else {
+                accountDao.update(
+                    account.copy(
+                        updatedAtEpochMillis = clock.millis(),
+                        syncStatus = SyncStatus.PENDING_DELETE
+                    )
+                )
+            }
+            DataResult.Success(Unit)
+        } catch (exception: Exception) {
+            DataResult.Failure(AppError.Unknown(exception.message))
         }
     }
 }

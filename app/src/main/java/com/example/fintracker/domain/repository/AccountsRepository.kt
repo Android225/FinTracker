@@ -10,4 +10,5 @@ interface AccountsRepository {
     fun observeAccounts(): Flow<List<Account>>
     suspend fun getAccount(id: Long): DataResult<Account>
     suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long>
+    suspend fun deleteAccount(id: Long): DataResult<Unit>
 }

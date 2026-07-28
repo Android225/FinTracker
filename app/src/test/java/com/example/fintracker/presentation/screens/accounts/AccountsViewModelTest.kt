@@ -113,6 +113,9 @@ class AccountsViewModelTest {
 
         override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
             DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun deleteAccount(id: Long): DataResult<Unit> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private class BlockingAccountsRepository : AccountsRepository {
@@ -131,6 +134,9 @@ class AccountsViewModelTest {
             DataResult.Failure(AppError.BadRequest)
 
         override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
+            DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun deleteAccount(id: Long): DataResult<Unit> =
             DataResult.Failure(AppError.BadRequest)
 
         fun complete(result: DataResult<List<Account>>) {

@@ -15,6 +15,7 @@ import com.example.fintracker.presentation.common.components.feedback.EmptyConte
 import com.example.fintracker.presentation.common.components.feedback.ErrorContent
 import com.example.fintracker.presentation.common.components.feedback.LoadingContent
 import com.example.fintracker.presentation.common.components.list.ListItem
+import com.example.fintracker.presentation.common.components.list.SwipeToDeleteItem
 import com.example.fintracker.presentation.common.components.scaffold.HeroSection
 import com.example.fintracker.presentation.common.model.UiState
 
@@ -24,7 +25,8 @@ fun TransactionListContent(
     totalAmountLabel: String,
     emptyStateText: String,
     onRetryClick: () -> Unit,
-    onTransactionClick: (Long) -> Unit = {}
+    onTransactionClick: (Long) -> Unit = {},
+    onTransactionDelete: (Long) -> Unit = {}
 ) {
     Column {
         when (state) {
@@ -42,19 +44,25 @@ fun TransactionListContent(
                     contentPadding = PaddingValues(bottom = 8.dp)
                 ) {
                     items(state.data.transactions, key = { it.id }) { transaction ->
-                        ListItem(
-                            emoji = transaction.emoji,
-                            title = transaction.title,
-                            amount = transaction.amount,
-                            supportingText = if (transaction.syncPending) {
-                                stringResource(R.string.pending_sync)
-                            } else {
-                                null
-                            },
-                            modifier = Modifier.clickable {
-                                onTransactionClick(transaction.id)
-                            }
-                        )
+                        SwipeToDeleteItem(
+                            confirmationTitle = stringResource(R.string.delete_transaction_title),
+                            confirmationMessage = stringResource(R.string.delete_transaction_message),
+                            onDelete = { onTransactionDelete(transaction.id) }
+                        ) {
+                            ListItem(
+                                emoji = transaction.emoji,
+                                title = transaction.title,
+                                amount = transaction.amount,
+                                supportingText = if (transaction.syncPending) {
+                                    stringResource(R.string.pending_sync)
+                                } else {
+                                    null
+                                },
+                                modifier = Modifier.clickable {
+                                    onTransactionClick(transaction.id)
+                                }
+                            )
+                        }
                     }
                 }
             }

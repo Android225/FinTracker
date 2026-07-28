@@ -45,18 +45,21 @@ class SyncCoordinator @Inject constructor(
 
     suspend fun sync(): DataResult<Unit> = withContext(ioDispatcher) {
         mutex.withLock {
-            pushAccounts().onFailureReturn()
+            pushAccountUpserts().onFailureReturn()
                 ?: pullAccounts().onFailureReturn()
                 ?: pullCategories().onFailureReturn()
                 ?: pushTransactions().onFailureReturn()
+                ?: pushAccountDeletes().onFailureReturn()
                 ?: pullAccounts().onFailureReturn()
                 ?: pullTransactions().onFailureReturn()
                 ?: DataResult.Success(Unit)
         }
     }
 
-    private suspend fun pushAccounts(): DataResult<Unit> {
-        for (account in accountDao.getPending()) {
+    private suspend fun pushAccountUpserts(): DataResult<Unit> {
+        for (account in accountDao.getPending().filterNot {
+            it.syncStatus == SyncStatus.PENDING_DELETE
+        }) {
             val request = AccountMutationRequestDto(
                 name = account.name,
                 emoji = account.emoji.ifBlank { null },
@@ -73,6 +76,30 @@ class SyncCoordinator @Inject constructor(
             when (result) {
                 is DataResult.Failure -> return result
                 is DataResult.Success -> saveSyncedAccount(account, result.data)
+            }
+        }
+        return DataResult.Success(Unit)
+    }
+
+    private suspend fun pushAccountDeletes(): DataResult<Unit> {
+        for (account in accountDao.getPending().filter {
+            it.syncStatus == SyncStatus.PENDING_DELETE
+        }) {
+            val serverId = account.serverId
+            if (serverId == null) {
+                accountDao.deleteByLocalId(account.localId)
+                continue
+            }
+            when (val result = executeRemoteCall { api.deleteAccount(serverId) }) {
+                is DataResult.Success -> accountDao.deleteByLocalId(account.localId)
+                is DataResult.Failure -> when (result.error) {
+                    AppError.NotFound -> accountDao.deleteByLocalId(account.localId)
+                    AppError.Conflict -> {
+                        accountDao.update(account.copy(syncStatus = SyncStatus.SYNCED))
+                        return result
+                    }
+                    else -> return result
+                }
             }
         }
         return DataResult.Success(Unit)
@@ -101,6 +128,24 @@ class SyncCoordinator @Inject constructor(
 
     private suspend fun pushTransactions(): DataResult<Unit> {
         for (transaction in transactionDao.getPending()) {
+            if (transaction.syncStatus == SyncStatus.PENDING_DELETE) {
+                val serverId = transaction.serverId
+                if (serverId == null) {
+                    transactionDao.deleteByLocalId(transaction.localId)
+                    continue
+                }
+                when (val result = executeRemoteCall { api.deleteTransaction(serverId) }) {
+                    is DataResult.Success -> transactionDao.deleteByLocalId(transaction.localId)
+                    is DataResult.Failure -> {
+                        if (result.error == AppError.NotFound) {
+                            transactionDao.deleteByLocalId(transaction.localId)
+                        } else {
+                            return result
+                        }
+                    }
+                }
+                continue
+            }
             val account = accountDao.getByLocalId(transaction.accountLocalId)
                 ?: continue
             val accountServerId = account.serverId ?: continue

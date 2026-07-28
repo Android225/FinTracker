@@ -1,11 +1,14 @@
 package com.example.fintracker.presentation.screens.expenses
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintracker.di.qualifier.DefaultDispatcher
 import com.example.fintracker.data.sync.SyncCoordinator
+import com.example.fintracker.data.sync.SyncScheduler
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.error.AppError
+import com.example.fintracker.domain.repository.TransactionsRepository
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetTransactionsUseCase
@@ -19,6 +22,7 @@ import com.example.fintracker.presentation.screens.transactions.TransactionListC
 import com.example.fintracker.presentation.screens.transactions.TransactionListEvent
 import com.example.fintracker.presentation.screens.transactions.toTransactionListContent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -36,7 +40,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ExpensesViewModel @Inject constructor(
     private val getTransactions: GetTransactionsUseCase,
+    private val transactionsRepository: TransactionsRepository,
     private val syncCoordinator: SyncCoordinator? = null,
+    @param:ApplicationContext private val context: Context,
     clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -59,6 +65,24 @@ class ExpensesViewModel @Inject constructor(
                 force = true,
                 synchronize = false
             )
+            is TransactionListEvent.Delete -> deleteTransaction(event.id)
+        }
+    }
+
+    private fun deleteTransaction(id: Long) {
+        viewModelScope.launch {
+            when (val result = transactionsRepository.deleteTransaction(id)) {
+                is DataResult.Failure -> errorChannel.send(result.error)
+                is DataResult.Success -> {
+                    loadExpenses(force = true, synchronize = false)
+                    val workInfo = SyncScheduler.awaitCompletion(
+                        context,
+                        SyncScheduler.enqueueNow(context)
+                    )
+                    loadExpenses(force = true, synchronize = false)
+                    SyncScheduler.failureError(workInfo)?.let { errorChannel.send(it) }
+                }
+            }
         }
     }
 

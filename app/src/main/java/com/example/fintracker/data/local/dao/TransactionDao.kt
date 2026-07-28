@@ -17,6 +17,7 @@ interface TransactionDao {
         """
         SELECT * FROM transactions
         WHERE accountLocalId = :accountId
+          AND syncStatus != 'PENDING_DELETE'
           AND transactionDateEpochMillis BETWEEN :startMillis AND :endMillis
         ORDER BY transactionDateEpochMillis DESC
         """
@@ -42,4 +43,16 @@ interface TransactionDao {
 
     @Update
     suspend fun update(transaction: TransactionEntity)
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM transactions
+        WHERE accountLocalId = :accountLocalId
+          AND syncStatus != 'PENDING_DELETE'
+        """
+    )
+    suspend fun countActiveForAccount(accountLocalId: Long): Int
+
+    @Query("DELETE FROM transactions WHERE localId = :localId")
+    suspend fun deleteByLocalId(localId: Long)
 }

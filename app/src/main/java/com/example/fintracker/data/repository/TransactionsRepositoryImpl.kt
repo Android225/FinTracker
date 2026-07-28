@@ -99,6 +99,24 @@ class TransactionsRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun deleteTransaction(id: Long): DataResult<Unit> =
+        withContext(ioDispatcher) {
+            val transaction = transactionDao.getByLocalId(id)?.transaction
+                ?: return@withContext DataResult.Failure(AppError.NotFound)
+            localResult {
+                if (transaction.serverId == null) {
+                    transactionDao.deleteByLocalId(id)
+                } else {
+                    transactionDao.update(
+                        transaction.copy(
+                            updatedAtEpochMillis = clock.millis(),
+                            syncStatus = SyncStatus.PENDING_DELETE
+                        )
+                    )
+                }
+            }
+        }
 }
 
 private inline fun <T> localResult(block: () -> T): DataResult<T> = try {

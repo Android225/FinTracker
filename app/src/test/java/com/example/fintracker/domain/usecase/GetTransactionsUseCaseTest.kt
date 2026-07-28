@@ -180,6 +180,9 @@ class GetTransactionsUseCaseTest {
 
         override suspend fun saveAccount(id: Long?, draft: AccountDraft): DataResult<Long> =
             DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun deleteAccount(id: Long): DataResult<Unit> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private class FakeTransactionsRepository(
@@ -203,6 +206,9 @@ class GetTransactionsUseCaseTest {
             id: Long?,
             draft: TransactionDraft
         ): DataResult<Long> = DataResult.Failure(AppError.BadRequest)
+
+        override suspend fun deleteTransaction(id: Long): DataResult<Unit> =
+            DataResult.Failure(AppError.BadRequest)
     }
 
     private fun account(id: Long): Account = Account(
