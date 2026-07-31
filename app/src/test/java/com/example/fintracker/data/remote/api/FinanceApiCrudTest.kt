@@ -10,6 +10,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -37,6 +38,26 @@ class FinanceApiCrudTest {
         val body = request.body.readUtf8()
         check("\"accountId\":7" in body)
         check("\"categoryId\":3" in body)
+    }
+
+    @Test
+    fun `create transaction sends explicit null comment`() = withServer { server, api ->
+        server.enqueue(jsonResponse(TRANSACTION_RESPONSE, 201))
+
+        runBlocking {
+            api.createTransaction(
+                TransactionMutationRequestDto(
+                    accountId = 1991,
+                    categoryId = 22,
+                    amount = "69",
+                    transactionDate = "2026-07-31T09:11:00Z",
+                    comment = null
+                )
+            )
+        }
+
+        val body = server.takeRequest().body.readUtf8()
+        assertTrue(body, "\"comment\":null" in body)
     }
 
     @Test
