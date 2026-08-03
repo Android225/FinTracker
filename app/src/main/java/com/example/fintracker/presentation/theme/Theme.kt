@@ -31,7 +31,8 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = OnSurfaceVariant,     // #49454F — второстепенные подписи
     outline = OutlineVariant,                // #C4C7C5 — границы иконок
     outlineVariant = OutlineVariant,
-    background = BackgroundColor
+    background = BackgroundColor,
+    inverseSurface = Black100
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -47,7 +48,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun FinTrackerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {

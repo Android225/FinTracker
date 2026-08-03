@@ -1,0 +1,26 @@
+package com.example.fintracker.di
+
+import com.example.fintracker.di.qualifier.DefaultDispatcher
+import com.example.fintracker.di.qualifier.IoDispatcher
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import java.time.Clock
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DispatcherModule {
+    @Provides
+    @IoDispatcher
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    @DefaultDispatcher
+    fun provideDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
+
+    @Provides
+    fun provideClock(): Clock = Clock.systemDefaultZone()
+}

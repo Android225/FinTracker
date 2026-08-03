@@ -56,7 +56,6 @@ fun SplashScreen(
         label = "text_alpha"
     )
 
-    // Когда анимация закончилась — ждём 100 мс и уходим
     LaunchedEffect(progress) {
         if (progress == 1f) {
             delay(100)
@@ -81,7 +80,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Текст с анимацией появления
             Text(
                 text = stringResource(R.string.app_name),
                 fontSize = 32.sp,

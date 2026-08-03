@@ -1,32 +1,25 @@
 package com.example.fintracker.domain
 
+import java.math.BigDecimal
+import java.time.Instant
 
 data class Transaction(
-    val id: Int,
-    val accountId: Int,
-    val categoryId: Int,
-    val amount: String,
-    val transactionDate: String,
-    val comment: String?,
-    val createdAt: String,
-    val updatedAt: String
-)
-
-data class TransactionRequest(
-    val accountId: Int,
-    val categoryId: Int,
-    val amount: String,
-    val transactionDate: String,
-    val comment: String? = null
-)
-
-data class TransactionResponse(
-    val id: Int,
+    val id: Long,
+    val serverId: Int?,
     val account: AccountBrief,
     val category: Category,
-    val amount: String,
-    val transactionDate: String,
+    val amount: BigDecimal,
+    val transactionDate: Instant,
     val comment: String?,
-    val createdAt: String,
-    val updatedAt: String
+    val createdAt: Instant,
+    val updatedAt: Instant,
+    val syncPending: Boolean = false
+)
+
+data class TransactionDraft(
+    val accountId: Long,
+    val categoryId: Int,
+    val amount: BigDecimal,
+    val transactionDate: Instant,
+    val comment: String?
 )
