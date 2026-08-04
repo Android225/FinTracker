@@ -20,6 +20,7 @@ fun MainScreenScaffold(
     selectedDate: LocalDate,
     snackbarHostState: SnackbarHostState,
     onAddClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     screenContent: @Composable () -> Unit
 ) {
     val navController = LocalNavController.current
@@ -39,7 +40,7 @@ fun MainScreenScaffold(
                         launchSingleTop = true
                     }
                 },
-                onFilterClick = {}
+                onSettingsClick = onSettingsClick
             )
         },
         floatingActionButton = {

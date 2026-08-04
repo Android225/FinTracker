@@ -143,8 +143,8 @@ fun ListItem(
     emoji: String,
     title: String,
     amount: String,
-    supportingText: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    supportingText: String? = null
 ) {
     ListItem(
         modifier = modifier,

@@ -22,11 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,11 +34,12 @@ fun MainTopAppBar(
     selectedDate: LocalDate,
     onMenuClick: () -> Unit = {},
     onAnalyticsClick: () -> Unit = {},
-    onFilterClick: () -> Unit = {}
+    onSettingsClick: () -> Unit = {}
 ){
-    val dateLabel = remember(selectedDate) {
+    val locale = LocalConfiguration.current.locales[0]
+    val dateLabel = remember(selectedDate, locale) {
         selectedDate.format(
-            DateTimeFormatter.ofPattern("d MMMM", Locale.forLanguageTag("ru"))
+            DateTimeFormatter.ofPattern("d MMMM", locale)
         )
     }
     TopAppBar(
@@ -83,10 +84,10 @@ fun MainTopAppBar(
             }
             Spacer(modifier = Modifier.padding(start = 4.dp))
             IconButton(modifier = Modifier.padding(end = 12.dp).size(48.dp),
-                onClick = onFilterClick) {
+                onClick = onSettingsClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.sliders_horizontal),
-                    contentDescription = stringResource(R.string.parameters_button),
+                    contentDescription = stringResource(R.string.settings_open_description),
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )

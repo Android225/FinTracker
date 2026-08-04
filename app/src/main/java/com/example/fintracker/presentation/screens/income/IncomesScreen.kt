@@ -26,6 +26,7 @@ import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
 fun IncomesScreen(
+    onSettingsClick: () -> Unit = {},
     viewModel: IncomesViewModel = hiltViewModel(),
     editorViewModel: TransactionEditorViewModel = hiltViewModel()
 ) {
@@ -45,7 +46,8 @@ fun IncomesScreen(
     MainScreenScaffold(
         selectedDate = viewModel.selectedDate,
         snackbarHostState = snackbarHostState,
-        onAddClick = { editorViewModel.open(TransactionType.Income, null) }
+        onAddClick = { editorViewModel.open(TransactionType.Income, null) },
+        onSettingsClick = onSettingsClick
     ) {
         RefreshableContent(
             isRefreshing = state.isRefreshing,

@@ -26,6 +26,7 @@ import com.example.fintracker.presentation.screens.editor.TransactionEditorViewM
 
 @Composable
 fun ExpensesScreen(
+    onSettingsClick: () -> Unit = {},
     viewModel: ExpensesViewModel = hiltViewModel(),
     editorViewModel: TransactionEditorViewModel = hiltViewModel()
 ) {
@@ -45,7 +46,8 @@ fun ExpensesScreen(
     MainScreenScaffold(
         selectedDate = viewModel.selectedDate,
         snackbarHostState = snackbarHostState,
-        onAddClick = { editorViewModel.open(TransactionType.Expense, null) }
+        onAddClick = { editorViewModel.open(TransactionType.Expense, null) },
+        onSettingsClick = onSettingsClick
     ) {
         RefreshableContent(
             isRefreshing = state.isRefreshing,

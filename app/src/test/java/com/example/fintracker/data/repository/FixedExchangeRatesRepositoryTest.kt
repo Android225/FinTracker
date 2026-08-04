@@ -19,6 +19,13 @@ class FixedExchangeRatesRepositoryTest {
         assertAmount("90", repository.convert(BigDecimal.ONE, " usd ", "rub"))
     }
 
+    @Test
+    fun `supports every currency available in settings`() {
+        assertEquals(listOf("RUB", "USD", "EUR", "GBP", "CNY"), repository.supportedCurrencies)
+        assertAmount("115", repository.convert(BigDecimal.ONE, "GBP", "RUB"))
+        assertAmount("12.5", repository.convert(BigDecimal.ONE, "CNY", "RUB"))
+    }
+
     private fun assertAmount(expected: String, actual: BigDecimal) {
         assertEquals(0, BigDecimal(expected).compareTo(actual))
     }

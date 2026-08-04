@@ -46,10 +46,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
+import com.example.fintracker.domain.settings.AppCurrency
 import com.example.fintracker.presentation.common.components.bottomsheet.FinTrackerBottomSheet
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
 import com.example.fintracker.presentation.common.components.list.ListItem
@@ -60,7 +62,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 private enum class TransactionPicker {
     Category,
@@ -174,6 +175,7 @@ private fun TransactionEditorContent(
     onAccountClick: () -> Unit,
     onSave: () -> Unit
 ) {
+    val locale = LocalConfiguration.current.locales[0]
     val account = state.accounts.firstOrNull { it.id == state.accountId }
     val category = state.categories.firstOrNull { it.id == state.categoryId }
     Column(
@@ -199,7 +201,7 @@ private fun TransactionEditorContent(
             icon = R.drawable.calendar_month,
             label = stringResource(R.string.date),
             value = state.date.format(
-                DateTimeFormatter.ofPattern("d MMMM", Locale.forLanguageTag("ru"))
+                DateTimeFormatter.ofPattern("d MMMM", locale)
             ),
             onClick = onDateClick
         )
@@ -272,7 +274,7 @@ fun AccountEditorHost(
     if (showCurrencies) {
         SingleChoiceDialog(
             title = stringResource(R.string.currency),
-            options = listOf("RUB", "USD", "EUR").map { it to it },
+            options = AppCurrency.entries.map { it.code to it.code },
             selectedKey = state.currency,
             onSelect = {
                 viewModel.setCurrency(it)

@@ -39,6 +39,7 @@ import com.example.fintracker.presentation.theme.FinTrackerTheme
 
 @Composable
 fun AccountsScreen(
+    onSettingsClick: () -> Unit = {},
     viewModel: AccountsViewModel = hiltViewModel(),
     editorViewModel: AccountEditorViewModel = hiltViewModel()
 ) {
@@ -58,7 +59,8 @@ fun AccountsScreen(
     MainScreenScaffold(
         selectedDate = viewModel.selectedDate,
         snackbarHostState = snackbarHostState,
-        onAddClick = { editorViewModel.open(null) }
+        onAddClick = { editorViewModel.open(null) },
+        onSettingsClick = onSettingsClick
     ) {
         RefreshableContent(
             isRefreshing = state.isRefreshing,

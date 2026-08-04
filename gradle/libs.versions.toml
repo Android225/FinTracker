@@ -19,6 +19,9 @@ ksp = "2.3.10"
 coroutines = "1.9.0"
 room = "2.8.4"
 work = "2.11.2"
+datastore = "1.2.1"
+appcompat = "1.7.1"
+biometric = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +57,9 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

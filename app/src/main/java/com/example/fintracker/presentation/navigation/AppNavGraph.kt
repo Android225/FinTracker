@@ -15,7 +15,8 @@ import com.example.fintracker.presentation.screens.income.IncomesScreen
 
 @Composable
 fun AppNavGraph(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSettingsClick: () -> Unit = {}
 ) {
     val navController = LocalNavController.current
 
@@ -26,13 +27,13 @@ fun AppNavGraph(
         modifier = modifier
     ) {
         composable(NavigationPath.EXPENSES.route) {
-            ExpensesScreen()
+            ExpensesScreen(onSettingsClick = onSettingsClick)
         }
         composable(NavigationPath.INCOME.route) {
-            IncomesScreen()
+            IncomesScreen(onSettingsClick = onSettingsClick)
         }
         composable(NavigationPath.ACCOUNTS.route) {
-            AccountsScreen()
+            AccountsScreen(onSettingsClick = onSettingsClick)
         }
         composable(NavigationPath.ANALYTICS.route) { backStackEntry ->
             val rootEntry = remember(backStackEntry) {

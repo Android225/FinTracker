@@ -7,6 +7,7 @@ import com.example.fintracker.data.sync.SyncScheduler
 import com.example.fintracker.domain.AccountDraft
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
+import com.example.fintracker.domain.repository.SettingsRepository
 import com.example.fintracker.domain.result.DataResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,6 +17,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -40,8 +44,12 @@ enum class AccountValidationError {
 @HiltViewModel
 class AccountEditorViewModel @Inject constructor(
     private val accountsRepository: AccountsRepository,
+    settingsRepository: SettingsRepository,
     @param:ApplicationContext private val context: Context
 ) : ViewModel() {
+    private val defaultCurrency = settingsRepository.settings
+        .map { it.currency.code }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "RUB")
     private val _state = MutableStateFlow(AccountEditorState())
     val state: StateFlow<AccountEditorState> = _state.asStateFlow()
 
@@ -55,6 +63,7 @@ class AccountEditorViewModel @Inject constructor(
         _state.value = AccountEditorState(
             visible = true,
             accountId = accountId,
+            currency = if (accountId == null) defaultCurrency.value else "RUB",
             loading = accountId != null
         )
         if (accountId == null) return

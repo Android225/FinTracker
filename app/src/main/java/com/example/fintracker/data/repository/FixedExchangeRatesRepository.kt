@@ -34,7 +34,9 @@ class FixedExchangeRatesRepository @Inject constructor() : ExchangeRatesReposito
         val RATES_TO_RUB = linkedMapOf(
             "RUB" to BigDecimal.ONE,
             "USD" to BigDecimal("90"),
-            "EUR" to BigDecimal("100")
+            "EUR" to BigDecimal("100"),
+            "GBP" to BigDecimal("115"),
+            "CNY" to BigDecimal("12.5")
         )
     }
 }
