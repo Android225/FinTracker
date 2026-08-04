@@ -1,7 +1,6 @@
 package com.example.fintracker.presentation.screens.analytics.components.chart
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import com.example.fintracker.presentation.screens.analytics.AnalyticsBreakdownUi
 
 internal data class AnalyticsChartSegment(
@@ -25,7 +24,9 @@ internal fun List<AnalyticsBreakdownUi>.toAnalyticsChartSegments(): List<Analyti
     }
 }
 
-internal fun List<AnalyticsBreakdownUi>.toOverviewChartSegments(): List<AnalyticsChartSegment> {
+internal fun List<AnalyticsBreakdownUi>.toOverviewChartSegments(
+    otherCategoriesTitle: String
+): List<AnalyticsChartSegment> {
     val segments = toAnalyticsChartSegments()
         .sortedByDescending { it.breakdown.percent }
     if (segments.size <= MAX_OVERVIEW_SEGMENTS) return segments
@@ -36,10 +37,9 @@ internal fun List<AnalyticsBreakdownUi>.toOverviewChartSegments(): List<Analytic
     val otherColor = generateSequence(0, Int::inc)
         .map(::analyticsCategoryColor)
         .first { it !in usedColors }
-    //TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
     val otherBreakdown = AnalyticsBreakdownUi(
         categoryId = OTHER_CATEGORY_ID,
-        title = "Другие",
+        title = otherCategoriesTitle,
         amount = "",
         percent = otherSegments.sumOf { it.breakdown.percent }
     )

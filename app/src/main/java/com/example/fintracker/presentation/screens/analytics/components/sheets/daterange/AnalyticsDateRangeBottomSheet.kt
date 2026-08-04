@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,8 @@ import com.example.fintracker.presentation.screens.analytics.components.sheets.A
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsPrimary
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun AnalyticsDateRangeBottomSheet(
@@ -43,6 +46,7 @@ fun AnalyticsDateRangeBottomSheet(
     onApply: (AnalyticsPeriod) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val locale = LocalConfiguration.current.locales[0]
     var period by remember(initialPeriod) { mutableStateOf(initialPeriod) }
     var selectingEnd by remember(initialPeriod) { mutableStateOf(false) }
     var visibleMonth by remember(initialPeriod) {
@@ -84,7 +88,7 @@ fun AnalyticsDateRangeBottomSheet(
             verticalAlignment = Alignment.CenterVertically
         ) {
             DateChip(
-                text = period.start.formatForChip(),
+                text = period.start.formatForChip(locale),
                 modifier = Modifier.weight(1f)
             )
             Box(
@@ -95,7 +99,7 @@ fun AnalyticsDateRangeBottomSheet(
                     .background(AnalyticsOutline)
             )
             DateChip(
-                text = period.end.formatForChip(),
+                text = period.end.formatForChip(locale),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -181,10 +185,5 @@ private fun DateChip(
     }
 }
 
-private fun LocalDate.formatForChip(): String =
-    "$dayOfMonth ${SHORT_MONTH_NAMES[monthValue - 1]} $year"
-
-private val SHORT_MONTH_NAMES = listOf(
-    "янв.", "февр.", "мар.", "апр.", "мая", "июн.",
-    "июл.", "авг.", "сент.", "окт.", "нояб.", "дек."
-)
+private fun LocalDate.formatForChip(locale: Locale): String =
+    format(DateTimeFormatter.ofPattern("d MMM yyyy", locale))

@@ -24,6 +24,16 @@
     <string name="detalication">Détail</string>
     <string name="apply">Appliquer</string>
     <string name="any_period">Période personnalisée</string>
+    <string name="analytics_type_expense">Dépenses</string>
+    <string name="analytics_type_income">Revenus</string>
+    <string name="analytics_type_all">Tout</string>
+    <string name="analytics_period_custom">Personnalisée</string>
+    <string name="analytics_period_week">7 derniers jours</string>
+    <string name="analytics_period_month">Ce mois</string>
+    <string name="analytics_period_quarter">Ce trimestre</string>
+    <string name="analytics_period_year">Cette année</string>
+    <string name="analytics_all_accounts">Tous les comptes</string>
+    <string name="analytics_other_categories">Autres</string>
     <string name="cancel">Annuler</string>
     <string name="accounts_not_exist">Aucun compte pour le moment</string>
     <string name="balance_all">solde total</string>

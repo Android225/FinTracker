@@ -44,10 +44,10 @@ data class AnalyticsContent(
 )
 
 data class AnalyticsFilterUi(
-    val type: String,
+    val type: TransactionType,
     val period: String,
     val categories: String,
-    val account: String
+    val account: String?
 )
 
 data class AnalyticsBreakdownUi(
@@ -68,7 +68,6 @@ data class AnalyticsTransactionUi(
 data class AnalyticsPeriodOption(
     val kind: AnalyticsPeriodKind,
     val period: AnalyticsPeriod,
-    val title: String,
     val subtitle: String? = null,
     val selected: Boolean
 )

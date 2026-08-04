@@ -52,7 +52,11 @@ fun AnalyticsAccountBottomSheet(
                             .weight(1f)
                     ) {
                         Text(
-                            text = option.title,
+                            text = if (option.id == null) {
+                                stringResource(R.string.analytics_all_accounts)
+                            } else {
+                                option.title
+                            },
                             fontSize = 16.sp,
                             lineHeight = 19.sp,
                             fontWeight = FontWeight.Medium,

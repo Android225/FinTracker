@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 import com.example.fintracker.domain.TransactionType
-import com.example.fintracker.presentation.screens.analytics.displayName
+import com.example.fintracker.presentation.screens.analytics.analyticsTitleResource
 
 @Composable
 fun AnalyticsTypeBottomSheet(
@@ -49,7 +49,7 @@ fun AnalyticsTypeBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = type.displayName,
+                    text = stringResource(type.analyticsTitleResource()),
                     modifier = Modifier.weight(1f),
                     fontSize = 16.sp,
                     lineHeight = 19.sp,

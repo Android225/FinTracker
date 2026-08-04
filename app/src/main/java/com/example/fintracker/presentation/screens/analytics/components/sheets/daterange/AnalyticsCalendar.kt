@@ -17,11 +17,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,8 +33,11 @@ import com.example.fintracker.R
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsPrimary
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsRange
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 internal fun CalendarMonth(
@@ -44,6 +48,9 @@ internal fun CalendarMonth(
     onNextMonth: () -> Unit,
     onDateClick: (LocalDate) -> Unit
 ) {
+    val locale = LocalConfiguration.current.locales[0]
+    val monthTitle = remember(month, locale) { month.title(locale) }
+    val weekdayLabels = remember(locale) { weekdayLabels(locale) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,7 +68,7 @@ internal fun CalendarMonth(
                 Spacer(modifier = Modifier.size(48.dp))
             }
             Text(
-                text = month.title(),
+                text = monthTitle,
                 fontSize = 16.sp,
                 lineHeight = 19.sp,
                 fontWeight = FontWeight.Medium,
@@ -75,7 +82,7 @@ internal fun CalendarMonth(
         }
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            WEEKDAY_LABELS.forEach { label ->
+            weekdayLabels.forEach { label ->
                 Text(
                     text = label,
                     modifier = Modifier
@@ -181,10 +188,14 @@ private fun YearMonth.weeks(): List<List<LocalDate?>> {
     return cells.chunked(7)
 }
 
-private fun YearMonth.title(): String = "${MONTH_NAMES[monthValue - 1]} $year"
+private fun YearMonth.title(locale: Locale): String {
+    val monthName = month.getDisplayName(TextStyle.FULL_STANDALONE, locale)
+        .replaceFirstChar { character ->
+            if (character.isLowerCase()) character.titlecase(locale) else character.toString()
+        }
+    return "$monthName $year"
+}
 
-private val WEEKDAY_LABELS = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
-private val MONTH_NAMES = listOf(
-    "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
-    "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-)
+private fun weekdayLabels(locale: Locale): List<String> = DayOfWeek.entries.map { day ->
+    day.getDisplayName(TextStyle.SHORT_STANDALONE, locale)
+}

@@ -75,21 +75,20 @@ internal fun AnalyticsCalculation.toUiContent(
         selectedPeriod = filter.period
     )
 }
-//TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
 private fun AnalyticsFilter.toUi(
     categories: List<Category>,
     accounts: List<AccountBrief>
 ): AnalyticsFilterUi {
     val selectedCategories = categories.filter { it.id in categoryIds }
     return AnalyticsFilterUi(
-        type = type.displayName,
+        type = type,
         period = period.formatForDisplay(),
         categories = if (selectedCategories.isEmpty()) {
-            "Все статьи"
+            ""
         } else {
             selectedCategories.joinToString { it.name }
         },
-        account = accounts.firstOrNull { it.id == accountId }?.name ?: "Все счета"
+        account = accounts.firstOrNull { it.id == accountId }?.name
     )
 }
 
@@ -112,7 +111,6 @@ private fun BigDecimal.percentOf(total: BigDecimal): Int {
         .toInt()
 }
 
-//TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
 internal fun createPeriodOptions(
     filter: AnalyticsFilter,
     today: LocalDate
@@ -127,32 +125,27 @@ internal fun createPeriodOptions(
         AnalyticsPeriodOption(
             kind = AnalyticsPeriodKind.Custom,
             period = filter.period,
-            title = "Произвольный",
             subtitle = filter.period.formatForDisplay(),
             selected = filter.periodKind == AnalyticsPeriodKind.Custom
         ),
         AnalyticsPeriodOption(
             kind = AnalyticsPeriodKind.Week,
             period = week,
-            title = "За неделю",
             selected = filter.periodKind == AnalyticsPeriodKind.Week
         ),
         AnalyticsPeriodOption(
             kind = AnalyticsPeriodKind.Month,
             period = month,
-            title = "За месяц",
             selected = filter.periodKind == AnalyticsPeriodKind.Month
         ),
         AnalyticsPeriodOption(
             kind = AnalyticsPeriodKind.Quarter,
             period = quarter,
-            title = "За квартал",
             selected = filter.periodKind == AnalyticsPeriodKind.Quarter
         ),
         AnalyticsPeriodOption(
             kind = AnalyticsPeriodKind.Year,
             period = year,
-            title = "За год",
             selected = filter.periodKind == AnalyticsPeriodKind.Year
         )
     )
@@ -170,14 +163,13 @@ internal fun createCategoryOptions(
     )
 }
 
-//TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
 internal fun createAccountOptions(
     accounts: List<AccountBrief>,
     selectedAccountId: Long?
 ): List<AnalyticsAccountOption> {
     val allAccounts = AnalyticsAccountOption(
         id = null,
-        title = "Все счета",
+        title = "",
         emoji = "💳",
         selected = selectedAccountId == null
     )
@@ -194,11 +186,3 @@ internal fun createAccountOptions(
 
 internal fun AnalyticsPeriod.formatForDisplay(): String =
     "${start.format(dateFormatter)} – ${end.format(dateFormatter)}"
-
-//TODO("реализовать потом когда локализация будет через enum или sealed class/inter")
-internal val TransactionType.displayName: String
-    get() = when (this) {
-        TransactionType.Expense -> "Расходы"
-        TransactionType.Income -> "Доходы"
-        TransactionType.All -> "Всё"
-    }

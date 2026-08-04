@@ -23,6 +23,16 @@
     <string name="detalication">Детализация</string>
     <string name="apply">Применить</string>
     <string name="any_period">Произвольный период</string>
+    <string name="analytics_type_expense">Расходы</string>
+    <string name="analytics_type_income">Доходы</string>
+    <string name="analytics_type_all">Всё</string>
+    <string name="analytics_period_custom">Произвольный</string>
+    <string name="analytics_period_week">За неделю</string>
+    <string name="analytics_period_month">За месяц</string>
+    <string name="analytics_period_quarter">За квартал</string>
+    <string name="analytics_period_year">За год</string>
+    <string name="analytics_all_accounts">Все счета</string>
+    <string name="analytics_other_categories">Другие</string>
     <string name="cancel">Отмена</string>
     <string name="accounts_not_exist">Счетов пока нет</string>
     <string name="balance_all">баланс, всего</string>

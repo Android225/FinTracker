@@ -24,6 +24,16 @@
     <string name="detalication">Breakdown</string>
     <string name="apply">Apply</string>
     <string name="any_period">Custom period</string>
+    <string name="analytics_type_expense">Expenses</string>
+    <string name="analytics_type_income">Income</string>
+    <string name="analytics_type_all">All</string>
+    <string name="analytics_period_custom">Custom</string>
+    <string name="analytics_period_week">Past week</string>
+    <string name="analytics_period_month">This month</string>
+    <string name="analytics_period_quarter">This quarter</string>
+    <string name="analytics_period_year">This year</string>
+    <string name="analytics_all_accounts">All accounts</string>
+    <string name="analytics_other_categories">Other</string>
     <string name="cancel">Cancel</string>
     <string name="accounts_not_exist">No accounts yet</string>
     <string name="balance_all">total balance</string>

@@ -45,6 +45,10 @@ class AnalyticsMapperTest {
         assertEquals("USD", content.selectedCurrency)
         assertEquals("20 $", content.totalAmount)
         assertEquals(listOf("10 $", "10 $"), content.transactions.map { it.amount })
+        assertEquals(TransactionType.Expense, content.filter.type)
+        assertEquals("", content.filter.categories)
+        assertEquals(null, content.filter.account)
+        assertEquals("", content.accountOptions.first().title)
     }
 
     @Test

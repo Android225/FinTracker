@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.presentation.screens.analytics.AnalyticsPeriodOption
+import com.example.fintracker.presentation.screens.analytics.analyticsTitleResource
 
 @Composable
 fun AnalyticsPeriodBottomSheet(
@@ -50,7 +51,7 @@ fun AnalyticsPeriodBottomSheet(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = option.title,
+                        text = stringResource(option.kind.analyticsTitleResource()),
                         fontSize = 16.sp,
                         lineHeight = 19.sp,
                         fontWeight = FontWeight.Medium,

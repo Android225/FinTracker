@@ -24,6 +24,16 @@
     <string name="detalication">Aufschlüsselung</string>
     <string name="apply">Anwenden</string>
     <string name="any_period">Eigener Zeitraum</string>
+    <string name="analytics_type_expense">Ausgaben</string>
+    <string name="analytics_type_income">Einnahmen</string>
+    <string name="analytics_type_all">Alle</string>
+    <string name="analytics_period_custom">Benutzerdefiniert</string>
+    <string name="analytics_period_week">Letzte Woche</string>
+    <string name="analytics_period_month">Dieser Monat</string>
+    <string name="analytics_period_quarter">Dieses Quartal</string>
+    <string name="analytics_period_year">Dieses Jahr</string>
+    <string name="analytics_all_accounts">Alle Konten</string>
+    <string name="analytics_other_categories">Andere</string>
     <string name="cancel">Abbrechen</string>
     <string name="accounts_not_exist">Noch keine Konten</string>
     <string name="balance_all">Gesamtsaldo</string>

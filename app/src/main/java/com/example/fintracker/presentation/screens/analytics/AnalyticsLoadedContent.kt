@@ -39,8 +39,9 @@ internal fun AnalyticsLoadedContent(
     onCurrencySelect: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val chartSegments = remember(content.breakdown) {
-        content.breakdown.toOverviewChartSegments()
+    val otherCategoriesTitle = stringResource(R.string.analytics_other_categories)
+    val chartSegments = remember(content.breakdown, otherCategoriesTitle) {
+        content.breakdown.toOverviewChartSegments(otherCategoriesTitle)
     }
     val context = LocalContext.current
     LazyColumn(
@@ -86,7 +87,7 @@ internal fun AnalyticsLoadedContent(
             ) {
                 AnalyticsFilterRow(
                     title = stringResource(R.string.type_transaction),
-                    value = content.filter.type,
+                    value = stringResource(content.filter.type.analyticsTitleResource()),
                     iconRes = R.drawable.analytics_filter_type,
                     showDivider = true,
                     onClick = { onFilterClick(AnalyticsSheet.Type) }
@@ -107,7 +108,8 @@ internal fun AnalyticsLoadedContent(
                 )
                 AnalyticsFilterRow(
                     title = stringResource(R.string.account),
-                    value = content.filter.account,
+                    value = content.filter.account
+                        ?: stringResource(R.string.analytics_all_accounts),
                     iconRes = R.drawable.analytics_filter_account,
                     showDivider = false,
                     onClick = { onFilterClick(AnalyticsSheet.Account) }

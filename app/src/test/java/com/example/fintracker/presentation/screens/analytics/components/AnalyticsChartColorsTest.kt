@@ -73,7 +73,7 @@ class AnalyticsChartColorsTest {
             )
         }
 
-        val segments = breakdown.toOverviewChartSegments()
+        val segments = breakdown.toOverviewChartSegments("Other")
 
         assertEquals(listOf(1, 2, 3, 4, 5), segments.map { it.breakdown.categoryId })
     }
@@ -89,10 +89,10 @@ class AnalyticsChartColorsTest {
             AnalyticsBreakdownUi(6, "Sixth", "4 ₽", 4)
         )
 
-        val segments = breakdown.toOverviewChartSegments()
+        val segments = breakdown.toOverviewChartSegments("Other")
 
         assertEquals(listOf(1, 2, 3, 4), segments.take(4).map { it.breakdown.categoryId })
-        assertEquals("Другие", segments.last().breakdown.title)
+        assertEquals("Other", segments.last().breakdown.title)
         assertEquals(10, segments.last().breakdown.percent)
         assertEquals(5, segments.size)
         assertEquals(segments.size, segments.map { it.color }.toSet().size)

@@ -22,10 +22,10 @@ private fun AnalyticsScreenPreview() {
                     currencyOptions = listOf("RUB", "USD", "EUR"),
                     showCurrencySelector = true,
                     filter = AnalyticsFilterUi(
-                        type = "Расходы",
+                        type = TransactionType.Expense,
                         period = "01.07.2026 – 16.07.2026",
                         categories = "Ремонт, Авто",
-                        account = "Все счета"
+                        account = null
                     ),
                     breakdown = listOf(
                         AnalyticsBreakdownUi(1, "Ремонт", "80 200 ₽", 61),
