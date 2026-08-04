@@ -8,6 +8,8 @@ import com.example.fintracker.data.sync.SyncCoordinator
 import com.example.fintracker.data.sync.SyncScheduler
 import com.example.fintracker.domain.TransactionType
 import com.example.fintracker.domain.error.AppError
+import com.example.fintracker.domain.repository.ExchangeRatesRepository
+import com.example.fintracker.domain.repository.SettingsRepository
 import com.example.fintracker.domain.repository.TransactionsRepository
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
@@ -30,6 +32,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,6 +47,8 @@ import javax.inject.Inject
 class IncomesViewModel @Inject constructor(
     private val getTransactions: GetTransactionsUseCase,
     private val transactionsRepository: TransactionsRepository,
+    private val settingsRepository: SettingsRepository,
+    private val exchangeRatesRepository: ExchangeRatesRepository,
     private val syncCoordinator: SyncCoordinator? = null,
     @param:ApplicationContext private val context: Context,
     clock: Clock,
@@ -56,6 +64,20 @@ class IncomesViewModel @Inject constructor(
 
     private val refreshPolicy = RefreshPolicy(clock)
     private var loadJob: Job? = null
+    private var displayCurrency = "RUB"
+    private var hasLoaded = false
+
+    init {
+        settingsRepository.settings
+            .map { it.currency.code }
+            .distinctUntilChanged()
+            .onEach { currency ->
+                val changed = displayCurrency != currency
+                displayCurrency = currency
+                if (changed && hasLoaded) loadIncomes(force = true, synchronize = false)
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun onEvent(event: TransactionListEvent) {
         when (event) {
@@ -92,6 +114,7 @@ class IncomesViewModel @Inject constructor(
     //      пока что реализация от
     // ")
     private fun loadIncomes(force: Boolean, synchronize: Boolean = true) {
+        hasLoaded = true
         if (loadJob?.isActive == true) {
             if (!force) return
             loadJob?.cancel()
@@ -137,7 +160,12 @@ class IncomesViewModel @Inject constructor(
             endDate = selectedDate
         )
         return withContext(defaultDispatcher) {
-            result.map { transactions -> transactions.toTransactionListContent() }
+            result.map { transactions ->
+                transactions.toTransactionListContent(
+                    displayCurrency = displayCurrency,
+                    convert = exchangeRatesRepository::convert
+                )
+            }
         }
     }
 }

@@ -33,11 +33,7 @@ internal fun AnalyticsCalculation.toUiContent(
         }
     }
     val showCurrencySelector = filter.accountId == null
-    val displayCurrency = if (showCurrencySelector) {
-        selectedCurrency
-    } else {
-        accounts.firstOrNull { it.id == filter.accountId }?.currency ?: selectedCurrency
-    }
+    val displayCurrency = selectedCurrency
     val convertedAmounts = transactions.associateWith { transaction ->
         convert(transaction.amount, transaction.account.currency, displayCurrency)
     }

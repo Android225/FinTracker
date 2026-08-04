@@ -1,5 +1,6 @@
 package com.example.fintracker.presentation.common.format
 
+import com.example.fintracker.data.repository.FixedExchangeRatesRepository
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.math.BigDecimal
@@ -28,5 +29,24 @@ class MoneyFormattingTest {
     @Test
     fun `currency codes are normalized before formatting`() {
         assertEquals("$", currencySymbol(" usd "))
+    }
+
+    @Test
+    fun `mixed currencies are aggregated in selected display currency`() {
+        val rates = FixedExchangeRatesRepository()
+        val values = listOf(
+            BigDecimal("900") to "RUB",
+            BigDecimal("10") to "USD"
+        )
+
+        assertEquals(
+            MoneyTotalUi("USD", "20 $"),
+            values.moneyTotalInCurrency(
+                targetCurrency = "USD",
+                amount = Pair<BigDecimal, String>::first,
+                currency = Pair<BigDecimal, String>::second,
+                convert = rates::convert
+            )
+        )
     }
 }

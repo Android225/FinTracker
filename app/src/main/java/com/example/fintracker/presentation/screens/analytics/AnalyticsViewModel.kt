@@ -14,6 +14,8 @@ import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriodKind
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.ExchangeRatesRepository
+import com.example.fintracker.domain.repository.SettingsRepository
+import com.example.fintracker.domain.settings.AppCurrency
 import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.result.map
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
@@ -32,6 +34,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,12 +50,13 @@ class AnalyticsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getAnalytics: GetAnalyticsUseCase,
     private val exchangeRatesRepository: ExchangeRatesRepository,
+    private val settingsRepository: SettingsRepository,
     private val syncCoordinator: SyncCoordinator? = null,
     private val clock: Clock,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
     private var filter = restoreFilter()
-    private var selectedCurrency = savedStateHandle[KEY_CURRENCY] ?: DEFAULT_CURRENCY
+    private var selectedCurrency = AppCurrency.Rub.code
 
     private val _uiState = MutableStateFlow(ScreenUiState<AnalyticsContent>())
     val uiState: StateFlow<ScreenUiState<AnalyticsContent>> = _uiState.asStateFlow()
@@ -59,6 +66,21 @@ class AnalyticsViewModel @Inject constructor(
 
     private val refreshPolicy = RefreshPolicy(clock)
     private var loadJob: Job? = null
+    private var hasLoaded = false
+
+    init {
+        settingsRepository.settings
+            .map { it.currency.code }
+            .distinctUntilChanged()
+            .onEach { currency ->
+                val changed = selectedCurrency != currency
+                selectedCurrency = currency
+                if (changed && hasLoaded) {
+                    loadAnalytics(force = false, replaceRunning = true, synchronize = false)
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun onEvent(event: AnalyticsEvent) {
         when (event) {
@@ -86,6 +108,7 @@ class AnalyticsViewModel @Inject constructor(
         replaceRunning: Boolean = false,
         synchronize: Boolean = true
     ) {
+        hasLoaded = true
         if (loadJob?.isActive == true && !replaceRunning) return
         if (replaceRunning) loadJob?.cancel()
         val shouldSync = synchronize && refreshPolicy.shouldRefresh(force)
@@ -150,9 +173,9 @@ class AnalyticsViewModel @Inject constructor(
 
     private fun updateCurrency(currency: String) {
         if (currency !in exchangeRatesRepository.supportedCurrencies) return
-        selectedCurrency = currency
-        savedStateHandle[KEY_CURRENCY] = currency
-        loadAnalytics(force = false, replaceRunning = true, synchronize = false)
+        viewModelScope.launch {
+            settingsRepository.setCurrency(AppCurrency.fromCode(currency))
+        }
     }
 
     // Сохраняет новый фильтр и заменяет незавершённый расчёт актуальным запросом.
@@ -217,7 +240,5 @@ class AnalyticsViewModel @Inject constructor(
         const val KEY_PERIOD_KIND = "analytics_period_kind"
         const val KEY_CATEGORY_IDS = "analytics_category_ids"
         const val KEY_ACCOUNT_ID = "analytics_account_id"
-        const val KEY_CURRENCY = "analytics_currency"
-        const val DEFAULT_CURRENCY = "RUB"
     }
 }

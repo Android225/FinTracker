@@ -5,11 +5,13 @@ import com.example.fintracker.domain.AccountDraft
 import com.example.fintracker.domain.error.AppError
 import com.example.fintracker.domain.repository.AccountsRepository
 import com.example.fintracker.domain.result.DataResult
+import com.example.fintracker.data.repository.FixedExchangeRatesRepository
 import com.example.fintracker.presentation.common.model.UiState
 import com.example.fintracker.presentation.common.format.MoneyTotalUi
 import com.example.fintracker.presentation.screens.accounts.model.AccountsContent
 import com.example.fintracker.presentation.screens.accounts.model.AccountsEvent
 import com.example.fintracker.test.MainDispatcherRule
+import com.example.fintracker.test.FakeSettingsRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -35,6 +37,8 @@ class AccountsViewModelTest {
             val repository = BlockingAccountsRepository()
             val viewModel = AccountsViewModel(
                 accountsRepository = repository,
+                settingsRepository = FakeSettingsRepository(),
+                exchangeRatesRepository = FixedExchangeRatesRepository(),
                 clock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC),
                 defaultDispatcher = mainDispatcherRule.dispatcher
             )
@@ -95,6 +99,8 @@ class AccountsViewModelTest {
     private fun createViewModel(repository: AccountsRepository): AccountsViewModel =
         AccountsViewModel(
             accountsRepository = repository,
+            settingsRepository = FakeSettingsRepository(),
+            exchangeRatesRepository = FixedExchangeRatesRepository(),
             clock = Clock.fixed(Instant.EPOCH, ZoneOffset.UTC),
             defaultDispatcher = mainDispatcherRule.dispatcher
         )

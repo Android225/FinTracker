@@ -15,6 +15,7 @@ import com.example.fintracker.domain.result.DataResult
 import com.example.fintracker.domain.usecase.GetAnalyticsUseCase
 import com.example.fintracker.domain.usecase.GetTransactionsUseCase
 import com.example.fintracker.presentation.common.model.UiState
+import com.example.fintracker.test.FakeSettingsRepository
 import com.example.fintracker.test.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +55,7 @@ class AnalyticsViewModelTest {
                 savedStateHandle = SavedStateHandle(),
                 getAnalytics = analyticsUseCase,
                 exchangeRatesRepository = FixedExchangeRatesRepository(),
+                settingsRepository = FakeSettingsRepository(),
                 clock = Clock.fixed(Instant.parse("2026-07-19T12:00:00Z"), ZoneOffset.UTC),
                 defaultDispatcher = mainDispatcherRule.dispatcher
             )

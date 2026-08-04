@@ -2,13 +2,21 @@ package com.example.fintracker.presentation.screens.transactions
 
 import com.example.fintracker.domain.Transaction
 import com.example.fintracker.presentation.common.format.formatMoney
-import com.example.fintracker.presentation.common.format.moneyTotalsByCurrency
+import com.example.fintracker.presentation.common.format.moneyTotalInCurrency
+import java.math.BigDecimal
 
-internal fun List<Transaction>.toTransactionListContent(): TransactionListContent =
+internal fun List<Transaction>.toTransactionListContent(
+    displayCurrency: String,
+    convert: (BigDecimal, String, String) -> BigDecimal
+): TransactionListContent =
     TransactionListContent(
-        totalAmounts = moneyTotalsByCurrency(
-            amount = Transaction::amount,
-            currency = { it.account.currency }
+        totalAmounts = listOf(
+            moneyTotalInCurrency(
+                targetCurrency = displayCurrency,
+                amount = Transaction::amount,
+                currency = { it.account.currency },
+                convert = convert
+            )
         ),
         transactions = map { transaction ->
             TransactionItemUi(

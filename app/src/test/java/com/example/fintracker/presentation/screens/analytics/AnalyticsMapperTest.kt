@@ -48,7 +48,7 @@ class AnalyticsMapperTest {
     }
 
     @Test
-    fun `single account uses its own currency and hides selector`() {
+    fun `single account still uses global currency and hides selector`() {
         val content = calculation(
             transaction(id = 2, amount = "10", account = usdAccount)
         ).toUiContent(
@@ -62,8 +62,8 @@ class AnalyticsMapperTest {
         )
 
         assertFalse(content.showCurrencySelector)
-        assertEquals("USD", content.selectedCurrency)
-        assertEquals("10 $", content.totalAmount)
+        assertEquals("RUB", content.selectedCurrency)
+        assertEquals("900 ₽", content.totalAmount)
     }
 
     private fun calculation(vararg transactions: Transaction) = AnalyticsCalculation(

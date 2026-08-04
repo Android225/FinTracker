@@ -30,10 +30,28 @@ internal fun <T> Iterable<T>.moneyTotalsByCurrency(
         }
 }
 
+internal fun <T> Iterable<T>.moneyTotalInCurrency(
+    targetCurrency: String,
+    amount: (T) -> BigDecimal,
+    currency: (T) -> String,
+    convert: (BigDecimal, String, String) -> BigDecimal
+): MoneyTotalUi {
+    val normalizedTarget = normalizeCurrency(targetCurrency)
+    val total = fold(BigDecimal.ZERO) { sum, item ->
+        sum + convert(amount(item), currency(item), normalizedTarget)
+    }
+    return MoneyTotalUi(
+        currency = normalizedTarget,
+        formattedAmount = total.formatMoney(normalizedTarget)
+    )
+}
+
 internal fun currencySymbol(currency: String): String = when (normalizeCurrency(currency)) {
     "RUB" -> "₽"
     "USD" -> "$"
     "EUR" -> "€"
+    "GBP" -> "£"
+    "CNY" -> "¥"
     else -> normalizeCurrency(currency)
 }
 
