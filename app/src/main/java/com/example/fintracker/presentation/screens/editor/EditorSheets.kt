@@ -44,10 +44,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
@@ -361,12 +365,17 @@ private fun AmountField(
     onValueChange: (String) -> Unit,
     error: Boolean
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    val currencySuffix = " ${currencySymbol(currency)}"
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier
-                .width(200.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
                 .height(58.dp),
             textStyle = MaterialTheme.typography.displayMedium.copy(
                 color = MaterialTheme.colorScheme.onSurface,
@@ -375,29 +384,27 @@ private fun AmountField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine = true,
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+            visualTransformation = AmountVisualTransformation(currencySuffix),
             decorationBox = { inner ->
-                Box(contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     if (value.isBlank()) {
                         Text(
-                            text = "0 ${currencySymbol(currency)}",
+                            text = "0$currencySuffix",
                             style = MaterialTheme.typography.displayMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { inner() }
-                        if (value.isNotBlank()) {
-                            Text(
-                                text = currencySymbol(currency),
-                                style = MaterialTheme.typography.displayMedium
-                            )
-                        }
-                    }
+                    inner()
                 }
             }
         )
         HorizontalDivider(
-            modifier = Modifier.width(200.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
             color = if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline
         )
         if (error) {
@@ -408,6 +415,25 @@ private fun AmountField(
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
+    }
+}
+
+private class AmountVisualTransformation(
+    private val suffix: String
+) : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        if (text.isEmpty()) return TransformedText(text, OffsetMapping.Identity)
+        val inputLength = text.length
+        return TransformedText(
+            text = AnnotatedString(text.text + suffix),
+            offsetMapping = object : OffsetMapping {
+                override fun originalToTransformed(offset: Int): Int =
+                    offset.coerceIn(0, inputLength)
+
+                override fun transformedToOriginal(offset: Int): Int =
+                    offset.coerceIn(0, inputLength)
+            }
+        )
     }
 }
 
