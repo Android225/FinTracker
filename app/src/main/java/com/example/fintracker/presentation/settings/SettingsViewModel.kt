@@ -27,6 +27,7 @@ class SettingsViewModel @Inject constructor(
     private val pinStep = MutableStateFlow(PinSettingsStep.EnterNew)
     private val pinError = MutableStateFlow<PinSettingsError?>(null)
     private var pendingNewPin: String? = null
+    private var pinFlowGeneration = 0
 
     private val pinState = combine(pinStep, pinError) { step, error ->
         PinState(step, error)
@@ -134,33 +135,38 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun verifyCurrentPin(pin: String) {
+        val generation = pinFlowGeneration
         savingPin.value = true
         viewModelScope.launch {
             try {
-                if (settingsRepository.verifyPin(pin)) {
+                val accepted = settingsRepository.verifyPin(pin)
+                if (generation != pinFlowGeneration) return@launch
+                if (accepted) {
                     pinStep.value = PinSettingsStep.EnterNew
                 } else {
                     pinError.value = PinSettingsError.WrongCurrent
                 }
             } finally {
-                savingPin.value = false
+                if (generation == pinFlowGeneration) savingPin.value = false
             }
         }
     }
 
     private fun persistPin(pin: String) {
+        val generation = pinFlowGeneration
         savingPin.value = true
         viewModelScope.launch {
             try {
                 settingsRepository.savePin(pin)
-                backToMain()
+                if (generation == pinFlowGeneration) backToMain()
             } finally {
-                savingPin.value = false
+                if (generation == pinFlowGeneration) savingPin.value = false
             }
         }
     }
 
     private fun startPinFlow(pinConfigured: Boolean) {
+        pinFlowGeneration += 1
         pendingNewPin = null
         pinError.value = null
         pinStep.value = if (pinConfigured) {
@@ -171,6 +177,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun resetPinFlow() {
+        pinFlowGeneration += 1
         pendingNewPin = null
         pinError.value = null
         pinStep.value = PinSettingsStep.EnterNew
