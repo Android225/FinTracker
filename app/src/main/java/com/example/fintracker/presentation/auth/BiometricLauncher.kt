@@ -32,11 +32,13 @@ class BiometricLauncher internal constructor(
 @Composable
 fun rememberBiometricLauncher(
     onSuccess: () -> Unit,
+    onCancelled: () -> Unit = {},
     onError: (String) -> Unit = {}
 ): BiometricLauncher {
     val context = LocalContext.current
     val activity = requireNotNull(context.findFragmentActivity())
     val currentSuccess = rememberUpdatedState(onSuccess)
+    val currentCancelled = rememberUpdatedState(onCancelled)
     val currentError = rememberUpdatedState(onError)
     return remember(activity) {
         val executor = ContextCompat.getMainExecutor(activity)
@@ -52,9 +54,11 @@ fun rememberBiometricLauncher(
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        if (errorCode != BiometricPrompt.ERROR_NEGATIVE_BUTTON &&
-                            errorCode != BiometricPrompt.ERROR_USER_CANCELED
+                        if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
+                            errorCode == BiometricPrompt.ERROR_USER_CANCELED
                         ) {
+                            currentCancelled.value()
+                        } else {
                             currentError.value(errString.toString())
                         }
                     }

@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,6 @@ import com.example.fintracker.R
 internal val AnalyticsPrimary = Color(0xFF6750A4)
 internal val AnalyticsCheckboxColor = Color(0xFF7B5EA7)
 internal val AnalyticsOutline = Color(0xFFC4C7C5)
-internal val AnalyticsRange = Color(0xFFE7E3F2)
 
 @Composable
 internal fun AnalyticsSheetHeader(
@@ -91,11 +91,12 @@ internal fun AnalyticsEmojiIcon(
     Box(
         modifier = modifier
             .size(32.dp)
+            .clip(CircleShape)
             .background(MaterialTheme.colorScheme.background, CircleShape)
             .border(1.dp, AnalyticsOutline, CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = emoji, fontSize = 22.sp, lineHeight = 22.sp)
+        Text(text = emoji, fontSize = 20.sp, lineHeight = 20.sp)
     }
 }
 

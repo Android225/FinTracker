@@ -24,12 +24,20 @@ class SettingsViewModel @Inject constructor(
     private val activeSheet = MutableStateFlow(SettingsSheet.Closed)
     private val categoryQuery = MutableStateFlow("")
     private val savingPin = MutableStateFlow(false)
+    private val pinStep = MutableStateFlow(PinSettingsStep.EnterNew)
+    private val pinError = MutableStateFlow<PinSettingsError?>(null)
+    private var pendingNewPin: String? = null
+
+    private val pinState = combine(pinStep, pinError) { step, error ->
+        PinState(step, error)
+    }
 
     private val localState = combine(
         activeSheet,
         categoryQuery,
-        savingPin
-    ) { sheet, query, saving -> LocalState(sheet, query, saving) }
+        savingPin,
+        pinState
+    ) { sheet, query, saving, pin -> LocalState(sheet, query, saving, pin) }
 
     val state: StateFlow<SettingsUiState> = combine(
         settingsRepository.settings,
@@ -45,7 +53,9 @@ class SettingsViewModel @Inject constructor(
                 local.query.isBlank() || it.name.contains(local.query, ignoreCase = true)
             },
             categoryQuery = local.query,
-            savingPin = local.savingPin
+            savingPin = local.savingPin,
+            pinStep = local.pin.step,
+            pinError = local.pin.error
         )
     }.stateIn(
         scope = viewModelScope,
@@ -60,15 +70,20 @@ class SettingsViewModel @Inject constructor(
     fun close() {
         activeSheet.value = SettingsSheet.Closed
         categoryQuery.value = ""
+        resetPinFlow()
     }
 
     fun openSheet(sheet: SettingsSheet) {
+        if (sheet == SettingsSheet.Pin) {
+            startPinFlow(pinConfigured = state.value.pinConfigured)
+        }
         activeSheet.value = sheet
     }
 
     fun backToMain() {
         activeSheet.value = SettingsSheet.Main
         categoryQuery.value = ""
+        resetPinFlow()
     }
 
     fun setTheme(theme: AppTheme) = updateSetting {
@@ -94,8 +109,46 @@ class SettingsViewModel @Inject constructor(
         categoryQuery.value = query
     }
 
-    fun savePin(pin: String) {
+    fun submitPin(pin: String) {
         if (pin.length != PinLength || savingPin.value) return
+
+        pinError.value = null
+        when (pinStep.value) {
+            PinSettingsStep.VerifyCurrent -> verifyCurrentPin(pin)
+            PinSettingsStep.EnterNew -> {
+                pendingNewPin = pin
+                pinStep.value = PinSettingsStep.ConfirmNew
+            }
+            PinSettingsStep.ConfirmNew -> {
+                if (pin != pendingNewPin) {
+                    pinError.value = PinSettingsError.ConfirmationMismatch
+                    return
+                }
+                persistPin(pin)
+            }
+        }
+    }
+
+    fun clearPinError() {
+        pinError.value = null
+    }
+
+    private fun verifyCurrentPin(pin: String) {
+        savingPin.value = true
+        viewModelScope.launch {
+            try {
+                if (settingsRepository.verifyPin(pin)) {
+                    pinStep.value = PinSettingsStep.EnterNew
+                } else {
+                    pinError.value = PinSettingsError.WrongCurrent
+                }
+            } finally {
+                savingPin.value = false
+            }
+        }
+    }
+
+    private fun persistPin(pin: String) {
         savingPin.value = true
         viewModelScope.launch {
             try {
@@ -105,6 +158,23 @@ class SettingsViewModel @Inject constructor(
                 savingPin.value = false
             }
         }
+    }
+
+    private fun startPinFlow(pinConfigured: Boolean) {
+        pendingNewPin = null
+        pinError.value = null
+        pinStep.value = if (pinConfigured) {
+            PinSettingsStep.VerifyCurrent
+        } else {
+            PinSettingsStep.EnterNew
+        }
+    }
+
+    private fun resetPinFlow() {
+        pendingNewPin = null
+        pinError.value = null
+        pinStep.value = PinSettingsStep.EnterNew
+        savingPin.value = false
     }
 
     private fun updateSetting(block: suspend () -> Unit) {
@@ -118,6 +188,12 @@ class SettingsViewModel @Inject constructor(
     private data class LocalState(
         val sheet: SettingsSheet,
         val query: String,
-        val savingPin: Boolean
+        val savingPin: Boolean,
+        val pin: PinState
+    )
+
+    private data class PinState(
+        val step: PinSettingsStep,
+        val error: PinSettingsError?
     )
 }

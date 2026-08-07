@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +23,8 @@ data class AppUiState(
     val pinConfigured: Boolean = false,
     val sessionUnlocked: Boolean = false,
     val verifyingPin: Boolean = false,
-    val pinRejected: Boolean = false
+    val pinRejected: Boolean = false,
+    val lockoutRemainingSeconds: Int = 0
 ) {
     val requiresUnlock: Boolean
         get() = !loading && pinConfigured && !sessionUnlocked
@@ -35,15 +38,19 @@ class AppViewModel @Inject constructor(
     private val authLoaded = MutableStateFlow(false)
     private val verifyingPin = MutableStateFlow(false)
     private val pinRejected = MutableStateFlow(false)
+    private val lockoutRemainingSeconds = MutableStateFlow(0)
     private var firstAuthValue = true
+    private var failedPinAttempts = 0
+    private var lockoutJob: Job? = null
 
     private val authState = combine(
         sessionUnlocked,
         authLoaded,
         verifyingPin,
-        pinRejected
-    ) { unlocked, loaded, verifying, rejected ->
-        AuthState(unlocked, loaded, verifying, rejected)
+        pinRejected,
+        lockoutRemainingSeconds
+    ) { unlocked, loaded, verifying, rejected, lockoutSeconds ->
+        AuthState(unlocked, loaded, verifying, rejected, lockoutSeconds)
     }
 
     val uiState: StateFlow<AppUiState> = combine(
@@ -57,7 +64,8 @@ class AppViewModel @Inject constructor(
             pinConfigured = pinConfigured,
             sessionUnlocked = auth.unlocked,
             verifyingPin = auth.verifying,
-            pinRejected = auth.rejected
+            pinRejected = auth.rejected,
+            lockoutRemainingSeconds = auth.lockoutSeconds
         )
     }.stateIn(
         scope = viewModelScope,
@@ -78,13 +86,21 @@ class AppViewModel @Inject constructor(
     }
 
     fun verifyPin(pin: String) {
-        if (pin.length != PinLength || verifyingPin.value) return
+        if (pin.length != PinLength || verifyingPin.value || lockoutRemainingSeconds.value > 0) {
+            return
+        }
         verifyingPin.value = true
         pinRejected.value = false
         viewModelScope.launch {
             val accepted = settingsRepository.verifyPin(pin)
             sessionUnlocked.value = accepted
             pinRejected.value = !accepted
+            if (accepted) {
+                failedPinAttempts = 0
+            } else {
+                failedPinAttempts += 1
+                if (failedPinAttempts >= AttemptsBeforeLockout) startLockout()
+            }
             verifyingPin.value = false
         }
     }
@@ -92,20 +108,37 @@ class AppViewModel @Inject constructor(
     fun unlockWithBiometrics() {
         sessionUnlocked.value = true
         pinRejected.value = false
+        failedPinAttempts = 0
     }
 
     fun clearPinError() {
         pinRejected.value = false
     }
 
+    private fun startLockout() {
+        failedPinAttempts = 0
+        pinRejected.value = false
+        lockoutJob?.cancel()
+        lockoutJob = viewModelScope.launch {
+            for (seconds in LockoutSeconds downTo 1) {
+                lockoutRemainingSeconds.value = seconds
+                delay(1_000)
+            }
+            lockoutRemainingSeconds.value = 0
+        }
+    }
+
     private companion object {
         const val PinLength = 4
+        const val AttemptsBeforeLockout = 5
+        const val LockoutSeconds = 30
     }
 
     private data class AuthState(
         val unlocked: Boolean,
         val loaded: Boolean,
         val verifying: Boolean,
-        val rejected: Boolean
+        val rejected: Boolean,
+        val lockoutSeconds: Int
     )
 }

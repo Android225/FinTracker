@@ -27,6 +27,7 @@ fun SettingsSheetHost(
     onCurrencySelect: (com.example.fintracker.domain.settings.AppCurrency) -> Unit,
     onCategoryQueryChange: (String) -> Unit,
     onPinComplete: (String) -> Unit,
+    onPinChange: () -> Unit,
     onBiometricToggle: (Boolean) -> Unit
 ) {
     if (state.sheet == SettingsSheet.Closed) return
@@ -65,7 +66,10 @@ fun SettingsSheetHost(
             SettingsSheet.Pin -> PinSettingsSheet(
                 pinConfigured = state.pinConfigured,
                 saving = state.savingPin,
-                onPinComplete = onPinComplete
+                step = state.pinStep,
+                error = state.pinError,
+                onPinComplete = onPinComplete,
+                onPinChange = onPinChange
             )
             SettingsSheet.Biometrics -> BiometricSettingsSheet(
                 enabled = state.settings.biometricEnabled,

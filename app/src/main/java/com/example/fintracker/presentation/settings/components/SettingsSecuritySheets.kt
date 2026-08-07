@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,14 +30,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.fintracker.R
+import com.example.fintracker.presentation.settings.PinSettingsError
+import com.example.fintracker.presentation.settings.PinSettingsStep
 
 @Composable
 fun PinSettingsSheet(
     pinConfigured: Boolean,
     saving: Boolean,
-    onPinComplete: (String) -> Unit
+    step: PinSettingsStep,
+    error: PinSettingsError?,
+    onPinComplete: (String) -> Unit,
+    onPinChange: () -> Unit
 ) {
-    var pin by remember { mutableStateOf("") }
+    var pin by remember(step) { mutableStateOf("") }
 
     LaunchedEffect(pin) {
         if (pin.length == PinLength) {
@@ -58,16 +64,40 @@ fun PinSettingsSheet(
         )
         Spacer(Modifier.height(28.dp))
         Text(
-            text = stringResource(R.string.pin_new_prompt),
-            style = MaterialTheme.typography.titleLarge,
+            text = stringResource(
+                when (step) {
+                    PinSettingsStep.VerifyCurrent -> R.string.pin_current_prompt
+                    PinSettingsStep.EnterNew -> R.string.pin_new_prompt
+                    PinSettingsStep.ConfirmNew -> R.string.pin_confirm_prompt
+                }
+            ),
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(28.dp))
-        Box(modifier = Modifier.padding(horizontal = 118.dp)) {
-            PinEntry(
-                value = pin,
-                onValueChange = { pin = it },
-                enabled = !saving
+        PinEntry(
+            value = pin,
+            onValueChange = {
+                onPinChange()
+                pin = it
+            },
+            modifier = Modifier.width(PinEntryWidth),
+            enabled = !saving,
+            isError = error != null
+        )
+        if (error != null) {
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = stringResource(
+                    when (error) {
+                        PinSettingsError.WrongCurrent -> R.string.pin_wrong_current
+                        PinSettingsError.ConfirmationMismatch -> R.string.pin_confirmation_mismatch
+                    }
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
         }
     }
@@ -155,3 +185,4 @@ fun BiometricSettingsSheet(
 }
 
 private const val PinLength = 4
+private val PinEntryWidth = 112.dp

@@ -14,11 +14,24 @@ enum class SettingsSheet {
     Biometrics
 }
 
+enum class PinSettingsStep {
+    VerifyCurrent,
+    EnterNew,
+    ConfirmNew
+}
+
+enum class PinSettingsError {
+    WrongCurrent,
+    ConfirmationMismatch
+}
+
 data class SettingsUiState(
     val settings: AppSettings = AppSettings(),
     val sheet: SettingsSheet = SettingsSheet.Closed,
     val pinConfigured: Boolean = false,
     val categories: List<Category> = emptyList(),
     val categoryQuery: String = "",
-    val savingPin: Boolean = false
+    val savingPin: Boolean = false,
+    val pinStep: PinSettingsStep = PinSettingsStep.EnterNew,
+    val pinError: PinSettingsError? = null
 )

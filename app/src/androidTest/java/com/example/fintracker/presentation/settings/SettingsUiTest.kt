@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.settings
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -53,7 +54,10 @@ class SettingsUiTest {
                 PinSettingsSheet(
                     pinConfigured = false,
                     saving = false,
-                    onPinComplete = { completedPin = it }
+                    step = PinSettingsStep.EnterNew,
+                    error = null,
+                    onPinComplete = { completedPin = it },
+                    onPinChange = {}
                 )
             }
         }
@@ -64,6 +68,25 @@ class SettingsUiTest {
         composeRule.runOnIdle {
             assertEquals("4826", completedPin)
         }
+    }
+
+    @Test
+    fun pinInputRequestsFocusWhenSheetOpens() {
+        composeRule.setContent {
+            FinTrackerTheme {
+                PinSettingsSheet(
+                    pinConfigured = false,
+                    saving = false,
+                    step = PinSettingsStep.EnterNew,
+                    error = null,
+                    onPinComplete = {},
+                    onPinChange = {}
+                )
+            }
+        }
+
+        composeRule.waitForIdle()
+        composeRule.onNodeWithTag(PinInputTestTag).assertIsFocused()
     }
 
     @Test
@@ -88,6 +111,7 @@ class SettingsUiTest {
                     onCurrencySelect = {},
                     onCategoryQueryChange = {},
                     onPinComplete = {},
+                    onPinChange = {},
                     onBiometricToggle = {}
                 )
             }

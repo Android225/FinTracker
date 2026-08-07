@@ -35,7 +35,9 @@ import com.example.fintracker.presentation.settings.components.PinEntry
 fun UnlockScreen(
     verifyingPin: Boolean,
     pinRejected: Boolean,
+    lockoutRemainingSeconds: Int,
     biometricAvailable: Boolean,
+    focusRequestKey: Int,
     onPinChange: () -> Unit,
     onPinComplete: (String) -> Unit,
     onBiometricClick: () -> Unit,
@@ -92,12 +94,21 @@ fun UnlockScreen(
                             onPinChange()
                             pin = it
                         },
-                        enabled = !verifyingPin,
-                        isError = pinRejected
+                        enabled = !verifyingPin && lockoutRemainingSeconds == 0,
+                        isError = pinRejected,
+                        focusRequestKey = focusRequestKey
                     )
                 }
                 Spacer(Modifier.size(20.dp))
                 when {
+                    lockoutRemainingSeconds > 0 -> Text(
+                        text = stringResource(
+                            R.string.unlock_too_many_attempts,
+                            lockoutRemainingSeconds
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
+                    )
                     verifyingPin -> {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
                         Text(

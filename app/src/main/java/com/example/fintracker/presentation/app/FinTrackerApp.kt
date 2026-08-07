@@ -10,6 +10,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,12 +51,15 @@ fun FinTrackerApp(
     val settingsState by settingsViewModel.state.collectAsStateWithLifecycle()
     var showSplash by rememberSaveable { mutableStateOf(true) }
     var biometricPurpose by remember { mutableStateOf<BiometricPurpose?>(null) }
+    var pinFocusRequest by rememberSaveable { mutableIntStateOf(0) }
     val currentPurpose = rememberUpdatedState(biometricPurpose)
     val context = LocalContext.current
     val biometricAvailable = remember(context) { isBiometricAvailable(context) }
     val promptTitle = stringResource(R.string.biometric_prompt_title)
+    val enablePromptTitle = stringResource(R.string.biometric_enable_prompt_title)
     val promptSubtitle = stringResource(R.string.biometric_prompt_subtitle)
-    val promptCancel = stringResource(R.string.biometric_prompt_cancel)
+    val promptUsePin = stringResource(R.string.biometric_prompt_use_pin)
+    val promptCancel = stringResource(R.string.cancel)
 
     ApplyApplicationLocale(appState.settings.language.languageTag)
 
@@ -75,12 +79,23 @@ fun FinTrackerApp(
             }
             biometricPurpose = null
         },
-        onError = { biometricPurpose = null }
+        onCancelled = {
+            if (currentPurpose.value == BiometricPurpose.Unlock) pinFocusRequest += 1
+            biometricPurpose = null
+        },
+        onError = {
+            if (currentPurpose.value == BiometricPurpose.Unlock) pinFocusRequest += 1
+            biometricPurpose = null
+        }
     )
 
     fun launchBiometrics(purpose: BiometricPurpose) {
         biometricPurpose = purpose
-        biometricLauncher.authenticate(promptTitle, promptSubtitle, promptCancel)
+        biometricLauncher.authenticate(
+            title = if (purpose == BiometricPurpose.Unlock) promptTitle else enablePromptTitle,
+            subtitle = promptSubtitle,
+            cancelText = if (purpose == BiometricPurpose.Unlock) promptUsePin else promptCancel
+        )
     }
 
     LaunchedEffect(
@@ -103,7 +118,9 @@ fun FinTrackerApp(
             appState.requiresUnlock -> UnlockScreen(
                 verifyingPin = appState.verifyingPin,
                 pinRejected = appState.pinRejected,
+                lockoutRemainingSeconds = appState.lockoutRemainingSeconds,
                 biometricAvailable = appState.settings.biometricEnabled && biometricAvailable,
+                focusRequestKey = pinFocusRequest,
                 onPinChange = appViewModel::clearPinError,
                 onPinComplete = appViewModel::verifyPin,
                 onBiometricClick = { launchBiometrics(BiometricPurpose.Unlock) }
@@ -124,7 +141,8 @@ fun FinTrackerApp(
                         onLanguageSelect = settingsViewModel::setLanguage,
                         onCurrencySelect = settingsViewModel::setCurrency,
                         onCategoryQueryChange = settingsViewModel::setCategoryQuery,
-                        onPinComplete = settingsViewModel::savePin,
+                        onPinComplete = settingsViewModel::submitPin,
+                        onPinChange = settingsViewModel::clearPinError,
                         onBiometricToggle = { enabled ->
                             if (enabled) launchBiometrics(BiometricPurpose.EnableSetting)
                             else settingsViewModel.setBiometricEnabled(false)

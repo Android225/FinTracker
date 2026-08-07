@@ -101,12 +101,17 @@
     <string name="pin_change_title">Cambiar PIN</string>
     <string name="pin_create_title">Establecer PIN</string>
     <string name="pin_new_prompt">Introduce un nuevo PIN</string>
+    <string name="pin_current_prompt">Introduce tu PIN actual</string>
+    <string name="pin_confirm_prompt">Repite el nuevo PIN</string>
+    <string name="pin_wrong_current">El PIN actual es incorrecto</string>
+    <string name="pin_confirmation_mismatch">Los PIN no coinciden</string>
     <string name="pin_input_description">Entrada de PIN de cuatro dígitos</string>
     <string name="unlock_title">Te damos la bienvenida</string>
     <string name="unlock_subtitle">Introduce tu PIN para abrir FinTracker</string>
     <string name="unlock_wrong_pin">PIN incorrecto. Inténtalo de nuevo</string>
     <string name="unlock_biometric">Usar biometría</string>
     <string name="unlock_verifying">Comprobando el PIN…</string>
+    <string name="unlock_too_many_attempts">Demasiados intentos. Inténtalo de nuevo en %1$d s.</string>
     <string name="biometric_title">Biometría</string>
     <string name="biometric_face_title">Desbloqueo biométrico</string>
     <string name="biometric_description">Usa tu huella o rostro para desbloquear rápidamente la aplicación</string>
@@ -115,8 +120,9 @@
     <string name="biometric_requires_pin">Establece primero un PIN</string>
     <string name="biometric_unavailable">La biometría no está disponible o configurada en este dispositivo</string>
     <string name="biometric_prompt_title">Desbloquear FinTracker</string>
+    <string name="biometric_enable_prompt_title">Activar biometría</string>
     <string name="biometric_prompt_subtitle">Confirma tu identidad</string>
-    <string name="biometric_prompt_cancel">Usar PIN</string>
+    <string name="biometric_prompt_use_pin">Introducir PIN</string>
     <string name="settings_open_description">Abrir ajustes</string>
     <string name="settings_back_description">Volver a los ajustes</string>
 </resources>

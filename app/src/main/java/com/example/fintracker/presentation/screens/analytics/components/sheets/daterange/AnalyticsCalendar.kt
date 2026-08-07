@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import com.example.fintracker.R
 import com.example.fintracker.domain.analytics.model.AnalyticsPeriod
 import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsPrimary
-import com.example.fintracker.presentation.screens.analytics.components.sheets.AnalyticsRange
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -159,7 +158,7 @@ private fun CalendarDay(
                     .fillMaxWidth(if (isStart || isEnd) 0.5f else 1f)
                     .height(40.dp)
                     .align(if (isStart) Alignment.CenterEnd else Alignment.CenterStart)
-                    .background(AnalyticsRange)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
             )
         }
         if (isStart || isEnd) {
@@ -173,7 +172,11 @@ private fun CalendarDay(
             text = date.dayOfMonth.toString(),
             fontSize = 14.sp,
             lineHeight = 16.sp,
-            color = if (isStart || isEnd) Color.White else MaterialTheme.colorScheme.onSurface,
+            color = when {
+                isStart || isEnd -> Color.White
+                isInRange -> MaterialTheme.colorScheme.onSecondaryContainer
+                else -> MaterialTheme.colorScheme.onSurface
+            },
             textAlign = TextAlign.Center
         )
     }

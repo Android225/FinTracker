@@ -101,12 +101,17 @@
     <string name="pin_change_title">Modifier le code PIN</string>
     <string name="pin_create_title">Définir un code PIN</string>
     <string name="pin_new_prompt">Saisissez un nouveau code PIN</string>
+    <string name="pin_current_prompt">Saisissez votre code PIN actuel</string>
+    <string name="pin_confirm_prompt">Répétez le nouveau code PIN</string>
+    <string name="pin_wrong_current">Le code PIN actuel est incorrect</string>
+    <string name="pin_confirmation_mismatch">Les codes PIN ne correspondent pas</string>
     <string name="pin_input_description">Saisie d’un code PIN à quatre chiffres</string>
     <string name="unlock_title">Heureux de vous revoir</string>
     <string name="unlock_subtitle">Saisissez votre code PIN pour ouvrir FinTracker</string>
     <string name="unlock_wrong_pin">Code PIN incorrect. Réessayez</string>
     <string name="unlock_biometric">Utiliser la biométrie</string>
     <string name="unlock_verifying">Vérification du code PIN…</string>
+    <string name="unlock_too_many_attempts">Trop de tentatives. Réessayez dans %1$d s.</string>
     <string name="biometric_title">Biométrie</string>
     <string name="biometric_face_title">Déverrouillage biométrique</string>
     <string name="biometric_description">Utilisez votre empreinte ou votre visage pour déverrouiller rapidement l’application</string>
@@ -115,8 +120,9 @@
     <string name="biometric_requires_pin">Définissez d’abord un code PIN</string>
     <string name="biometric_unavailable">La biométrie est indisponible ou non configurée sur cet appareil</string>
     <string name="biometric_prompt_title">Déverrouiller FinTracker</string>
+    <string name="biometric_enable_prompt_title">Activer la biométrie</string>
     <string name="biometric_prompt_subtitle">Confirmez votre identité</string>
-    <string name="biometric_prompt_cancel">Utiliser le code PIN</string>
+    <string name="biometric_prompt_use_pin">Saisir le code PIN</string>
     <string name="settings_open_description">Ouvrir les paramètres</string>
     <string name="settings_back_description">Retourner aux paramètres</string>
 </resources>
