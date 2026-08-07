@@ -1,6 +1,7 @@
 package com.example.fintracker.presentation.screens.editor
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
@@ -302,9 +303,16 @@ fun AccountEditorHost(
         }
     }
     if (showCurrencies) {
-        SingleChoiceDialog(
+        EditorChoiceBottomSheet(
             title = stringResource(R.string.currency),
-            options = AppCurrency.entries.map { it.code to it.code },
+            options = AppCurrency.entries.map { currency ->
+                EditorChoiceOption(
+                    key = currency.code,
+                    emoji = currencyFlag(currency),
+                    title = stringResource(currencyName(currency)),
+                    supportingText = currency.code
+                )
+            },
             selectedKey = state.currency,
             onSelect = {
                 viewModel.setCurrency(it)
@@ -618,45 +626,6 @@ private fun EditorChoiceBottomSheet(
     }
 }
 
-@Composable
-private fun SingleChoiceDialog(
-    title: String,
-    options: List<Pair<String, String>>,
-    selectedKey: String?,
-    onSelect: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column {
-                options.forEach { (key, label) ->
-                    TextButton(
-                        onClick = { onSelect(key) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = label,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Start
-                        )
-                        if (key == selectedKey) {
-                            Text("✓", color = MaterialTheme.colorScheme.primary)
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        }
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditorDatePicker(
@@ -719,4 +688,21 @@ private fun currencySymbol(currency: String): String = when (currency) {
     "USD" -> "$"
     "EUR" -> "€"
     else -> currency
+}
+
+private fun currencyFlag(currency: AppCurrency): String = when (currency) {
+    AppCurrency.Rub -> "🇷🇺"
+    AppCurrency.Usd -> "🇺🇸"
+    AppCurrency.Eur -> "🇪🇺"
+    AppCurrency.Gbp -> "🇬🇧"
+    AppCurrency.Cny -> "🇨🇳"
+}
+
+@StringRes
+private fun currencyName(currency: AppCurrency): Int = when (currency) {
+    AppCurrency.Rub -> R.string.currency_rub
+    AppCurrency.Usd -> R.string.currency_usd
+    AppCurrency.Eur -> R.string.currency_eur
+    AppCurrency.Gbp -> R.string.currency_gbp
+    AppCurrency.Cny -> R.string.currency_cny
 }
