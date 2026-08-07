@@ -2,6 +2,7 @@ package com.example.fintracker.presentation.screens.editor
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -23,6 +27,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHost
@@ -44,10 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TransformedText
@@ -60,6 +67,7 @@ import com.example.fintracker.presentation.common.components.bottomsheet.FinTrac
 import com.example.fintracker.presentation.common.components.feedback.ErrorSnackbarEffect
 import com.example.fintracker.presentation.common.components.list.ListItem
 import com.example.fintracker.presentation.common.components.list.ListItemContentText
+import com.example.fintracker.presentation.common.components.list.ListItemLeadEmoji
 import com.example.fintracker.presentation.common.components.list.ListItemLeadIcon
 import java.time.Instant
 import java.time.LocalDate
@@ -71,6 +79,13 @@ private enum class TransactionPicker {
     Category,
     Account
 }
+
+private data class EditorChoiceOption(
+    val key: String,
+    val emoji: String,
+    val title: String,
+    val supportingText: String? = null
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,9 +136,15 @@ fun TransactionEditorHost(
     }
 
     when (picker) {
-        TransactionPicker.Category -> SingleChoiceDialog(
+        TransactionPicker.Category -> EditorChoiceBottomSheet(
             title = stringResource(R.string.transaction_category),
-            options = state.categories.map { it.id.toString() to "${it.emoji} ${it.name}" },
+            options = state.categories.map {
+                EditorChoiceOption(
+                    key = it.id.toString(),
+                    emoji = it.emoji,
+                    title = it.name
+                )
+            },
             selectedKey = state.categoryId?.toString(),
             onSelect = {
                 viewModel.setCategory(it.toInt())
@@ -131,10 +152,15 @@ fun TransactionEditorHost(
             },
             onDismiss = { picker = null }
         )
-        TransactionPicker.Account -> SingleChoiceDialog(
+        TransactionPicker.Account -> EditorChoiceBottomSheet(
             title = stringResource(R.string.account),
             options = state.accounts.map {
-                it.id.toString() to "${it.emoji} ${it.name} · ${it.currency}"
+                EditorChoiceOption(
+                    key = it.id.toString(),
+                    emoji = it.emoji,
+                    title = it.name,
+                    supportingText = it.currency
+                )
             },
             selectedKey = state.accountId?.toString(),
             onSelect = {
@@ -502,6 +528,96 @@ private fun EditorConfirmButton(enabled: Boolean, onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditorChoiceBottomSheet(
+    title: String,
+    options: List<EditorChoiceOption>,
+    selectedKey: String?,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val maxListHeight = (LocalConfiguration.current.screenHeightDp * 0.6f).dp
+
+    FinTrackerBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandleHeight = 16.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold
+            )
+            LazyColumn(
+                modifier = Modifier.heightIn(max = maxListHeight)
+            ) {
+                itemsIndexed(
+                    items = options,
+                    key = { _, option -> option.key }
+                ) { index, option ->
+                    val selected = option.key == selectedKey
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = selected,
+                                onClick = { onSelect(option.key) },
+                                role = Role.RadioButton
+                            )
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ListItemLeadEmoji(option.emoji)
+                        Column(
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = option.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            option.supportingText?.let { supportingText ->
+                                Text(
+                                    text = supportingText,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        if (selected) {
+                            Icon(
+                                painter = painterResource(R.drawable.analytics_check),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                    if (index != options.lastIndex) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.65f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun SingleChoiceDialog(
     title: String,
@@ -552,6 +668,7 @@ private fun EditorDatePicker(
         initialSelectedDateMillis = date.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
     )
     DatePickerDialog(
+        modifier = Modifier.padding(horizontal = 16.dp),
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
